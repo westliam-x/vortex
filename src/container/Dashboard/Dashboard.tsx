@@ -1,4 +1,5 @@
 "use client";
+import { DashboardLayout } from "@/layouts";
 import {
   DashboardStats,
   ProjectOverview,
@@ -10,21 +11,23 @@ import {
 
 const Dashboard = () => {
   return (
-    <main className="p-6 space-y-6">
-      <DashboardStats />
+    <DashboardLayout>
+      <main className="md:p-6 space-y-6">
+        <DashboardStats />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <RecentActivity />
-        <RecentComments />
-      </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <RecentActivity />
+          <RecentComments />
+        </div>
 
-      <ProjectOverview />
+        <ProjectOverview />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ReviewHighlight />
-        <QuickActions />
-      </div>
-    </main>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ReviewHighlight />
+          <QuickActions />
+        </div>
+      </main>
+    </DashboardLayout>
   );
 };
 
