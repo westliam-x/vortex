@@ -16,7 +16,10 @@ const QuickActions = () => {
         >
           ➕ Add New Project
         </button>
-        <button onClick={()=> setShowInviteModal(true)} className="bg-yellow-600 hover:bg-yellow-700 transition text-white px-4 py-2 rounded-md text-sm">
+        <button
+          onClick={() => setShowInviteModal(true)}
+          className="bg-yellow-600 hover:bg-yellow-700 transition text-white px-4 py-2 rounded-md text-sm"
+        >
           📨 Invite Client
         </button>
         <button className="bg-gray-700 hover:bg-gray-800 transition text-white px-4 py-2 rounded-md text-sm">
@@ -24,16 +27,17 @@ const QuickActions = () => {
         </button>
       </div>
 
-
       {/* Modals */}
-        <AddProjectModal
-          isOpen={showProjectModal}
-          onClose={() => setShowProjectModal(false)}
-        />
-        <InviteClientModal
-          isOpen={showInviteModal}
-          onClose={() => setShowInviteModal(false)}
-        />
+      <AddProjectModal
+        clients={[]}
+        onSubmit={() => {}}
+        isOpen={showProjectModal}
+        onClose={() => setShowProjectModal(false)}
+      />
+      <InviteClientModal
+        isOpen={showInviteModal}
+        onClose={() => setShowInviteModal(false)}
+      />
     </div>
   );
 };

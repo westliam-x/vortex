@@ -1,5 +1,20 @@
+// types/project.ts
 export interface Project {
   id: string;
   title: string;
-  status: "Pending" | "In Progress" | "Completed";
+  description?: string;
+  status: "Pending" | "In Progress" | "Completed" | "Archived";
+  clientId: string;
+  startDate?: string;
+  endDate?: Date;
+  deadline?: string;
+  createdAt: string;
+  updatedAt?: string;
+  assignedTo?: string[];
+  techStack?: string[];
+  team?: string[];
+  budget?: number;
+  priority?: "Low" | "Medium" | "High";
+  feedback?: string;
+  isPublic?: boolean;
 }
