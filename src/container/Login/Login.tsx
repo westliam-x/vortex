@@ -27,7 +27,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0C0C1C] px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center  px-4 py-12">
       <div className="w-full max-w-4xl bg-[#1E1E2E] border border-[#2F2F41] rounded-2xl shadow-2xl p-12">
         <h1 className="text-4xl font-bold text-cyan-400 text-center mb-3 tracking-wide">
           Welcome Back
