@@ -212,7 +212,6 @@ Open [http://localhost:3000](http://localhost:3000) to see the result.
 * [ ] Add `useDarkMode` toggle
 * [ ] Integrate real backend or Supabase/Prisma
 * [ ] Setup protected routes with middleware
-* [ ] Deploy to Vercel with environment variables
 
 ---
 
