@@ -1,6 +1,6 @@
 "use client";
 
-import { AddProjectModal, InviteClientModal } from "@/components";
+import { AddProjectModal, InviteUserModal } from "@/components";
 import { useState } from "react";
 
 const QuickActions = () => {
@@ -34,9 +34,16 @@ const QuickActions = () => {
         isOpen={showProjectModal}
         onClose={() => setShowProjectModal(false)}
       />
-      <InviteClientModal
+      <InviteUserModal
         isOpen={showInviteModal}
         onClose={() => setShowInviteModal(false)}
+        onSubmit={(data: { type: string }) => {
+          if (data.type === "Client") {
+            // send invite to client with data.projectId
+          } else {
+            // send invite to team member with data.role
+          }
+        }}
       />
     </div>
   );

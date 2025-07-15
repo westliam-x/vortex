@@ -12,153 +12,203 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { Fragment } from "react";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 
-// Mock project data (replace with actual from store/api)
+// Replace with real data later
 const projectOptions = [
   { id: "p1", name: "Ayinke Website" },
   { id: "p2", name: "Spark Website" },
-  { id: "p3", name: "Skyboard Project" },
 ];
 
-interface InviteClientProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+const roles = ["Admin", "Developer", "Designer", "Marketer"];
 
-const formSchema = z.object({
-  name: z.string().min(2, "Client name is required"),
-  email: z
-    .string()
-    .min(3, "Email must be valid")
-    .max(100, "Email must not exceed 100 characters")
-    .email("Please enter a valid email address"),
-  projectId: z.string().min(1, "Please select a project"),
+// Schema setup
+const baseSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  email: z.string().email("Enter a valid email"),
+  type: z.enum(["Client", "Team"]),
 });
 
-type FormData = z.infer<typeof formSchema>;
+const extendedSchema = z.discriminatedUnion("type", [
+  baseSchema.extend({
+    type: z.literal("Client"),
+    projectId: z.string().min(1, "Please select a project"),
+  }),
+  baseSchema.extend({
+    type: z.literal("Team"),
+    role: z.string().min(1, "Please select a role"),
+    projectIds: z.array(z.string()).min(1, "Assign at least one project"),
+  }),
+]);
 
-const InviteClientModal = ({ isOpen, onClose }: InviteClientProps) => {
+type InviteFormData = z.infer<typeof extendedSchema>;
+
+interface InviteUserModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: InviteFormData) => void;
+}
+
+const InviteUserModal = ({ isOpen, onClose, onSubmit }: InviteUserModalProps) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    watch,
     reset,
-  } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    formState: { errors },
+  } = useForm<InviteFormData>({
+    resolver: zodResolver(extendedSchema),
+    defaultValues: { type: "Client" },
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log("Invite Data:", data);
-    reset();
+  const userType = watch("type");
+
+  const handleFormSubmit = (data: InviteFormData) => {
+    onSubmit(data);
+    reset({ type: "Client" });
     onClose();
   };
 
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog as="div" onClose={onClose} className="relative z-50">
-        <TransitionChild
-          as={Fragment}
-          enter="ease-out duration-200"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-150"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
+        <TransitionChild as={Fragment}>
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
         </TransitionChild>
 
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <TransitionChild
-            as={Fragment}
-            enter="ease-out duration-200"
-            enterFrom="scale-95 opacity-0"
-            enterTo="scale-100 opacity-100"
-            leave="ease-in duration-150"
-            leaveFrom="scale-100 opacity-100"
-            leaveTo="scale-95 opacity-0"
-          >
-            <DialogPanel className="w-full max-w-md rounded-xl bg-[#1E1E2E] border border-[#2F2F41] p-6 shadow-lg">
+          <TransitionChild as={Fragment}>
+            <DialogPanel className="w-full max-w-md bg-[#1E1E2E] border border-[#2F2F41] p-6 rounded-xl">
               <div className="flex justify-between items-center mb-4">
                 <DialogTitle className="text-lg font-semibold text-gray-100">
-                  Invite Client
+                  Invite a User
                 </DialogTitle>
-                <button
-                  onClick={onClose}
-                  className="text-gray-400 hover:text-white"
-                >
+                <button onClick={onClose} className="text-gray-400 hover:text-white">
                   <X size={20} />
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+                {/* Invite Type */}
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">
-                    Client Name
-                  </label>
+                  <label className="block text-sm text-gray-300 mb-1">Invite as</label>
+                  <select
+                    {...register("type")}
+                    className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+                  >
+                    <option value="Client">Client</option>
+                    <option value="Team">Team Member</option>
+                  </select>
+                </div>
+
+                {/* Name */}
+                <div>
+                  <label className="block text-sm text-gray-300 mb-1">Full Name</label>
                   <input
                     type="text"
                     {...register("name")}
                     className={cn(
-                      "w-full px-3 py-2 rounded-md bg-[#141421] text-gray-200 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-600",
+                      "w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700",
                       errors.name && "border-red-500"
                     )}
                   />
                   {errors.name && (
-                    <p className="text-xs text-red-400 mt-1">
-                      {errors.name.message}
-                    </p>
+                    <p className="text-xs text-red-400 mt-1">{errors.name.message}</p>
                   )}
                 </div>
 
+                {/* Email */}
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">
-                    Client Email
-                  </label>
+                  <label className="block text-sm text-gray-300 mb-1">Email</label>
                   <input
                     type="email"
                     {...register("email")}
                     className={cn(
-                      "w-full px-3 py-2 rounded-md bg-[#141421] text-gray-200 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-600",
+                      "w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700",
                       errors.email && "border-red-500"
                     )}
                   />
                   {errors.email && (
-                    <p className="text-xs text-red-400 mt-1">
-                      {errors.email.message}
-                    </p>
+                    <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-sm text-gray-300 mb-1">
-                    Select Project
-                  </label>
-                  <select
-                    {...register("projectId")}
-                    defaultValue=""
-                    className={cn(
-                      "w-full px-3 py-2 rounded-md bg-[#141421] text-gray-200 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-600",
-                      errors.projectId && "border-red-500"
+                {/* Client Project Assignment */}
+                {userType === "Client" && (
+                  <div>
+                    <label className="block text-sm text-gray-300 mb-1">Assign to Project</label>
+                    <select
+                      {...register("projectId")}
+                      className={cn(
+                        "w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700",
+                        "projectId" in errors && "border-red-500"
+                      )}
+                    >
+                      <option value="">-- Select Project --</option>
+                      {projectOptions.map((proj) => (
+                        <option key={proj.id} value={proj.id}>
+                          {proj.name}
+                        </option>
+                      ))}
+                    </select>
+                    {"projectId" in errors && errors.projectId?.message && (
+                      <p className="text-xs text-red-400 mt-1">
+                        {errors.projectId.message}
+                      </p>
                     )}
-                  >
-                    <option value="" disabled>
-                      -- Choose a project --
-                    </option>
-                    {projectOptions.map((proj) => (
-                      <option key={proj.id} value={proj.id}>
-                        {proj.name}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.projectId && (
-                    <p className="text-xs text-red-400 mt-1">
-                      {errors.projectId.message}
-                    </p>
-                  )}
-                </div>
+                  </div>
+                )}
 
+                {/* Team Role & Project Assignments */}
+                {userType === "Team" && (
+                  <>
+                    <div>
+                      <label className="block text-sm text-gray-300 mb-1">Select Role</label>
+                      <select
+                        {...register("role")}
+                        className={cn(
+                          "w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700",
+                          "role" in errors && "border-red-500"
+                        )}
+                      >
+                        <option value="">-- Select Role --</option>
+                        {roles.map((role) => (
+                          <option key={role} value={role}>
+                            {role}
+                          </option>
+                        ))}
+                      </select>
+                      {"role" in errors && errors.role?.message && (
+                        <p className="text-xs text-red-400 mt-1">{errors.role.message}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm text-gray-300 mb-1">Assign to Projects</label>
+                      <select
+                        {...register("projectIds")}
+                        multiple
+                        className={cn(
+                          "w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700",
+                          "projectIds" in errors && "border-red-500"
+                        )}
+                      >
+                        {projectOptions.map((proj) => (
+                          <option key={proj.id} value={proj.id}>
+                            {proj.name}
+                          </option>
+                        ))}
+                      </select>
+                      {"projectIds" in errors && errors.projectIds?.message && (
+                        <p className="text-xs text-red-400 mt-1">
+                          {errors.projectIds.message}
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* Submit */}
                 <button
                   type="submit"
                   className="w-full mt-4 bg-cyan-700 hover:bg-cyan-800 transition text-white py-2 rounded-md"
@@ -174,4 +224,4 @@ const InviteClientModal = ({ isOpen, onClose }: InviteClientProps) => {
   );
 };
 
-export default InviteClientModal;
+export default InviteUserModal;
