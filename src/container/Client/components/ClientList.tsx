@@ -14,7 +14,7 @@ const mockClients: Client[] = [
     company: "Johnson Media",
     avatarUrl: "/avatars/chris.jpg",
     projects: [
-      { id: "p3", title: "E-commerce Platform", status: "Pending" },
+      { id: "p3", title: "E-commerce Platform", status: "Pending", createdAt: "2025-09-01", clientId: "1" },
     ],
     joinedAt: "2024-12-01T14:35:00Z",
     status: "Active",
@@ -31,7 +31,7 @@ const mockClients: Client[] = [
     company: "Obi Design Studio",
     avatarUrl: "/avatars/amaka.png",
      projects: [
-      { id: "p3", title: "E-commerce Platform", status: "Pending" },
+      { id: "p3", title: "E-commerce Platform", status: "Pending", createdAt: "2025-09-01", clientId: "2" },
     ],
     joinedAt: "2025-02-15T09:00:00Z",
     status: "Inactive",
