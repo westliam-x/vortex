@@ -12,14 +12,22 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-const StepEmail = ({ onNext }: { onNext: (email: string) => void }) => {
+const StepEmail = ({
+  initialEmail,
+  onNext,
+}: {
+  initialEmail: string;
+  onNext: (email: string) => void;
+}) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
+    defaultValues: { email: initialEmail },
   });
+
 
   const onSubmit = (data: FormData) => {
     onNext(data.email);
@@ -66,7 +74,7 @@ const StepEmail = ({ onNext }: { onNext: (email: string) => void }) => {
         {/* Continue Button */}
         <button
           type="submit"
-          className="w-full py-3 rounded-lg bg-[#985EFF] hover:bg-[#985EFF] text-white text-base font-medium transition"
+          className="w-full cursor-pointer py-3 rounded-lg bg-[#985EFF] hover:bg-[#985EFF] text-white text-base font-medium transition"
         >
           Continue →
         </button>

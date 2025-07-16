@@ -25,6 +25,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.60.0",
+    "react-toastify": "^11.0.5",
     "tailwind-variants": "^1.0.0",
     "uuid": "^11.1.0",
     "zod": "^4.0.5",

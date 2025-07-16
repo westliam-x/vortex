@@ -4,6 +4,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { makeRequest } from "@/lib/request";
+import API_ROUTES from "@/endpoints/routes";
+import { useState } from "react";
+import { toast } from "react-toastify";
+
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -11,8 +16,7 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>;
 
-export default function LoginPage() {
-   
+const LoginPage = () => {
   const {
     register,
     handleSubmit,
@@ -20,14 +24,32 @@ export default function LoginPage() {
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   });
- const router = useRouter()
-  const onSubmit = (data: LoginForm) => {
-    console.log("Login attempt:", data);
-    router.push("/dashboard");
+
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (formData: LoginForm) => {
+    try {
+      setLoading(true);
+
+      await makeRequest({
+        url: API_ROUTES.AUTH.LOGIN,
+        method: "POST",
+        data: formData,
+      });
+
+      toast.success("Login successful!");
+
+      router.push("/dashboard");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center  px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-4xl bg-[#090909] border border-[#2F2F41] rounded-2xl shadow-2xl p-12">
         <h1 className="text-4xl font-bold text-white text-center mb-3 tracking-wide">
           Welcome Back
@@ -36,7 +58,10 @@ export default function LoginPage() {
           Log in to manage your Vortex workspace
         </p>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 w-full max-w-xl mx-auto">
+        <form
+          onSubmit={handleSubmit(handleLogin)}
+          className="space-y-6 w-full max-w-xl mx-auto"
+        >
           {/* Email */}
           <div>
             <label className="block text-sm text-gray-300 mb-1">Email</label>
@@ -44,7 +69,7 @@ export default function LoginPage() {
               {...register("email")}
               type="email"
               placeholder="you@example.com"
-              className="w-full px-4 py-3 rounded-lg bg-[#141421] border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring--[#985EFF]"
+              className="w-full px-4 py-3 rounded-lg bg-[#141421] border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-[#985EFF]"
             />
             {errors.email && (
               <p className="text-xs text-red-400 mt-1">
@@ -60,7 +85,7 @@ export default function LoginPage() {
               {...register("password")}
               type="password"
               placeholder="••••••••"
-              className="w-full px-4 py-3 rounded-lg bg-[#141421] border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring--[#985EFF]"
+              className="w-full px-4 py-3 rounded-lg bg-[#141421] border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-[#985EFF]"
             />
             {errors.password && (
               <p className="text-xs text-red-400 mt-1">
@@ -71,9 +96,12 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full py-3 rounded-lg bg-[#985EFF] hover:bg-[#985EFF] transition font-semibold text-white text-base"
+            disabled={loading}
+            className={`w-full py-3 rounded-lg cursor-pointer ${
+              loading ? "bg-gray-600" : "bg-[#985EFF] hover:bg-[#985EFF]"
+            } transition font-semibold text-white text-base`}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
@@ -89,4 +117,6 @@ export default function LoginPage() {
       </div>
     </div>
   );
-}
+};
+
+export default LoginPage;
