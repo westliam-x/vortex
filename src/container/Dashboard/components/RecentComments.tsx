@@ -19,9 +19,9 @@ const recentComments = [
 
 const RecentComments = () => {
   return (
-    <div className="bg-[#1E1E2E] border border-[#2F2F41] rounded-xl p-4 shadow-inner">
+    <div className="bg-[#090909] border border-[#2F2F41] rounded-xl p-4 shadow-inner">
       <div className="flex items-center gap-2 mb-4">
-        <MessageCircle size={18} className="text-yellow-400" />
+        <MessageCircle size={18} className="text-[#985EFF]" />
         <h2 className="text-white text-lg font-semibold">Client Comments</h2>
       </div>
       <ul className="space-y-4">
@@ -29,7 +29,7 @@ const RecentComments = () => {
           <li key={item.id} className="border-b border-gray-700 pb-3">
             <p className="text-sm text-gray-300 italic">“{item.comment}”</p>
             <p className="text-xs text-gray-400 mt-1">
-              — {item.client} on <span className="text-blue-300">{item.project}</span>
+              — {item.client} on <span className="text-[#985EFF]">{item.project}</span>
             </p>
           </li>
         ))}

@@ -24,11 +24,11 @@ const MobileSidebar = () => {
 
   return (
     <Dialog open={isOpen} onClose={close} className="relative z-50 md:hidden">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" aria-hidden="true" />
+      <div className="fixed inset-0 bg-[#191919] backdrop-blur-sm" aria-hidden="true" />
 
-      <div className="fixed top-0 left-0 w-64 h-full bg-[#141421] p-6 shadow-xl border-r border-cyan-400">
+      <div className="fixed top-0 left-0 w-64 h-full bg-[#191919] p-6 shadow-xl border-r border-white">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-xl font-semibold text-cyan-300">⚡ Vortex</h2>
+          <h2 className="text-xl font-semibold text-white">⚡ Vortex</h2>
           <button onClick={close} className="text-cyan-300">
             <X size={20} />
           </button>

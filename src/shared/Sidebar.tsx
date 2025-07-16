@@ -30,17 +30,17 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden md:flex flex-col w-64 h-full bg-[#141421]/80 border-r border-[#2F2F41] backdrop-blur-lg p-6 shadow-[inset_0_0_10px_#1E1E3F]">
+    <aside className="hidden md:flex flex-col w-64 h-full bg-[#090909] border-r backdrop-blur-lg p-6 shadow-[inset_0_0_10px_backdrop-blur-lg p-6 shadow-[inset_0_0_10px_#1E1E3F]]">
       <div className="mb-10 flex items-center gap-2">
         <motion.div
           animate={{ rotate: [0, 20, -10, 0] }}
           transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 3 }}
-          className="text-cyan-400"
+          className="text-[#985EFF]"
         >
           ⚡
         </motion.div>
-        <h1 className="text-2xl font-semibold text-cyan-400 tracking-wide">
-          West&apos;s Vortex
+        <h1 className="text-2xl font-poppins font-semibold text-white tracking-wide">
+          Vortex
         </h1>
       </div>
 
@@ -55,10 +55,10 @@ const Sidebar = () => {
               aria-current={isActive ? "page" : undefined}
               className={cn(
                 "flex items-center gap-5 px-4 py-4 rounded-lg transition-colors",
-                "hover:bg-blue-500/10 hover:text-blue-300",
+                "hover:bg-[#ba93fd] hover:text-white",
                 isActive
-                  ? "bg-blue-500/20 text-blue-300 font-medium"
-                  : "text-gray-400"
+                  ? "bg-[#985EFF] text-white font-medium"
+                  : "text-white"
               )}
             >
               <Icon size={18} className="shrink-0" />

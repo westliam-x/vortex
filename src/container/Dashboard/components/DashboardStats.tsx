@@ -8,25 +8,25 @@ const stats = [
     label: "Total Revenue",
     value: "₦1,250,000",
     icon: DollarSign,
-    color: "text-green-400",
+    color: "text-[#985EFF]",
   },
   {
     label: "Ongoing Projects",
     value: "5",
     icon: Clock,
-    color: "text-yellow-400",
+    color: "text-[#985EFF]",
   },
   {
     label: "Completed Projects",
     value: "32",
     icon: CheckCircle,
-    color: "text-blue-400",
+    color: "text-[#985EFF]",
   },
   {
     label: "Clients",
     value: "14",
     icon: Briefcase,
-    color: "text-cyan-400",
+    color: "text-[#985EFF]",
   },
 ];
 

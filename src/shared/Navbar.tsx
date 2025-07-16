@@ -16,7 +16,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <div className="sticky top-0 z-30 flex justify-between items-center px-4 h-14 border-b border-gray-800 bg-[#1A1A2E]/80 backdrop-blur">
+    <div className="sticky top-0 z-30 flex justify-between items-center px-4 h-14 border-b border-gray-800 bg-[#090909] backdrop-blur">
       <div className="flex items-center gap-2">
         <button
           onClick={openSidebar}
@@ -24,7 +24,7 @@ const Navbar = () => {
         >
           <Menu size={10} />
         </button>
-        <div className="text-xs text-gray-400">Current Time: {time}</div>
+        <div className="text-xs text-white font-poppins">Current Time: {time}</div>
       </div>
       <div className="flex items-center gap-2">
         <span className="text-xs">Hi, Admin</span>

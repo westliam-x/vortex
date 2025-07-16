@@ -11,15 +11,15 @@ const recentLogs = [
 
 const RecentActivity = () => {
   return (
-    <div className="bg-[#1E1E2E] border border-[#2F2F41] rounded-xl p-4 shadow-inner">
+    <div className="bg-[#090909] border border-[#2F2F41] rounded-xl p-4 shadow-inner">
       <div className="flex items-center gap-2 mb-4">
-        <Activity size={18} className="text-blue-400" />
+        <Activity size={18} className="text-[#985EFF]" />
         <h2 className="text-gray-200 text-lg font-semibold">Recent Activity</h2>
       </div>
       <ul className="space-y-3">
         {recentLogs.map((log) => (
-          <li key={log.id} className="text-sm text-gray-300">
-            <span className="text-blue-300 font-medium">{log.action}</span>
+          <li key={log.id} className="text-sm ">
+            <span className="font-medium">{log.action}</span>
             <span className="ml-2 text-gray-500 text-xs">({log.time})</span>
           </li>
         ))}
