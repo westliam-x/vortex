@@ -47,10 +47,10 @@ const router = useRouter();
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto bg-[#1E1E2E] border border-[#2F2F41] p-8 rounded-2xl shadow-lg">
+    <div className="w-full max-w-lg mx-auto bg-[#090909] border border-[#2F2F41] p-8 rounded-2xl shadow-lg">
       <div className="text-center mb-6">
-        <UserPlus className="mx-auto text-cyan-400 mb-2" size={24} />
-        <h2 className="text-xl font-bold text-cyan-300">Complete Your Details</h2>
+        <UserPlus className="mx-auto text-white mb-2" size={24} />
+        <h2 className="text-xl font-bold text-white">Complete Your Details</h2>
         <p className="text-sm text-gray-400">Let&apos;s personalize your Vortex account.</p>
       </div>
 
@@ -61,7 +61,7 @@ const router = useRouter();
             <input
               {...register("firstName")}
               placeholder="e.g. John"
-              className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring-cyan-600"
+              className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring--[#985EFF]"
             />
             {errors.firstName && (
               <p className="text-xs text-red-400 mt-1">{errors.firstName.message}</p>
@@ -73,7 +73,7 @@ const router = useRouter();
             <input
               {...register("lastName")}
               placeholder="e.g. Doe"
-              className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring-cyan-600"
+              className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring--[#985EFF]"
             />
             {errors.lastName && (
               <p className="text-xs text-red-400 mt-1">{errors.lastName.message}</p>
@@ -86,7 +86,7 @@ const router = useRouter();
           <input
             {...register("phone")}
             placeholder="e.g. +2348123456789"
-            className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring-cyan-600"
+            className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring--[#985EFF]"
           />
           {errors.phone && (
             <p className="text-xs text-red-400 mt-1">{errors.phone.message}</p>
@@ -98,7 +98,7 @@ const router = useRouter();
           <input
             {...register("country")}
             placeholder="e.g. Nigeria"
-            className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring-cyan-600"
+            className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring--[#985EFF]"
           />
           {errors.country && (
             <p className="text-xs text-red-400 mt-1">{errors.country.message}</p>
@@ -111,7 +111,7 @@ const router = useRouter();
             type="password"
             {...register("password")}
             placeholder="Create a password"
-            className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring-cyan-600"
+            className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring--[#985EFF]"
           />
           {errors.password && (
             <p className="text-xs text-red-400 mt-1">{errors.password.message}</p>
@@ -124,7 +124,7 @@ const router = useRouter();
             type="password"
             {...register("confirmPassword")}
             placeholder="Re-enter password"
-            className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring-cyan-600"
+            className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring--[#985EFF]"
           />
           {errors.confirmPassword && (
             <p className="text-xs text-red-400 mt-1">{errors.confirmPassword.message}</p>
@@ -133,7 +133,7 @@ const router = useRouter();
 
         <button
           type="submit"
-          className="w-full py-3 rounded-lg bg-cyan-700 hover:bg-cyan-800 text-white font-medium transition"
+          className="w-full py-3 rounded-lg bg-[#985EFF] hover:bg-[#985EFF] text-white font-medium transition"
         >
           Create Account
         </button>

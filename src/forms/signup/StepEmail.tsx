@@ -26,12 +26,12 @@ const StepEmail = ({ onNext }: { onNext: (email: string) => void }) => {
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto bg-[#1E1E2E] border border-[#2F2F41] rounded-2xl shadow-lg p-8">
+    <div className="w-full max-w-xl mx-auto bg-[#090909] border border-[#2F2F41] rounded-2xl shadow-lg p-8">
       <div className="text-center mb-6">
-        <div className="flex items-center justify-center mb-2 text-cyan-400">
+        <div className="flex items-center justify-center mb-2 text-white">
           <Sparkles size={24} />
         </div>
-        <h2 className="text-2xl font-bold text-cyan-300">Let&apos;s get started</h2>
+        <h2 className="text-2xl font-bold text-white">Let&apos;s get started</h2>
         <p className="text-sm text-gray-400">Enter your email to begin setting up your Vortex workspace.</p>
       </div>
 
@@ -44,7 +44,7 @@ const StepEmail = ({ onNext }: { onNext: (email: string) => void }) => {
               {...register("email")}
               type="email"
               placeholder="you@example.com"
-              className="w-full px-4 py-3 pr-10 rounded-md bg-[#141421] border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-600"
+              className="w-full px-4 py-3 pr-10 rounded-md bg-[#141421] border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring--[#985EFF]"
             />
             <Mail className="absolute right-3 top-3 text-gray-500" size={18} />
           </div>
@@ -59,14 +59,14 @@ const StepEmail = ({ onNext }: { onNext: (email: string) => void }) => {
           <input
             {...register("purpose")}
             placeholder="e.g. Client collaboration, tracking dev progress..."
-            className="w-full px-4 py-3 rounded-md bg-[#141421] border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-600"
+            className="w-full px-4 py-3 rounded-md bg-[#141421] border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring--[#985EFF]"
           />
         </div>
 
         {/* Continue Button */}
         <button
           type="submit"
-          className="w-full py-3 rounded-lg bg-cyan-700 hover:bg-cyan-800 text-white text-base font-medium transition"
+          className="w-full py-3 rounded-lg bg-[#985EFF] hover:bg-[#985EFF] text-white text-base font-medium transition"
         >
           Continue →
         </button>
@@ -74,7 +74,7 @@ const StepEmail = ({ onNext }: { onNext: (email: string) => void }) => {
           Already have an account?{" "}
           <a
             href="/login"
-            className="text-cyan-400 hover:underline hover:text-cyan-300"
+            className="text-white hover:underline hover:text-white"
           >
             Sign in here
           </a>

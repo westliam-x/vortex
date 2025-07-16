@@ -11,8 +11,8 @@ interface Props {
 
 const ProjectCard = ({ project }: Props) => {
   return (
-    <div className="bg-[#1E1E2E] p-4 border border-[#2F2F41] rounded-lg">
-      <h2 className="text-lg font-semibold text-cyan-300">{project.title}</h2>
+    <div className="bg-[#090909] p-4 border border-[#2F2F41] rounded-lg">
+      <h2 className="text-lg font-semibold text-white">{project.title}</h2>
       <p className="text-sm text-gray-400 mb-2">{project.description}</p>
       <div className="flex justify-between text-sm text-gray-300">
         <span>Status: {project.status}</span>
@@ -20,7 +20,7 @@ const ProjectCard = ({ project }: Props) => {
       </div>
       <Link
         href={`/projects/${project.id}`}
-        className="inline-block mt-3 text-cyan-400 hover:underline text-sm"
+        className="inline-block mt-3 text-white hover:underline text-sm"
       >
         View Details →
       </Link>

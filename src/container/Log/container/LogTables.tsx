@@ -8,7 +8,7 @@ interface Props {
 const LogsTable = ({ logs }: Props) => {
   return (
     <div className="overflow-x-auto border border-[#2F2F41] rounded-lg">
-      <table className="min-w-full bg-[#1E1E2E] text-sm">
+      <table className="min-w-full bg-[#090909] text-sm">
         <thead className="text-left text-gray-400">
           <tr>
             <th className="px-4 py-2">Action</th>

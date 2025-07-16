@@ -47,7 +47,7 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <Dialog.Panel className="w-full max-w-xl bg-[#1E1E2E] border border-[#2F2F41] rounded-xl p-6 shadow-lg">
             <div className="flex justify-between items-center mb-4">
-              <Dialog.Title className="text-lg font-semibold text-cyan-300">
+              <Dialog.Title className="text-lg font-semibold text-white">
                 Add New Client
               </Dialog.Title>
               <button
@@ -66,7 +66,7 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
                 </label>
                 <input
                   {...register("name")}
-                  className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-cyan-600"
+                  className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring--[#985EFF]"
                 />
                 {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name.message}</p>}
               </div>
@@ -155,7 +155,7 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
               {/* Submit */}
               <button
                 type="submit"
-                className="w-full bg-cyan-700 hover:bg-cyan-800 text-white py-2 rounded-md font-medium transition"
+                className="w-full bg-[#985EFF] hover:bg-[#985EFF] text-white py-2 rounded-md font-medium transition"
               >
                 Add Client
               </button>

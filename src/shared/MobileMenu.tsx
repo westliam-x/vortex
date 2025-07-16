@@ -29,7 +29,7 @@ const MobileSidebar = () => {
       <div className="fixed top-0 left-0 w-64 h-full bg-[#191919] p-6 shadow-xl border-r border-white">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-xl font-semibold text-white">⚡ Vortex</h2>
-          <button onClick={close} className="text-cyan-300">
+          <button onClick={close} className="text-white">
             <X size={20} />
           </button>
         </div>
@@ -41,7 +41,7 @@ const MobileSidebar = () => {
               onClick={close}
               className={cn(
                 "block px-4 py-2 rounded-lg hover:bg-cyan-400/10 transition-all",
-                pathname === link.href && "bg-cyan-500/10 text-cyan-300 font-medium"
+                pathname === link.href && "bg-cyan-500/10 text-white font-medium"
               )}
             >
               {link.name}

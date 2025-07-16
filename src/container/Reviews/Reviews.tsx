@@ -34,7 +34,7 @@ const ReviewsPage = () =>{
    <DashboardLayout>
      <div className="p-6 text-white max-w-6xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-cyan-400">Client Reviews</h1>
+        <h1 className="text-3xl font-bold text-white">Client Reviews</h1>
         <p className="text-gray-400 text-sm">See what your clients are saying</p>
       </div>
       <ReviewTable reviews={reviews} />

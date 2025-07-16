@@ -36,10 +36,10 @@ export default function TeamPage() {
     <DashboardLayout>
       <div className="p-6 max-w-6xl mx-auto text-white">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-cyan-400">Team Members</h1>
+          <h1 className="text-3xl font-bold text-white">Team Members</h1>
           <button
             onClick={() => setShowInviteModal(true)}
-            className="bg-cyan-700 hover:bg-cyan-800 text-white px-4 py-2 rounded-md"
+            className="bg-[#985EFF] hover:bg-[#985EFF] text-white px-4 py-2 rounded-md"
           >
             + Invite Member
           </button>

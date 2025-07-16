@@ -211,7 +211,7 @@ const InviteUserModal = ({ isOpen, onClose, onSubmit }: InviteUserModalProps) =>
                 {/* Submit */}
                 <button
                   type="submit"
-                  className="w-full mt-4 bg-cyan-700 hover:bg-cyan-800 transition text-white py-2 rounded-md"
+                  className="w-full mt-4 bg-[#985EFF] hover:bg-[#985EFF] transition text-white py-2 rounded-md"
                 >
                   Send Invite
                 </button>

@@ -8,7 +8,7 @@ interface Props {
 const ReviewTable = ({ reviews }: Props) => {
   return (
     <div className="overflow-x-auto border border-[#2F2F41] rounded-lg">
-      <table className="min-w-full bg-[#1E1E2E] text-sm">
+      <table className="min-w-full bg-[#090909] text-sm">
         <thead>
           <tr className="border-b border-[#2F2F41] text-left text-gray-300">
             <th className="py-3 px-4">Rating</th>

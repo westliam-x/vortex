@@ -59,7 +59,7 @@ export default function ClientDetails() {
       <DashboardLayout>
         <div className="p-6 text-white">
           <Link href="/clients">
-            <button className="mb-6 text-sm text-cyan-400 hover:text-cyan-300">
+            <button className="mb-6 text-sm text-white hover:text-white">
               ← Back to Clients
             </button>
           </Link>
@@ -74,14 +74,14 @@ export default function ClientDetails() {
     <DashboardLayout>
       <div className="p-2 max-w-6xl mx-auto text-white">
         <Link href="/clients">
-          <button className="mb-6 text-sm text-cyan-400 hover:text-cyan-300">
+          <button className="mb-6 text-sm text-white hover:text-white">
             ← Back to Clients
           </button>
         </Link>
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-cyan-400">{client.name}</h1>
+            <h1 className="text-3xl font-bold text-white">{client.name}</h1>
             <p className="text-sm text-gray-400">
               {client.company ? client.company : "No company specified"}
             </p>
@@ -116,13 +116,13 @@ export default function ClientDetails() {
 
         {client.notes && (
           <div className="mb-6">
-            <h2 className="text-xl font-semibold text-cyan-300 mb-2">Notes</h2>
+            <h2 className="text-xl font-semibold text-white mb-2">Notes</h2>
             <p className="text-gray-300">{client.notes}</p>
           </div>
         )}
 
         <div>
-          <h2 className="text-xl font-semibold text-cyan-300 mb-4">Projects</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">Projects</h2>
           {client.projects.length > 0 ? (
             <div className="overflow-x-auto border border-[#2F2F41] rounded-lg">
               <table className="min-w-full bg-[#1E1E2E] text-sm">
@@ -141,7 +141,7 @@ export default function ClientDetails() {
                       <td className="py-3 px-4">
                         <Link
                           href={`/projects/${project.id}`}
-                          className="text-cyan-400 hover:underline"
+                          className="text-white hover:underline"
                         >
                           View Project
                         </Link>

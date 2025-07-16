@@ -27,7 +27,7 @@ const TeamRow = ({ member, onRoleChange, onRemove }: Props) => {
           {member.projects.map((project) => (
             <span
               key={project}
-              className="bg-cyan-900/40 text-cyan-300 text-xs px-2 py-0.5 rounded-full"
+              className="bg-cyan-900/40 text-white text-xs px-2 py-0.5 rounded-full"
             >
               {project}
             </span>

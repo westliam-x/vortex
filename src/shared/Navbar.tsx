@@ -20,7 +20,7 @@ const Navbar = () => {
       <div className="flex items-center gap-2">
         <button
           onClick={openSidebar}
-          className="md:hidden p-2 rounded-md bg-[#1A1A2B] border border-cyan-400 text-cyan-300 shadow-md"
+          className="md:hidden p-2 rounded-md bg-[#1A1A2B] border border-[#985EFF] text-[985EFF] shadow-md"
         >
           <Menu size={10} />
         </button>

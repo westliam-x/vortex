@@ -77,14 +77,14 @@ const ProjectDetails = () => {
       <div className="p-4 max-w-6xl mx-auto text-white">
         <Link
           href="/projects"
-          className="text-sm text-cyan-400 hover:text-cyan-300"
+          className="text-sm text-white hover:text-white"
         >
           ← Back to Projects
         </Link>
 
         <div className="mt-4 flex flex-col md:flex-row md:items-center md:justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-cyan-400">
+            <h1 className="text-3xl font-bold text-white">
               {project.title}
             </h1>
             <p className="text-sm text-gray-400">
@@ -137,7 +137,7 @@ const ProjectDetails = () => {
 
         {project.feedback && (
           <div className="mb-6">
-            <h2 className="text-xl font-semibold text-cyan-300 mb-2">
+            <h2 className="text-xl font-semibold text-white mb-2">
               Client Feedback
             </h2>
             <p className="text-gray-300">{project.feedback}</p>

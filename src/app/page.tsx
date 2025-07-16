@@ -6,7 +6,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-[#0C0C1C] text-white px-6">
       {/* Brand Logo / Tagline */}
-      <h1 className="text-4xl md:text-5xl font-bold text-cyan-400 mb-4 text-center">
+      <h1 className="text-4xl md:text-5xl font-bold text-[#985EFF] mb-4 text-center">
         ⚡ Vortex
       </h1>
       <p className="text-md md:text-lg text-gray-400 max-w-xl text-center mb-10">
@@ -17,7 +17,7 @@ export default function HomePage() {
       <div className="flex flex-col sm:flex-row gap-4">
         <Link
           href="/login"
-          className="px-6 py-3 rounded-md bg-cyan-700 hover:bg-cyan-800 transition text-white font-medium"
+          className="px-6 py-3 rounded-md bg-[#985EFF] hover:bg-[#af8aee] transition text-white font-medium"
         >
           Login
         </Link>

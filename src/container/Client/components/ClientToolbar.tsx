@@ -8,7 +8,7 @@ interface Props {
 const ClientToolbar = ({ onAddClient }: Props) => {
   return (
     <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
-      <h1 className="text-2xl font-bold text-cyan-300">Clients</h1>
+      <h1 className="text-2xl font-bold text-white">Clients</h1>
       <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
         <input
           type="text"
@@ -17,7 +17,7 @@ const ClientToolbar = ({ onAddClient }: Props) => {
         />
         <button
           onClick={onAddClient}
-          className="bg-cyan-700 hover:bg-cyan-800 transition text-white px-4 py-2 rounded-md text-sm"
+          className="bg-[cyan-700] hover:bg-[#090909] transition text-white px-4 py-2 rounded-md text-sm"
         >
           ➕ Add Client
         </button>

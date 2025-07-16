@@ -50,7 +50,7 @@ const EditClientModal = ({ isOpen, onClose, client, onUpdate }: EditClientModalP
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <Dialog.Panel className="w-full max-w-md bg-[#1E1E2E] border border-[#2F2F41] rounded-xl p-6">
             <div className="flex justify-between items-center mb-4">
-              <Dialog.Title className="text-lg font-semibold text-cyan-300">Edit Client</Dialog.Title>
+              <Dialog.Title className="text-lg font-semibold text-white">Edit Client</Dialog.Title>
               <button onClick={onClose} className="text-gray-400 hover:text-white">
                 <X size={20} />
               </button>
@@ -94,7 +94,7 @@ const EditClientModal = ({ isOpen, onClose, client, onUpdate }: EditClientModalP
 
               <button
                 type="submit"
-                className="w-full bg-cyan-700 hover:bg-cyan-800 text-white py-2 rounded-md"
+                className="w-full bg-[#985EFF] hover:bg-[#985EFF] text-white py-2 rounded-md"
               >
                 Save Changes
               </button>

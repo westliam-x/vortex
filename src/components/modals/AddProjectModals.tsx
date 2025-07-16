@@ -49,7 +49,7 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit, clients }: Props) => {
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <Dialog.Panel className="w-full max-w-lg bg-[#1E1E2E] border border-[#2F2F41] rounded-xl p-6">
             <div className="flex justify-between items-center mb-4">
-              <Dialog.Title className="text-lg font-semibold text-cyan-300">
+              <Dialog.Title className="text-lg font-semibold text-white">
                 Create New Project
               </Dialog.Title>
               <button
@@ -141,7 +141,7 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit, clients }: Props) => {
 
               <button
                 type="submit"
-                className="w-full bg-cyan-700 hover:bg-cyan-800 transition text-white py-2 rounded-md"
+                className="w-full bg-[#985EFF] hover:bg-[#985EFF] transition text-white py-2 rounded-md"
               >
                 Create Project
               </button>

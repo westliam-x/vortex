@@ -9,7 +9,7 @@ const buttonStyles = cva(
     variants: {
       variant: {
       outline: "bg-transparent border border-gray-600 text-gray-200 hover:bg-gray-700",
-        primary: "bg-cyan-700 hover:bg-cyan-800 text-white",
+        primary: "bg-[#985EFF] hover:bg-[#985EFF] text-white",
         secondary: "bg-gray-700 hover:bg-gray-600 text-white",
         destructive: "bg-red-600 hover:bg-red-700 text-white",
         ghost: "bg-transparent text-white hover:bg-white/10",

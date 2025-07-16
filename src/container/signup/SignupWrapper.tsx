@@ -11,7 +11,7 @@ const SignupWrapper = () => {
   const [otpVerified, setOtpVerified] = useState(false);
 
   return (
-    <div className="max-w-md mx-auto bg-[#1E1E2E] p-6 rounded-xl border border-[#2F2F41]">
+    <div className="max-w-md mx-auto bg-[#090909] p-6 rounded-xl border border-[#2F2F41]">
       {step === 1 && (
         <StepEmail
           onNext={(emailInput) => {
