@@ -8,11 +8,11 @@ import { getProfile, USER_RESPONSE } from "@/services/profileServices";
 const Navbar = () => {
   const openSidebar = useMobileSidebar((state) => state.open);
   const [time, setTime] = useState(new Date().toLocaleTimeString());
-  const [profile, setProfile] = useState<USER_RESPONSE>()
-useEffect(() => {
+  const [profile, setProfile] = useState<USER_RESPONSE>();
+  useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await getProfile()
+        const response = await getProfile();
         setProfile(response);
       } catch (error) {
         console.error("Failed to fetch profile:", error);
@@ -37,10 +37,12 @@ useEffect(() => {
         >
           <Menu size={10} />
         </button>
-        <div className="text-xs text-white font-poppins">Current Time: {time}</div>
+        <div className="text-xs text-white font-poppins">
+          Current Time: {time}
+        </div>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-xs">Hi, {profile?.name}</span>
+        <span className="text-xs">Hi, {profile?.firstName}</span>
         <div className="h-8 w-8 rounded-full bg-gray-600" />
       </div>
     </div>

@@ -2,8 +2,8 @@ import { makeRequest } from "@/api/request";
 import API_ROUTES from "@/endpoints/routes";
 export interface USER_RESPONSE{
     id: string;
-    // firstName: string;
-    // secondName: string;
+    firstName: string;
+    secondName: string;
     name: string;
     email: string;
     phone: string;
