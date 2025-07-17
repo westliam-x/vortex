@@ -1,3 +1,5 @@
+import { Client } from "./client";
+
 // types/project.ts
 export interface Project {
   id: string;
@@ -5,7 +7,7 @@ export interface Project {
   description?: string;
   status: "Pending" | "In Progress" | "Completed" | "Archived";
   type: "Free" | "Paid";
-  clientId: string;
+  clientId: Client | string; 
   startDate?: string;
   endDate?: Date;
   deadline?: string;

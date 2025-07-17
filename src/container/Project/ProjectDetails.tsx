@@ -59,7 +59,7 @@ const ProjectDetails = () => {
     if (typeof id === "string") {
       const proj = mockProjects[id];
       setProject(proj || null);
-      if (proj?.clientId) {
+      if (proj?.clientId && typeof proj.clientId === "string") {
         setClient(mockClients[proj.clientId] || null);
       }
     }

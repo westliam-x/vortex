@@ -21,6 +21,9 @@ const API_ROUTES = {
   },
   USERS:{
     INVITE: "/users/invite",
+  },
+  LOGS:{
+    GET: "/logs",
   }
 };
 

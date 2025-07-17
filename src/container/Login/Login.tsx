@@ -8,6 +8,7 @@ import { makeRequest } from "@/api/request";
 import API_ROUTES from "@/endpoints/routes";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import Cookies from "js-cookie";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -40,7 +41,12 @@ const LoginPage = () => {
         data: formData,
       });
 
-      localStorage.setItem("token", response.token);
+      Cookies.set("token", response.token, {
+      expires: 7,
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    });
 
       toast.success("Login successful!");
 

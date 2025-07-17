@@ -78,7 +78,6 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
 
 
   const submitHandler = async (data: FormData) => {
-    console.log("Submitting project data:", data);
     try {
       await makeRequest({
         url: API_ROUTES.PROJECT.CREATE,

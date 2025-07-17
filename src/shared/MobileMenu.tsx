@@ -2,10 +2,11 @@
 
 import { Dialog } from "@headlessui/react";
 import { X } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useMobileSidebar } from "@/store/useMobileSidebar";
 import { cn } from "@/lib";
+import { handleLogout } from "@/services/authServices";
 
 const links = [
   { name: "Dashboard", href: "/dashboard" },
@@ -22,13 +23,25 @@ const links = [
 const MobileSidebar = () => {
   const { isOpen, close } = useMobileSidebar();
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleClick = async (link: (typeof links)[number]) => {
+    if (link.logout) {
+      try {
+        await handleLogout();
+        router.push("/login");
+      } catch (error) {
+        console.error("Logout failed", error);
+      }
+      return;
+    }
+
+    close();
+  };
 
   return (
     <Dialog open={isOpen} onClose={close} className="relative z-50 md:hidden">
-      <div
-        className="fixed inset-0 bg-[#090909] backdrop-blur-sm"
-        aria-hidden="true"
-      />
+      <div className="fixed inset-0 bg-[#090909] backdrop-blur-sm" aria-hidden="true" />
 
       <div className="fixed top-0 left-0 w-64 h-full bg-[#090909] p-6 shadow-xl border-r border-white">
         <div className="flex justify-between items-center mb-8">
@@ -37,26 +50,22 @@ const MobileSidebar = () => {
             <X size={20} />
           </button>
         </div>
+
         <nav className="space-y-4">
           {links.map((link) => {
-            const handleClick = () => {
-              if (link.logout) {
-                localStorage.removeItem("token");
-                window.location.href = "/login"; // redirect to login
-                return;
-              }
-              close();
-            };
+            const isActive = pathname === link.href;
 
             return (
               <Link
                 key={link.href}
                 href={link.logout ? "#" : link.href}
-                onClick={handleClick}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleClick(link);
+                }}
                 className={cn(
                   "block px-4 py-2 rounded-lg hover:bg-cyan-400/10 transition-all",
-                  pathname === link.href &&
-                    "bg-cyan-500/10 text-white font-medium"
+                  isActive && "bg-cyan-500/10 text-white font-medium"
                 )}
               >
                 {link.name}

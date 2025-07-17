@@ -18,7 +18,6 @@ const ClientList = () => {
           url: API_ROUTES.CLIENT.LIST, 
           method: "GET",
         });
-        console.log("Fetched clients:", response);
 
         setClients((response as { clients: Client[] }).clients); 
       } catch (err: unknown) {

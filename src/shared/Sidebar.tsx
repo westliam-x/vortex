@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { handleLogout } from "@/services/authServices";
 import {
   Home,
   Users,
@@ -32,14 +33,21 @@ const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
 
-  const handleLogout = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+  const Logout = async (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+  ) => {
     e.preventDefault();
-    localStorage.removeItem("token"); // Clear token
-    router.push("/login"); // Redirect to login
+
+    try {
+      await handleLogout();
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
   };
 
   return (
-    <aside className="hidden md:flex flex-col w-64 h-full bg-[#090909] border-r backdrop-blur-lg p-6 shadow-[inset_0_0_10px_backdrop-blur-lg p-6 shadow-[inset_0_0_10px_#1E1E3F]]">
+    <aside className="hidden md:flex flex-col w-64 h-full bg-[#090909] border-r backdrop-blur-lg p-6 shadow-[inset_0_0_10px_#1E1E3F]">
       <div className="mb-10 flex items-center gap-2">
         <motion.div
           animate={{ rotate: [0, 20, -10, 0] }}
@@ -62,7 +70,7 @@ const Sidebar = () => {
               <a
                 key={name}
                 href={href}
-                onClick={handleLogout}
+                onClick={Logout}
                 className={cn(
                   "flex items-center gap-5 px-4 py-4 rounded-lg transition-colors",
                   "hover:bg-[#ba93fd] hover:text-white",

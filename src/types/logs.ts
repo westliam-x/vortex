@@ -1,5 +1,5 @@
 export interface LogEntry {
-  id: string;
+  _id: string;
   action: string;
   actor: {
     id: string;

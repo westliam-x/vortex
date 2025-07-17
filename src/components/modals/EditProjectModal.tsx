@@ -25,7 +25,7 @@ interface Props {
   onClose: () => void;
   project: Project;
   onSubmit: (updatedData: Partial<Project>) => void;
-  clients?: Client[]; // optional if you want to render client dropdown
+  clients?: Client[];
 }
 
 const EditProjectModal = ({
@@ -43,19 +43,33 @@ const EditProjectModal = ({
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ...project,
+      title: project.title,
+      description: project.description,
+      clientId:
+        typeof project.clientId === "string"
+          ? project.clientId
+          : project.clientId._id,
       deadline: project.deadline
         ? new Date(project.deadline).toISOString().split("T")[0]
         : "",
+      priority: project.priority,
+      status: project.status,
     },
   });
 
   useEffect(() => {
     reset({
-      ...project,
+      title: project.title,
+      description: project.description,
+      clientId:
+        typeof project.clientId === "string"
+          ? project.clientId
+          : project.clientId._id,
       deadline: project.deadline
         ? new Date(project.deadline).toISOString().split("T")[0]
         : "",
+      priority: project.priority,
+      status: project.status,
     });
   }, [project, reset]);
 

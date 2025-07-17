@@ -20,7 +20,7 @@ const LogsTable = ({ logs }: Props) => {
         </thead>
         <tbody>
           {logs.map((log) => (
-            <tr key={log.id} className="border-t border-[#2F2F41]">
+            <tr key={log._id} className="border-t border-[#2F2F41]">
               <td className="px-4 py-2 text-white">{log.action}</td>
               <td className="px-4 py-2 text-white">
                 {log.actor.name} ({log.actor.role})

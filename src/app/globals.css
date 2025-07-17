@@ -38,3 +38,11 @@ body {
   font-style: normal;
   font-display: swap;
 }
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none; 
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
