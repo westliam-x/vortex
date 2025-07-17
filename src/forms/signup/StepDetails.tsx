@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { makeRequest } from "@/lib/request";
+import { makeRequest } from "@/api/request";
 import API_ROUTES from "@/endpoints/routes";
 
 const schema = z

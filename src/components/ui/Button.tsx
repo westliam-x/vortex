@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { ButtonHTMLAttributes } from "react";
 
 const buttonStyles = cva(
-  "inline-flex items-center justify-center rounded-md font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-2",
+  "inline-flex items-center cursor-pointer justify-center rounded-md font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-2",
   {
     variants: {
       variant: {

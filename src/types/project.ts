@@ -4,6 +4,7 @@ export interface Project {
   title: string;
   description?: string;
   status: "Pending" | "In Progress" | "Completed" | "Archived";
+  type: "Free" | "Paid";
   clientId: string;
   startDate?: string;
   endDate?: Date;

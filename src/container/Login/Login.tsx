@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { makeRequest } from "@/lib/request";
+import { makeRequest } from "@/api/request";
 import API_ROUTES from "@/endpoints/routes";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -15,7 +15,6 @@ const loginSchema = z.object({
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
-
 const LoginPage = () => {
   const {
     register,
@@ -32,12 +31,12 @@ const LoginPage = () => {
     try {
       setLoading(true);
 
-      await makeRequest({
+      const response = (await makeRequest({
         url: API_ROUTES.AUTH.LOGIN,
         method: "POST",
         data: formData,
-      });
-
+      })) as { token: string };
+      localStorage.setItem("token", response.token);
       toast.success("Login successful!");
 
       router.push("/dashboard");

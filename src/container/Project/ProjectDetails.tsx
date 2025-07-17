@@ -16,6 +16,7 @@ const mockProjects: Record<string, Project> = {
     description: "Revamping the entire website for modern look",
     clientId: "1",
     status: "In Progress",
+    type: "Paid",
     startDate: "2024-10-10",
     endDate: new Date("2024-12-20"),
     createdAt: "2024-10-01",
@@ -30,7 +31,7 @@ const mockProjects: Record<string, Project> = {
 
 const mockClients: Record<string, Client> = {
   "1": {
-    id: "1",
+    _id: "1",
     name: "Chris Johnson",
     email: "chris@example.com",
     phone: "+1-202-555-0176",

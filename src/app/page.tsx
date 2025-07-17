@@ -17,7 +17,7 @@ export default function HomePage() {
       <div className="flex flex-col sm:flex-row gap-4">
         <Link
           href="/login"
-          className="text-center py-3 rounded-md bg-[#985EFF] hover:bg-[#af8aee] transition text-white font-medium"
+          className="text-center px-6 py-3 rounded-md bg-[#985EFF] hover:bg-[#af8aee] transition text-white font-medium"
         >
           Login
         </Link>

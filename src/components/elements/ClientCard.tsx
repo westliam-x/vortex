@@ -8,8 +8,8 @@ const ClientCard = ({ client }: { client: Client }) => {
 
   return (
     <div className="bg-[#090909] border border-[#2F2F41] rounded-xl p-5 shadow-sm">
-      <h2 className="text-lg font-semibold text-white">{client.name}</h2>
-      <p className="text-sm text-gray-400">{client.email}</p>
+      <h2 className="text-lg font-semibold truncate text-white">{client.name}</h2>
+      <p className="text-sm text-gray-400 truncate">{client.email}</p>
       <div className="mt-3 flex justify-between text-sm text-gray-300">
         <span>{(client?.projects).length} Projects</span>
         <span
@@ -21,8 +21,8 @@ const ClientCard = ({ client }: { client: Client }) => {
         </span>
       </div>
       <button
-        className="mt-4 w-full bg-[#985EFF] hover:bg-[#ac84f1] text-white text-sm py-2 rounded-md transition"
-        onClick={() => router.push(`/clients/${client.id}`)}
+        className="mt-4 w-full cursor-pointer bg-[#985EFF] hover:bg-[#ac84f1] text-white text-sm py-2 rounded-md transition"
+        onClick={() => router.push(`/clients/${client._id}`)}
       >
         View Details
       </button>

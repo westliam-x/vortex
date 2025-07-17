@@ -1,45 +1,97 @@
-// components/modals/CreateProjectModal.tsx
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { z } from "zod";
 import { Client } from "@/types/client";
+import { makeRequest } from "@/api/request";
+import { toast } from "react-toastify";
+import API_ROUTES from "@/endpoints/routes"; // Optional, if you're using centralized routes
 
-const formSchema = z.object({
-  title: z.string().min(2, "Project title is too short"),
-  description: z.string().optional(),
-  clientId: z.string().min(1, "Select a client"),
-  deadline: z.string().optional(),
-  priority: z.enum(["Low", "Medium", "High"]).optional(),
-});
+const formSchema = z
+  .object({
+    title: z.string().min(2, "Project title is too short"),
+    description: z.string().optional(),
+    type: z.enum(["Paid", "Free"]),
+    clientId: z.string().optional(),
+    budget: z.string().optional(),
+    deadline: z.string().optional(),
+    priority: z.enum(["Low", "Medium", "High"]).optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.type === "Paid") {
+        return data.clientId && data.budget;
+      }
+      return true;
+    },
+    {
+      message: "Client and amount are required for paid projects",
+      path: ["clientId"],
+    }
+  );
 
 type FormData = z.infer<typeof formSchema>;
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: FormData) => void;
-  clients: Client[];
 }
 
-const AddProjectModal = ({ isOpen, onClose, onSubmit, clients }: Props) => {
+const AddProjectModal = ({ isOpen, onClose }: Props) => {
+  const [clients, setClients] = useState<Client[]>([]);
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      type: "Free",
+    },
   });
 
-  const submitHandler = (data: FormData) => {
-    onSubmit(data);
-    reset();
-    onClose();
+  const projectType = watch("type");
+
+ useEffect(() => {
+  const fetchClients = async () => {
+    try {
+      const response = await makeRequest<{ clients: Client[] }>({
+        url: API_ROUTES.CLIENT.LIST,
+      });
+       setClients(response.clients); 
+    } catch (error) {
+      console.error("Failed to load clients:", error);
+      toast.error("Unable to load clients");
+    }
+  };
+
+  if (isOpen) {
+    fetchClients();
+  }
+}, [isOpen]);
+
+
+  const submitHandler = async (data: FormData) => {
+    console.log("Submitting project data:", data);
+    try {
+      await makeRequest({
+        url: API_ROUTES.PROJECT.CREATE,
+        method: "POST",
+        data,
+      });
+      toast.success("Project created!");
+      reset();
+      onClose();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create project.");
+    }
   };
 
   return (
@@ -54,7 +106,7 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit, clients }: Props) => {
               </Dialog.Title>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-400 hover:text-white cursor-pointer"
               >
                 <X size={20} />
               </button>
@@ -89,27 +141,63 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit, clients }: Props) => {
                 />
               </div>
 
+              {/* Type */}
               <div>
                 <label className="block text-sm text-gray-300 mb-1">
-                  Client
+                  Project Type
                 </label>
                 <select
-                  {...register("clientId")}
+                  {...register("type")}
                   className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
                 >
-                  <option value="">Select a client</option>
-                  {clients?.map((client) => (
-                    <option key={client.id} value={client.id}>
-                      {client.name} ({client.company || "No company"})
-                    </option>
-                  ))}
+                  <option value="Free">Free</option>
+                  <option value="Paid">Paid</option>
                 </select>
-                {errors.clientId && (
-                  <p className="text-xs text-red-400 mt-1">
-                    {errors.clientId.message}
-                  </p>
-                )}
               </div>
+
+              {/* Client (only for Paid) */}
+              {projectType === "Paid" && (
+                <div>
+                  <label className="block text-sm text-gray-300 mb-1">
+                    Client
+                  </label>
+                  <select
+                    {...register("clientId")}
+                    className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+                  >
+                    <option value="">Select a client</option>
+                    {Array.isArray(clients) && clients.map((client) => (
+                      <option key={client?._id} value={client?._id}>
+                        {client?.name} ({client?.company || "No company"})
+                      </option>
+                    ))}
+                  </select>
+                  {errors.clientId && (
+                    <p className="text-xs text-red-400 mt-1">
+                      {errors.clientId.message}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Budget (only for Paid) */}
+              {projectType === "Paid" && (
+                <div>
+                  <label className="block text-sm text-gray-300 mb-1">
+                    Budget
+                  </label>
+                  <input
+                    {...register("budget")}
+                    type="number"
+                    className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+                  />
+                  {errors.budget && (
+                    <p className="text-xs text-red-400 mt-1">
+                      {errors.budget.message}
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* Deadline */}
               <div>
@@ -139,9 +227,10 @@ const AddProjectModal = ({ isOpen, onClose, onSubmit, clients }: Props) => {
                 </select>
               </div>
 
+              {/* Submit */}
               <button
                 type="submit"
-                className="w-full bg-[#985EFF] hover:bg-[#985EFF] transition text-white py-2 rounded-md"
+                className="w-full bg-[#985EFF] hover:bg-[#8851e4] transition text-white py-2 rounded-md"
               >
                 Create Project
               </button>

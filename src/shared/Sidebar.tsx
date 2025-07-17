@@ -24,6 +24,8 @@ const links = [
   { name: "Team", href: "/team", icon: UserCog },
   { name: "Settings", href: "/settings", icon: Settings },
   { name: "Logs", href: "/logs", icon: BookOpen },
+  { name: "Logout", href: "#logout", logout: true, icon: Home },
+
 ];
 
 const Sidebar = () => {

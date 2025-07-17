@@ -1,5 +1,6 @@
-// app/clients/ClientToolbar.tsx
 "use client";
+
+import { Button } from "@/components";
 
 interface Props {
   onAddClient: () => void;
@@ -15,12 +16,13 @@ const ClientToolbar = ({ onAddClient }: Props) => {
           placeholder="Search clients..."
           className="w-full md:w-72 px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700 focus:ring-2 focus:ring-cyan-500"
         />
-        <button
+        <Button
+          variant="primary"
           onClick={onAddClient}
-          className="bg-[cyan-700] hover:bg-[#090909] transition text-white px-4 py-2 rounded-md text-sm"
+          className=" transition text-white px-4 py-2 rounded-md text-sm"
         >
           ➕ Add Client
-        </button>
+        </Button>
       </div>
     </div>
   );

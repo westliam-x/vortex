@@ -6,6 +6,9 @@ import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import API_ROUTES from "@/endpoints/routes";
+import { toast } from "react-toastify";
+import { makeRequest } from "@/api/request";
 
 const formSchema = z.object({
   name: z.string().min(2, "Client name is too short"),
@@ -33,12 +36,22 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
-
-  const onSubmit = (data: FormData) => {
-    console.log("Adding client:", data);
-    reset();
-    onClose();
-  };
+  const submitHandler = async (data: FormData) => {
+      try {
+        await makeRequest({
+          url: API_ROUTES.CLIENT.CREATE,
+          method: "POST",
+          data,
+        });
+        toast.success("New Client Added! Congrats");
+        reset();
+        onClose();
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to create Client.");
+      }
+    };
+  
 
   return (
     <Transition show={isOpen} as={Fragment}>
@@ -52,13 +65,13 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
               </Dialog.Title>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-400 cursor-pointer hover:text-white"
               >
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <form onSubmit={handleSubmit(submitHandler)} className="space-y-5">
               {/* Name */}
               <div>
                 <label className="block text-sm text-gray-300 mb-1">
