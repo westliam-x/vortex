@@ -3,11 +3,24 @@
 import { Menu } from "lucide-react";
 import { useMobileSidebar } from "@/store/useMobileSidebar";
 import { useEffect, useState } from "react";
+import { getProfile, USER_RESPONSE } from "@/services/profileServices";
 
 const Navbar = () => {
   const openSidebar = useMobileSidebar((state) => state.open);
   const [time, setTime] = useState(new Date().toLocaleTimeString());
+  const [profile, setProfile] = useState<USER_RESPONSE>()
+useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await getProfile()
+        setProfile(response);
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+      }
+    };
 
+    fetchProfile();
+  }, []);
   useEffect(() => {
     const interval = setInterval(() => {
       setTime(new Date().toLocaleTimeString());
@@ -27,7 +40,7 @@ const Navbar = () => {
         <div className="text-xs text-white font-poppins">Current Time: {time}</div>
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-xs">Hi, Admin</span>
+        <span className="text-xs">Hi, {profile?.name}</span>
         <div className="h-8 w-8 rounded-full bg-gray-600" />
       </div>
     </div>

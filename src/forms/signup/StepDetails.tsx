@@ -69,7 +69,7 @@ const StepDetails = ({
         data: formData,
       });
       toast.success("Account created! Redirecting...");
-      router.push("/dashboard");
+      router.push("/login");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong");
     }

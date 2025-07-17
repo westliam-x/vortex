@@ -8,29 +8,8 @@ import {
   RecentComments,
   ReviewHighlight,
 } from "./components";
-import { makeRequest } from "@/api/request";
-import API_ROUTES from "@/endpoints/routes";
-import { useEffect } from "react";
-const Dashboard = () => {
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        await makeRequest({
-          url: API_ROUTES.AUTH.PROFILE,
-          method: "GET",
-          config: {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          },
-        });
-      } catch (error) {
-        console.error("Failed to fetch profile:", error);
-      }
-    };
-
-    fetchProfile();
-  }, []);
+  const Dashboard = () => {
+  
 
   return (
     <DashboardLayout>
