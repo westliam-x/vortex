@@ -10,14 +10,14 @@ import { Button, EditClientModal } from "@/components";
 
 const mockClientData: Record<string, Client> = {
   "1": {
-    id: "1",
+    _id: "1",
     name: "Chris Johnson",
     email: "chris@example.com",
     phone: "+1-202-555-0176",
     company: "Johnson Media",
     projects: [
-      { id: "p1", title: "Website Redesign", status: "In Progress", clientId: "1", createdAt: "2024-11-01T10:00:00Z" },
-      { id: "p2", title: "Brand Identity", status: "Completed", clientId: "1", createdAt: "2024-10-15T12:00:00Z" },
+      { id: "p1", title: "Website Redesign", status: "In Progress",type:"Free", clientId: "1", createdAt: "2024-11-01T10:00:00Z" },
+      { id: "p2", title: "Brand Identity", status: "Completed",type:"Free", clientId: "1", createdAt: "2024-10-15T12:00:00Z" },
     ],
     status: "Active",
     joinedAt: "2024-12-01T14:35:00Z",
@@ -26,12 +26,12 @@ const mockClientData: Record<string, Client> = {
     assignedTo: ["user1", "user2"],
   },
   "2": {
-    id: "2",
+    _id: "2",
     name: "Amaka Obi",
     email: "amaka@obi.io",
     phone: "+234-802-555-0133",
     company: "Obi Design Studio",
-    projects: [{ id: "p3", title: "E-commerce Platform", status: "Pending", clientId: "2", createdAt: "2024-11-01T10:00:00Z"  }],
+    projects: [{ id: "p3", title: "E-commerce Platform",type:"Free", status: "Pending", clientId: "2", createdAt: "2024-11-01T10:00:00Z"  }],
     status: "Inactive",
     joinedAt: "2025-02-15T09:00:00Z",
     notes: "Awaiting feedback on initial design.",
