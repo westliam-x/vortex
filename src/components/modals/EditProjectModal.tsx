@@ -74,7 +74,10 @@ const EditProjectModal = ({
               <Dialog.Title className="text-lg font-semibold text-white">
                 Edit Project
               </Dialog.Title>
-              <button onClick={onClose} className="text-gray-400 hover:text-white">
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-white"
+              >
                 <X size={20} />
               </button>
             </div>
@@ -82,17 +85,25 @@ const EditProjectModal = ({
             <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
               {/* Title */}
               <div>
-                <label className="block text-sm text-gray-300 mb-1">Title</label>
+                <label className="block text-sm text-gray-300 mb-1">
+                  Title
+                </label>
                 <input
                   {...register("title")}
                   className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
                 />
-                {errors.title && <p className="text-xs text-red-400 mt-1">{errors.title.message}</p>}
+                {errors.title && (
+                  <p className="text-xs text-red-400 mt-1">
+                    {errors.title.message}
+                  </p>
+                )}
               </div>
 
               {/* Description */}
               <div>
-                <label className="block text-sm text-gray-300 mb-1">Description</label>
+                <label className="block text-sm text-gray-300 mb-1">
+                  Description
+                </label>
                 <textarea
                   {...register("description")}
                   rows={3}
@@ -102,7 +113,9 @@ const EditProjectModal = ({
 
               {/* Client */}
               <div>
-                <label className="block text-sm text-gray-300 mb-1">Client</label>
+                <label className="block text-sm text-gray-300 mb-1">
+                  Client
+                </label>
                 <select
                   {...register("clientId")}
                   className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
@@ -115,13 +128,17 @@ const EditProjectModal = ({
                   ))}
                 </select>
                 {errors.clientId && (
-                  <p className="text-xs text-red-400 mt-1">{errors.clientId.message}</p>
+                  <p className="text-xs text-red-400 mt-1">
+                    {errors.clientId.message}
+                  </p>
                 )}
               </div>
 
               {/* Deadline */}
               <div>
-                <label className="block text-sm text-gray-300 mb-1">Deadline</label>
+                <label className="block text-sm text-gray-300 mb-1">
+                  Deadline
+                </label>
                 <input
                   type="date"
                   {...register("deadline")}
@@ -131,7 +148,9 @@ const EditProjectModal = ({
 
               {/* Priority */}
               <div>
-                <label className="block text-sm text-gray-300 mb-1">Priority</label>
+                <label className="block text-sm text-gray-300 mb-1">
+                  Priority
+                </label>
                 <select
                   {...register("priority")}
                   className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
@@ -145,7 +164,9 @@ const EditProjectModal = ({
 
               {/* Status */}
               <div>
-                <label className="block text-sm text-gray-300 mb-1">Status</label>
+                <label className="block text-sm text-gray-300 mb-1">
+                  Status
+                </label>
                 <select
                   {...register("status")}
                   className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
