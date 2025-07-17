@@ -7,14 +7,14 @@ const SignupWrapper = () => {
   const [step, setStep] = useState(1);
 
   const [email, setEmail] = useState("");
-  const [details, setDetails] = useState({
+  const details = {
     firstName: "",
     lastName: "",
     phone: "",
     country: "",
     password: "",
     confirmPassword: "",
-  });
+  };
 
   return (
     <div className="max-w-md mx-auto">
