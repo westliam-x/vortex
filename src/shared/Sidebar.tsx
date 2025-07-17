@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
   Users,
@@ -11,6 +11,7 @@ import {
   Settings,
   BookOpen,
   Zap,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib";
 import { motion } from "framer-motion";
@@ -24,12 +25,18 @@ const links = [
   { name: "Team", href: "/team", icon: UserCog },
   { name: "Settings", href: "/settings", icon: Settings },
   { name: "Logs", href: "/logs", icon: BookOpen },
-  { name: "Logout", href: "#logout", logout: true, icon: Home },
-
+  { name: "Logout", href: "#", icon: LogOut, logout: true },
 ];
 
 const Sidebar = () => {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.preventDefault();
+    localStorage.removeItem("token"); // Clear token
+    router.push("/login"); // Redirect to login
+  };
 
   return (
     <aside className="hidden md:flex flex-col w-64 h-full bg-[#090909] border-r backdrop-blur-lg p-6 shadow-[inset_0_0_10px_backdrop-blur-lg p-6 shadow-[inset_0_0_10px_#1E1E3F]]">
@@ -47,8 +54,26 @@ const Sidebar = () => {
       </div>
 
       <nav className="space-y-1">
-        {links.map(({ href, name, icon: Icon }) => {
+        {links.map(({ href, name, icon: Icon, logout }) => {
           const isActive = pathname === href;
+
+          if (logout) {
+            return (
+              <a
+                key={name}
+                href={href}
+                onClick={handleLogout}
+                className={cn(
+                  "flex items-center gap-5 px-4 py-4 rounded-lg transition-colors",
+                  "hover:bg-[#ba93fd] hover:text-white",
+                  "text-white"
+                )}
+              >
+                <Icon size={18} className="shrink-0" />
+                <span className="truncate">{name}</span>
+              </a>
+            );
+          }
 
           return (
             <Link

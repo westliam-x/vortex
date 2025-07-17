@@ -4,23 +4,18 @@ import { useEffect, useState } from "react";
 import { Project } from "@/types/project";
 import { ProjectGrid, ProjectHeader } from "./components";
 import { DashboardLayout } from "@/layouts";
-import { makeRequest } from "@/api/request";
 import { toast } from "react-toastify";
-import API_ROUTES from "@/endpoints/routes";
+import { fetchProjects } from "@/services/projectServices";
 
 const ProjectPage = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProjects = async () => {
+    const load = async () => {
       try {
-        const response = await makeRequest<{ projects: Project[] }>({
-          url: API_ROUTES.PROJECT.LIST,
-          method: "GET",
-        });
-
-        setProjects(response.projects);
+        const data = await fetchProjects();
+        setProjects(data);
       } catch (error) {
         toast.error("Failed to fetch projects.");
         console.error("Fetch error:", error);
@@ -29,7 +24,7 @@ const ProjectPage = () => {
       }
     };
 
-    fetchProjects();
+    load();
   }, []);
 
   return (

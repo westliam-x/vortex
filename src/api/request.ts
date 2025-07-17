@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig, Method } from "axios";
+import { ApiResponse } from "@/types/api";
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
 
@@ -25,7 +26,7 @@ type RequestParams = {
   url: string;
   method?: Method;
   data?: unknown;
-  config?: AxiosRequestConfig ;
+  config?: AxiosRequestConfig;
 };
 
 export const makeRequest = async <T = unknown>({
@@ -35,19 +36,19 @@ export const makeRequest = async <T = unknown>({
   config,
 }: RequestParams): Promise<T> => {
   try {
-    const response = await axiosInstance.request<T>({
+    const response = await axiosInstance.request<ApiResponse<T>>({
       url,
       method,
       data,
       ...config,
     });
-    return response.data;
+
+    // Only return the actual `data` part from the custom response
+    return response.data.data;
   } catch (error: unknown) {
     const err = error as AxiosError<{ message?: string }>;
-    console.error("API Error:", err);
     const message =
       err.response?.data?.message || err.message || "Unknown error";
     throw new Error(message);
   }
 };
-

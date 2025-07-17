@@ -31,12 +31,17 @@ const LoginPage = () => {
     try {
       setLoading(true);
 
-      const response = (await makeRequest({
+      const response = await makeRequest<{
+        token: string;
+        user: { id: string; name: string; email: string };
+      }>({
         url: API_ROUTES.AUTH.LOGIN,
         method: "POST",
         data: formData,
-      })) as { token: string };
+      });
+
       localStorage.setItem("token", response.token);
+
       toast.success("Login successful!");
 
       router.push("/dashboard");

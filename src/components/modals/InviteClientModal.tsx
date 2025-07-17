@@ -1,6 +1,10 @@
 "use client";
 
+import { makeRequest } from "@/api/request";
+import API_ROUTES from "@/endpoints/routes";
 import { cn } from "@/lib";
+import { fetchProjects } from "@/services/projectServices";
+import { Project } from "@/types/project";
 import {
   Dialog,
   DialogPanel,
@@ -10,15 +14,10 @@ import {
 } from "@headlessui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import { z } from "zod";
-
-// Replace with real data later
-const projectOptions = [
-  { id: "p1", name: "Ayinke Website" },
-  { id: "p2", name: "Spark Website" },
-];
 
 const roles = ["Admin", "Developer", "Designer", "Marketer"];
 
@@ -49,7 +48,11 @@ interface InviteUserModalProps {
   onSubmit: (data: InviteFormData) => void;
 }
 
-const InviteUserModal = ({ isOpen, onClose, onSubmit }: InviteUserModalProps) => {
+const InviteUserModal = ({
+  isOpen,
+  onClose,
+  onSubmit,
+}: InviteUserModalProps) => {
   const {
     register,
     handleSubmit,
@@ -60,13 +63,44 @@ const InviteUserModal = ({ isOpen, onClose, onSubmit }: InviteUserModalProps) =>
     resolver: zodResolver(extendedSchema),
     defaultValues: { type: "Client" },
   });
+  
+const [projects, setProjects] = useState<Project[]>([]);
+const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await fetchProjects();
+        setProjects(data);
+      } catch (error) {
+        toast.error("Failed to fetch projects.");
+        console.error("Fetch error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+  }, []);
+
 
   const userType = watch("type");
 
-  const handleFormSubmit = (data: InviteFormData) => {
-    onSubmit(data);
-    reset({ type: "Client" });
-    onClose();
+  const handleFormSubmit = async (data: InviteFormData) => {
+    try {
+      const response = await makeRequest({
+        url: API_ROUTES.USERS.INVITE,
+        method: "POST",
+        data,
+      });
+      toast.success("Invite sent successfully");
+      reset({ type: "Client" });
+      onClose();
+    } catch (err) {
+      console.error("Invite error:", err);
+      toast.error(err instanceof Error ? err.message : "Invite failed");
+      toast.error("Invite failed");
+    }
   };
 
   return (
@@ -83,15 +117,22 @@ const InviteUserModal = ({ isOpen, onClose, onSubmit }: InviteUserModalProps) =>
                 <DialogTitle className="text-lg font-semibold text-gray-100">
                   Invite a User
                 </DialogTitle>
-                <button onClick={onClose} className="text-gray-400 hover:text-white">
+                <button
+                  onClick={onClose}
+                  className="text-gray-400 hover:text-white"
+                >
                   <X size={20} />
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-                {/* Invite Type */}
+              <form
+                onSubmit={handleSubmit(handleFormSubmit)}
+                className="space-y-4"
+              >
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">Invite as</label>
+                  <label className="block text-sm text-gray-300 mb-1">
+                    Invite as
+                  </label>
                   <select
                     {...register("type")}
                     className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
@@ -101,9 +142,10 @@ const InviteUserModal = ({ isOpen, onClose, onSubmit }: InviteUserModalProps) =>
                   </select>
                 </div>
 
-                {/* Name */}
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">Full Name</label>
+                  <label className="block text-sm text-gray-300 mb-1">
+                    Full Name
+                  </label>
                   <input
                     type="text"
                     {...register("name")}
@@ -113,13 +155,17 @@ const InviteUserModal = ({ isOpen, onClose, onSubmit }: InviteUserModalProps) =>
                     )}
                   />
                   {errors.name && (
-                    <p className="text-xs text-red-400 mt-1">{errors.name.message}</p>
+                    <p className="text-xs text-red-400 mt-1">
+                      {errors.name.message}
+                    </p>
                   )}
                 </div>
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">Email</label>
+                  <label className="block text-sm text-gray-300 mb-1">
+                    Email
+                  </label>
                   <input
                     type="email"
                     {...register("email")}
@@ -129,14 +175,17 @@ const InviteUserModal = ({ isOpen, onClose, onSubmit }: InviteUserModalProps) =>
                     )}
                   />
                   {errors.email && (
-                    <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>
+                    <p className="text-xs text-red-400 mt-1">
+                      {errors.email.message}
+                    </p>
                   )}
                 </div>
 
-                {/* Client Project Assignment */}
                 {userType === "Client" && (
                   <div>
-                    <label className="block text-sm text-gray-300 mb-1">Assign to Project</label>
+                    <label className="block text-sm text-gray-300 mb-1">
+                      Assign to Project
+                    </label>
                     <select
                       {...register("projectId")}
                       className={cn(
@@ -145,9 +194,9 @@ const InviteUserModal = ({ isOpen, onClose, onSubmit }: InviteUserModalProps) =>
                       )}
                     >
                       <option value="">-- Select Project --</option>
-                      {projectOptions.map((proj) => (
+                      {projects.map((proj) => (
                         <option key={proj.id} value={proj.id}>
-                          {proj.name}
+                          {proj.title}
                         </option>
                       ))}
                     </select>
@@ -163,7 +212,9 @@ const InviteUserModal = ({ isOpen, onClose, onSubmit }: InviteUserModalProps) =>
                 {userType === "Team" && (
                   <>
                     <div>
-                      <label className="block text-sm text-gray-300 mb-1">Select Role</label>
+                      <label className="block text-sm text-gray-300 mb-1">
+                        Select Role
+                      </label>
                       <select
                         {...register("role")}
                         className={cn(
@@ -179,12 +230,16 @@ const InviteUserModal = ({ isOpen, onClose, onSubmit }: InviteUserModalProps) =>
                         ))}
                       </select>
                       {"role" in errors && errors.role?.message && (
-                        <p className="text-xs text-red-400 mt-1">{errors.role.message}</p>
+                        <p className="text-xs text-red-400 mt-1">
+                          {errors.role.message}
+                        </p>
                       )}
                     </div>
 
                     <div>
-                      <label className="block text-sm text-gray-300 mb-1">Assign to Projects</label>
+                      <label className="block text-sm text-gray-300 mb-1">
+                        Assign to Projects
+                      </label>
                       <select
                         {...register("projectIds")}
                         multiple
@@ -193,9 +248,9 @@ const InviteUserModal = ({ isOpen, onClose, onSubmit }: InviteUserModalProps) =>
                           "projectIds" in errors && "border-red-500"
                         )}
                       >
-                        {projectOptions.map((proj) => (
+                        {projects.map((proj) => (
                           <option key={proj.id} value={proj.id}>
-                            {proj.name}
+                            {proj.title}
                           </option>
                         ))}
                       </select>

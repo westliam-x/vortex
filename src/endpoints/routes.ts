@@ -18,6 +18,9 @@ const API_ROUTES = {
     DELETE: "/client/delete",
     LIST: "/client/list",
     DETAILS: "/client/details"
+  },
+  USERS:{
+    INVITE: "/users/invite",
   }
 };
 

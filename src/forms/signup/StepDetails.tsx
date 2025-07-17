@@ -35,12 +35,10 @@ type FormData = z.infer<typeof schema>;
 const StepDetails = ({
   email,
   initialData,
-  onNext,
   onBack,
 }: {
   email: string;
   initialData: Partial<FormData>;
-  onNext: (data: FormData) => void;
   onBack: () => void;
 }) => {
   const {
