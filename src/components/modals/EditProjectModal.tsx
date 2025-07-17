@@ -109,7 +109,7 @@ const EditProjectModal = ({
                 >
                   <option value="">Select client</option>
                   {clients.map((c) => (
-                    <option key={c.id} value={c.id}>
+                    <option key={c._id} value={c._id}>
                       {c.name}
                     </option>
                   ))}
