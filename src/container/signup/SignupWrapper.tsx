@@ -41,10 +41,6 @@ const SignupWrapper = () => {
         <StepDetails
           email={email}
           initialData={details}
-          onNext={(data) => {
-            setDetails(data);
-            // send to backend or move forward
-          }}
           onBack={() => setStep(2)}
         />
       )}

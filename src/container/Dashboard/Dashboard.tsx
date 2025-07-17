@@ -11,22 +11,19 @@ import {
 import { makeRequest } from "@/api/request";
 import API_ROUTES from "@/endpoints/routes";
 import { useEffect } from "react";
-const token = localStorage.getItem("token") || "";
 const Dashboard = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await makeRequest({
+        await makeRequest({
           url: API_ROUTES.AUTH.PROFILE,
           method: "GET",
           config: {
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
             },
           },
         });
-        console.log(response);
       } catch (error) {
         console.error("Failed to fetch profile:", error);
       }

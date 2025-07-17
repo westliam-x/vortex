@@ -51,7 +51,6 @@ interface InviteUserModalProps {
 const InviteUserModal = ({
   isOpen,
   onClose,
-  onSubmit,
 }: InviteUserModalProps) => {
   const {
     register,
@@ -65,7 +64,6 @@ const InviteUserModal = ({
   });
   
 const [projects, setProjects] = useState<Project[]>([]);
-const [loading, setLoading] = useState(true);
 
 useEffect(() => {
     const load = async () => {
@@ -75,9 +73,7 @@ useEffect(() => {
       } catch (error) {
         toast.error("Failed to fetch projects.");
         console.error("Fetch error:", error);
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
 
     load();
@@ -88,7 +84,7 @@ useEffect(() => {
 
   const handleFormSubmit = async (data: InviteFormData) => {
     try {
-      const response = await makeRequest({
+      await makeRequest({
         url: API_ROUTES.USERS.INVITE,
         method: "POST",
         data,

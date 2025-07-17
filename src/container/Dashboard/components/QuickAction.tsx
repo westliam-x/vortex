@@ -29,8 +29,6 @@ const QuickActions = () => {
 
       {/* Modals */}
       <AddProjectModal
-        clients={[]}
-        onSubmit={() => {}}
         isOpen={showProjectModal}
         onClose={() => setShowProjectModal(false)}
       />
