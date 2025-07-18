@@ -51,7 +51,7 @@ const LoginPage = () => {
       toast.success("Login successful!");
       await new Promise((res) => setTimeout(res, 450));
       console.log("Redirecting");
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong");
     } finally {
