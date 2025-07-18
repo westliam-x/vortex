@@ -17,7 +17,7 @@ const SignupWrapper = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="max-w-md mx-auto px-3">
       {step === 1 && (
         <StepEmail
           initialEmail={email}
