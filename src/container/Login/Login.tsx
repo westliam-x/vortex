@@ -42,14 +42,15 @@ const LoginPage = () => {
       });
 
       Cookies.set("token", response.token, {
-      expires: 7,
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-    });
+        expires: 7,
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+      });
 
       toast.success("Login successful!");
-
+      await new Promise((res) => setTimeout(res, 450));
+      console.log("Redirecting");
       router.push("/dashboard");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong");
