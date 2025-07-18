@@ -58,24 +58,23 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
 
   const projectType = watch("type");
 
- useEffect(() => {
-  const fetchClients = async () => {
-    try {
-      const response = await makeRequest<{ clients: Client[] }>({
-        url: API_ROUTES.CLIENT.LIST,
-      });
-       setClients(response.clients); 
-    } catch (error) {
-      console.error("Failed to load clients:", error);
-      toast.error("Unable to load clients");
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const response = await makeRequest<{ clients: Client[] }>({
+          url: API_ROUTES.CLIENT.LIST,
+        });
+        setClients(response.clients);
+      } catch (error) {
+        console.error("Failed to load clients:", error);
+        toast.error("Unable to load clients");
+      }
+    };
+
+    if (isOpen) {
+      fetchClients();
     }
-  };
-
-  if (isOpen) {
-    fetchClients();
-  }
-}, [isOpen]);
-
+  }, [isOpen]);
 
   const submitHandler = async (data: FormData) => {
     try {
@@ -97,8 +96,8 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
     <Transition show={isOpen} as={Fragment}>
       <Dialog as="div" onClose={onClose} className="relative z-50">
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="w-full max-w-lg bg-[#1E1E2E] border border-[#2F2F41] rounded-xl p-6">
+        <div className="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto">
+          <Dialog.Panel className="w-full max-w-lg bg-[#1E1E2E] border border-[#2F2F41] rounded-xl p-6 max-h-screen overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <Dialog.Title className="text-lg font-semibold text-white">
                 Create New Project
@@ -165,11 +164,12 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
                     className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
                   >
                     <option value="">Select a client</option>
-                    {Array.isArray(clients) && clients.map((client) => (
-                      <option key={client?._id} value={client?._id}>
-                        {client?.name} ({client?.company || "No company"})
-                      </option>
-                    ))}
+                    {Array.isArray(clients) &&
+                      clients.map((client) => (
+                        <option key={client?._id} value={client?._id}>
+                          {client?.name} ({client?.company || "No company"})
+                        </option>
+                      ))}
                   </select>
                   {errors.clientId && (
                     <p className="text-xs text-red-400 mt-1">

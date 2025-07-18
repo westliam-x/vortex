@@ -37,28 +37,27 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
     resolver: zodResolver(formSchema),
   });
   const submitHandler = async (data: FormData) => {
-      try {
-        await makeRequest({
-          url: API_ROUTES.CLIENT.CREATE,
-          method: "POST",
-          data,
-        });
-        toast.success("New Client Added! Congrats");
-        reset();
-        onClose();
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to create Client.");
-      }
-    };
-  
+    try {
+      await makeRequest({
+        url: API_ROUTES.CLIENT.CREATE,
+        method: "POST",
+        data,
+      });
+      toast.success("New Client Added! Congrats");
+      reset();
+      onClose();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create Client.");
+    }
+  };
 
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog as="div" onClose={onClose} className="relative z-50">
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="w-full max-w-xl bg-[#1E1E2E] border border-[#2F2F41] rounded-xl p-6 shadow-lg">
+        <div className="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto">
+          <Dialog.Panel className="w-full max-w-xl bg-[#1E1E2E] border border-[#2F2F41] rounded-xl p-6 shadow-lg max-h-screen overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <Dialog.Title className="text-lg font-semibold text-white">
                 Add New Client
@@ -81,7 +80,11 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
                   {...register("name")}
                   className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring--[#985EFF]"
                 />
-                {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name.message}</p>}
+                {errors.name && (
+                  <p className="text-xs text-red-400 mt-1">
+                    {errors.name.message}
+                  </p>
+                )}
               </div>
 
               {/* Email */}
@@ -94,7 +97,11 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
                   type="email"
                   className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md"
                 />
-                {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>}
+                {errors.email && (
+                  <p className="text-xs text-red-400 mt-1">
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
 
               {/* Company and Phone */}
@@ -118,7 +125,11 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
                     type="tel"
                     className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md"
                   />
-                  {errors.phone && <p className="text-xs text-red-400 mt-1">{errors.phone.message}</p>}
+                  {errors.phone && (
+                    <p className="text-xs text-red-400 mt-1">
+                      {errors.phone.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -147,10 +158,13 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
                     <option value="Inactive">Inactive</option>
                     <option value="Pending">Pending</option>
                   </select>
-                  {errors.status && <p className="text-xs text-red-400 mt-1">{errors.status.message}</p>}
+                  {errors.status && (
+                    <p className="text-xs text-red-400 mt-1">
+                      {errors.status.message}
+                    </p>
+                  )}
                 </div>
               </div>
-
 
               {/* Notes */}
               <div>
@@ -162,7 +176,11 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
                   rows={3}
                   className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md"
                 />
-                {errors.notes && <p className="text-xs text-red-400 mt-1">{errors.notes.message}</p>}
+                {errors.notes && (
+                  <p className="text-xs text-red-400 mt-1">
+                    {errors.notes.message}
+                  </p>
+                )}
               </div>
 
               {/* Submit */}

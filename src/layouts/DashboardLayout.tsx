@@ -13,7 +13,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
       <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar />
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto md:px-6 md:py-2 px-4 pt-2 pb-10">
           {children}
         </main>
       </div>
