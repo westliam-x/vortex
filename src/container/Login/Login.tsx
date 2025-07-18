@@ -32,8 +32,7 @@ const LoginPage = () => {
     try {
       setLoading(true);
 
-      const response = await makeRequest<{
-        token: string;
+      await makeRequest<{
         user: { id: string; name: string; email: string };
       }>({
         url: API_ROUTES.AUTH.LOGIN,
@@ -41,17 +40,18 @@ const LoginPage = () => {
         data: formData,
       });
 
-      Cookies.set("token", response.token, {
+      Cookies.set("logged_in", "true", {
+        sameSite: "Lax",
+        secure: process.env.NODE_ENV === "production",
         expires: 7,
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
       });
 
       toast.success("Login successful!");
+
+      // Wait a bit before redirect (optional UX)
       await new Promise((res) => setTimeout(res, 450));
-      console.log("Redirecting");
-      window.location.href = "/dashboard";
+
+      router.push("/dashboard");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong");
     } finally {

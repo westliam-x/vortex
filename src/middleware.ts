@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get("token")?.value;
+  const loggedIn = request.cookies.get("logged_in")?.value;
   const pathname = request.nextUrl.pathname;
 
   const protectedRoutes = [
@@ -29,7 +29,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith(path)
   );
 
-  if (isProtected && !token) {
+  if (isProtected && !loggedIn) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
