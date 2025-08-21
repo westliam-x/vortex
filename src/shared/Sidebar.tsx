@@ -23,6 +23,7 @@ const links = [
   { name: "Projects", href: "/projects", icon: Folder },
   { name: "Vortexes", href: "/vortexes", icon: Zap },
   { name: "Reviews", href: "/reviews", icon: Star },
+  { name: "Invoice", href: "/invoice/new", icon: Folder },
   { name: "Team", href: "/team", icon: UserCog },
   { name: "Settings", href: "/settings", icon: Settings },
   { name: "Logs", href: "/logs", icon: BookOpen },
