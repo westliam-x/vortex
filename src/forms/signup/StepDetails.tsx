@@ -16,7 +16,7 @@ const schema = z
     phone: z
       .string()
       .min(8, "Phone number must be at least 8 digits")
-      .regex(/^\+?[0-9\s\-]+$/, "Invalid phone number"),
+      .regex(/^\+?[0-9\\s\\-]+$/, "Invalid phone number"),
     country: z.string().min(2, "Country is required"),
     password: z
       .string()
@@ -53,7 +53,7 @@ const StepDetails = ({
   const router = useRouter();
 
   const onSubmit = async (data: FormData) => {
-    const formData = {
+    const payload = {
       email,
       firstName: data.firstName,
       lastName: data.lastName,
@@ -66,7 +66,7 @@ const StepDetails = ({
       await makeRequest({
         url: API_ROUTES.AUTH.REGISTER,
         method: "POST",
-        data: formData,
+        data: payload,
       });
       toast.success("Account created! Redirecting...");
       router.push("/login");
@@ -86,48 +86,38 @@ const StepDetails = ({
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-gray-300 mb-1">
-              First Name
-            </label>
+            <label className="block text-sm text-gray-300 mb-1">First Name</label>
             <input
               {...register("firstName")}
               placeholder="e.g. John"
-              className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring--[#985EFF]"
+              className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring-[#985EFF]"
             />
             {errors.firstName && (
-              <p className="text-xs text-red-400 mt-1">
-                {errors.firstName.message}
-              </p>
+              <p className="text-xs text-red-400 mt-1">{errors.firstName.message}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm text-gray-300 mb-1">
-              Last Name
-            </label>
+            <label className="block text-sm text-gray-300 mb-1">Last Name</label>
             <input
               {...register("lastName")}
               placeholder="e.g. Doe"
-              className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring--[#985EFF]"
+              className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring-[#985EFF]"
             />
             {errors.lastName && (
-              <p className="text-xs text-red-400 mt-1">
-                {errors.lastName.message}
-              </p>
+              <p className="text-xs text-red-400 mt-1">{errors.lastName.message}</p>
             )}
           </div>
         </div>
 
         <div>
-          <label className="block text-sm text-gray-300 mb-1">
-            Phone Number
-          </label>
+          <label className="block text-sm text-gray-300 mb-1">Phone Number</label>
           <input
             {...register("phone")}
             placeholder="e.g. +2348123456789"
-            className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring--[#985EFF]"
+            className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring-[#985EFF]"
           />
           {errors.phone && (
             <p className="text-xs text-red-400 mt-1">{errors.phone.message}</p>
@@ -139,12 +129,10 @@ const StepDetails = ({
           <input
             {...register("country")}
             placeholder="e.g. Nigeria"
-            className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring--[#985EFF]"
+            className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring-[#985EFF]"
           />
           {errors.country && (
-            <p className="text-xs text-red-400 mt-1">
-              {errors.country.message}
-            </p>
+            <p className="text-xs text-red-400 mt-1">{errors.country.message}</p>
           )}
         </div>
 
@@ -154,35 +142,29 @@ const StepDetails = ({
             type="password"
             {...register("password")}
             placeholder="Create a password"
-            className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring--[#985EFF]"
+            className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring-[#985EFF]"
           />
           {errors.password && (
-            <p className="text-xs text-red-400 mt-1">
-              {errors.password.message}
-            </p>
+            <p className="text-xs text-red-400 mt-1">{errors.password.message}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm text-gray-300 mb-1">
-            Confirm Password
-          </label>
+          <label className="block text-sm text-gray-300 mb-1">Confirm Password</label>
           <input
             type="password"
             {...register("confirmPassword")}
             placeholder="Re-enter password"
-            className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring--[#985EFF]"
+            className="w-full px-3 py-2 rounded-md bg-[#141421] border border-gray-700 text-white focus:ring-2 focus:ring-[#985EFF]"
           />
           {errors.confirmPassword && (
-            <p className="text-xs text-red-400 mt-1">
-              {errors.confirmPassword.message}
-            </p>
+            <p className="text-xs text-red-400 mt-1">{errors.confirmPassword.message}</p>
           )}
         </div>
 
         <button
           type="submit"
-          className="w-full py-3 cursor-pointer rounded-lg bg-[#985EFF] hover:bg-[#985EFF] text-white font-medium transition"
+          className="w-full py-3 cursor-pointer rounded-lg bg-[#985EFF] hover:bg-[#8d5df9] text-white font-medium transition"
         >
           Create Account
         </button>

@@ -95,7 +95,7 @@ export default function LandingPage() {
               <span className="block" style={{ color: accent }}>projects, clients, and the Vortex</span>
             </motion.h1>
             <motion.p variants={fadeUp} className="mt-4 text-base md:text-lg text-gray-300 max-w-2xl mx-auto">
-              Plan work, onboard clients, share updates in a unique Vortex space, generate invoices, and collect reviews — all in one place.
+              Plan work, onboard clients, share updates in a unique Vortex space, generate invoices, and collect reviews  all in one place.
             </motion.p>
             <motion.div variants={fadeUp} className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link href="/signup" className="inline-flex items-center gap-2 rounded-md bg-[#985EFF] px-5 py-3 text-sm md:text-base font-medium hover:bg-[#8d5df9]">
@@ -120,7 +120,7 @@ export default function LandingPage() {
           >
             {[
               { Icon: TerminalSquare, title: "Projects", body: "Plan tasks, sprints, and milestones with zero fuss." },
-              { Icon: Users, title: "Clients", body: "Onboard clients cleanly — keep context and comms in one place." },
+              { Icon: Users, title: "Clients", body: "Onboard clients cleanly  keep context and comms in one place." },
               { Icon: Share2, title: "The Vortex", body: "A shareable, unique space per project for updates, links, & docs." },
             ].map(({ Icon, title, body }) => (
               <div key={title} className="rounded-xl border border-white/10 bg-white/5 p-5">
@@ -143,7 +143,7 @@ export default function LandingPage() {
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}>
             <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-bold">Everything you need to ship</motion.h2>
             <motion.p variants={fadeUp} className="mt-3 max-w-2xl text-gray-300">
-              Vortex bundles the essentials for remote development — no switching tabs or tools. Focus on the work.
+              Vortex bundles the essentials for remote development  no switching tabs or tools. Focus on the work.
             </motion.p>
 
             <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -168,7 +168,7 @@ export default function LandingPage() {
             </div>
 
             <motion.div variants={fadeUp} className="mt-10 flex items-center gap-3 text-sm text-gray-300">
-              <ShieldCheck size={18} style={{ color: accent }} /> No trackers, no noise — just the work and the people.
+              <ShieldCheck size={18} style={{ color: accent }} /> No trackers, no noise  just the work and the people.
             </motion.div>
           </motion.div>
         </div>
@@ -180,7 +180,7 @@ export default function LandingPage() {
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}>
             <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-bold">How it works</motion.h2>
             <motion.p variants={fadeUp} className="mt-3 max-w-2xl text-gray-300">
-              Share a single link with everyone — clients and team — and keep the project moving.
+              Share a single link with everyone  clients and team  and keep the project moving.
             </motion.p>
 
             <ol className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -209,7 +209,7 @@ export default function LandingPage() {
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger} className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/10 to-transparent p-6 md:p-10">
             <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-bold">Turn client feedback into your unfair advantage</motion.h2>
             <motion.p variants={fadeUp} className="mt-3 max-w-3xl text-gray-300">
-              At project completion, clients leave a structured review. Expose those reviews anywhere with the **Vortex Reviews API** — portfolio, docs, or even your homepage.
+              At project completion, clients leave a structured review. Expose those reviews anywhere with the **Vortex Reviews API**  portfolio, docs, or even your homepage.
             </motion.p>
             <motion.div variants={fadeUp} className="mt-6 flex flex-col sm:flex-row gap-3">
               <Link href="/signup" className="inline-flex items-center gap-2 rounded-md bg-[#985EFF] px-5 py-3 text-sm font-medium hover:bg-[#8d5df9]">
@@ -231,8 +231,8 @@ export default function LandingPage() {
             {[ 
               { q: "Who is Vortex for?", a: "Remote teams and freelance developers who need a single hub for clients, projects, and communication." },
               { q: "What’s the Vortex space?", a: "A unique, shareable link per project where updates, feedback, links, and docs live together." },
-              { q: "Can I invoice clients?", a: "Yes — create USD or NGN invoices with custom fields and one‑click PDF download." },
-              { q: "Do clients need an account?", a: "You can invite by email or share the Vortex link — clients can view and respond without friction." },
+              { q: "Can I invoice clients?", a: "Yes  create USD or NGN invoices with custom fields and one‑click PDF download." },
+              { q: "Do clients need an account?", a: "You can invite by email or share the Vortex link  clients can view and respond without friction." },
             ].map(({ q, a }) => (
               <motion.div key={q} initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="rounded-xl border border-white/10 bg-white/5 p-5">
                 <p className="font-medium">{q}</p>
