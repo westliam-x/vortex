@@ -60,11 +60,7 @@ function Tooltip({ text }: { text: string }) {
   );
 }
 
-export default function AddInvoiceForm({
-  onCreate,
-}: {
-  onCreate: (invoice: Invoice) => void;
-}) {
+export default function AddInvoiceForm() {
   const {
     register,
     control,
@@ -159,9 +155,12 @@ export default function AddInvoiceForm({
       };
 
       // Call parent
-      onCreate(invoice);
+      // onCreate(invoice);
 
-      await downloadInvoicePDF(invoice);
+      await downloadInvoicePDF(
+        invoice,
+        `invoice_${invoice.invoiceNumber || invoice.id}.pdf`
+      );
 
       toast.success("Invoice created & downloaded 🎉");
       reset();

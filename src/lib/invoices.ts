@@ -166,22 +166,51 @@ function buildTotalsTable(invoice: Invoice): Content {
 //
 // ---------- Exported PDF Generator ----------
 //
-export async function downloadInvoicePDF(invoice: Invoice, filename?: string) {
+export async function downloadInvoicePDF(invoice: Invoice, p0: string) {
   const docDefinition: TDocumentDefinitions = {
     pageSize: "A4",
-    pageMargins: [40, 60, 40, 60],
+    pageMargins: m(40, 60, 40, 60),
     content: [
       { text: invoice.businessName, style: "header" },
-      // ...
+      {
+        text: `Invoice #${invoice.invoiceNumber || invoice.id}`,
+        margin: m(0, 0, 0, 20),
+      },
+
+      {
+        columns: [
+          [
+            { text: "Bill To:", bold: true },
+            { text: invoice.clientName || "" },
+            { text: invoice.clientEmail || "" },
+            { text: invoice.clientPhone || "" },
+          ],
+          [
+            { text: "From:", bold: true },
+            { text: invoice.yourName },
+            { text: invoice.yourEmail || "" },
+            { text: invoice.yourPhone || "" },
+          ],
+        ],
+        margin: m(0, 0, 0, 20),
+      },
+
+      buildItemsTable(invoice),
+      buildTotalsTable(invoice),
+
+      ...(invoice.notes
+        ? [{ text: `Notes:\n${invoice.notes}`, margin: m(0, 20, 0, 0) }]
+        : []),
+      ...(invoice.terms
+        ? [{ text: `Terms:\n${invoice.terms}`, margin: m(0, 10, 0, 0) }]
+        : []),
     ],
+
     styles: {
-      header: { fontSize: 18, bold: true, margin: [0, 0, 0, 10] },
+      header: { fontSize: 18, bold: true, margin: m(0, 0, 0, 10) },
     },
     defaultStyle: { fontSize: 10 },
   };
 
-  pdfMake.createPdf(docDefinition).download(
-    filename || `invoice-${invoice.id}.pdf`
-  );
+  pdfMake.createPdf(docDefinition).download(`invoice-${invoice.id}.pdf`);
 }
-

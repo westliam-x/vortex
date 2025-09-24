@@ -1,32 +1,8 @@
 "use client";
-import { useRef, useState } from "react";
-import {
-  Invoice,
-  getInvoices,
-  saveInvoices,
-  downloadInvoicePDF,
-} from "@/lib/invoices";
-import { AddInvoiceForm, InvoicePreview } from "./components";
+import { AddInvoiceForm } from "./components";
 import { DashboardLayout } from "@/layouts";
 
 export default function NewInvoicePage() {
-  const [active, setActive] = useState<Invoice | null>(null);
-  const printRef = useRef<HTMLDivElement>(null);
-
-  const handleCreate = async (inv: Invoice) => {
-    const list = [inv, ...getInvoices()];
-    saveInvoices(list);
-    setActive(inv);
-    await new Promise((r) => setTimeout(r, 30));
-    if (printRef.current) {
-      await downloadInvoicePDF(
-        inv,
-        `invoice_${inv.invoiceNumber || inv.id}.pdf`
-      );
-      setActive(null);
-    }
-  };
-
   return (
     <DashboardLayout>
       <div className="md:p-6 p-3 text-white max-w-7xl mx-auto">
@@ -34,11 +10,7 @@ export default function NewInvoicePage() {
           <h1 className="text-3xl font-bold">New Invoice</h1>
         </div>
 
-        <AddInvoiceForm onCreate={handleCreate} />
-
-        <div className="fixed -left-[9999px] top-0">
-          {active && <InvoicePreview ref={printRef} invoice={active} />}
-        </div>
+        <AddInvoiceForm />
       </div>
     </DashboardLayout>
   );
