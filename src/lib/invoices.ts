@@ -1,7 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import html2canvas, { type Options as Html2CanvasOptions } from "html2canvas";
-import { jsPDF } from "jspdf";
 
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+(pdfMake as any).vfs = (pdfFonts as any).vfs;
+
+import type { TDocumentDefinitions, Content, TableCell } from "pdfmake/interfaces";
+
+//
+// ---------- Types ----------
+//
 export type Currency = "NGN" | "USD";
 
 export type LineItem = {
@@ -38,6 +46,9 @@ export type Invoice = {
   customFields?: CustomField[];
 };
 
+//
+// ---------- Utilities ----------
+//
 export const STORAGE_KEY = "vortex_invoices";
 
 export const genId = () => Math.random().toString(36).slice(2, 10);
@@ -46,7 +57,6 @@ export const formatMoney = (n: number, currency: Currency) =>
   new Intl.NumberFormat("en-NG", {
     style: "currency",
     currency,
-    currencyDisplay: "symbol",
     maximumFractionDigits: 2,
   }).format(isNaN(n) ? 0 : n);
 
@@ -74,94 +84,133 @@ export const computeTotals = (invoice: Invoice) => {
   return { sub, tax, discount, total };
 };
 
-export async function downloadInvoicePDF(
-  container: HTMLElement,
-  filename: string
-) {
-    
-  const hadId = !!container.id;
-  const TEMP_ID = container.id || "invoice-print-root";
-  if (!hadId) container.id = TEMP_ID;
+// margin helper to satisfy TS tuple typing
+const m = (l = 0, t = 0, r = 0, b = 0): [number, number, number, number] => [
+  l,
+  t,
+  r,
+  b,
+];
 
-  
-  const render = async (
-    extraOpts: Partial<Html2CanvasOptions> = {}
-  ): Promise<HTMLCanvasElement> => {
-    const baseOpts: Partial<Html2CanvasOptions> = {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#ffffff",
-      windowWidth: 794,
-      onclone: (clonedDoc: Document) => {
-        clonedDoc
-          .querySelectorAll('link[rel="stylesheet"], style')
-          .forEach((n) => n.parentNode?.removeChild(n));
-        const root = clonedDoc.getElementById(TEMP_ID) as HTMLElement | null;
-        if (!root) return;
-
-        
-        const style = clonedDoc.createElement("style");
-        style.textContent = `
-          #${TEMP_ID} { background:#fff !important; color:#000 !important; font-family: Inter, Arial, Helvetica, sans-serif !important; }
-          #${TEMP_ID} * { background:transparent !important; color:#000 !important; border-color:#000 !important; box-shadow:none !important; }
-          #${TEMP_ID} table { border-collapse:collapse !important; width:100% !important; }
-          #${TEMP_ID} th, #${TEMP_ID} td { border-top:1px solid #ddd !important; padding:8px 6px !important; }
-        `;
-        clonedDoc.head.appendChild(style);
-
-        
-        const apply = (el: HTMLElement) => {
-          el.style.setProperty("color", "#000", "important");
-          el.style.setProperty("background", "transparent", "important");
-          el.style.setProperty("background-color", "transparent", "important");
-          el.style.setProperty("border-color", "#000", "important");
-          el.style.setProperty("box-shadow", "none", "important");
-        };
-        apply(root);
-        root.querySelectorAll("*").forEach((el) => {
-          if (el instanceof HTMLElement) apply(el);
-        });
+//
+// ---------- PDF Builders ----------
+//
+function buildItemsTable(invoice: Invoice): Content {
+  const rows: TableCell[][] = [
+    [
+      { text: "Description", bold: true },
+      { text: "Qty", bold: true, alignment: "center" },
+      { text: "Rate", bold: true, alignment: "right" },
+      { text: "Total", bold: true, alignment: "right" },
+    ],
+    ...invoice.items.map((it) => [
+      it.description,
+      { text: it.quantity.toString(), alignment: "center" },
+      { text: formatMoney(it.rate, invoice.currency), alignment: "right" },
+      {
+        text: formatMoney(it.quantity * it.rate, invoice.currency),
+        alignment: "right",
       },
-    };
+    ]),
+  ];
 
-    const opts: Partial<Html2CanvasOptions> = { ...baseOpts, ...extraOpts };
-    return html2canvas(container, opts);
+  return {
+    table: {
+      widths: ["*", "auto", "auto", "auto"],
+      body: rows,
+    },
+    layout: "lightHorizontalLines",
+    margin: m(0, 10, 0, 10),
+  };
+}
+
+function buildTotalsTable(invoice: Invoice): Content {
+  const totals = computeTotals(invoice);
+
+  const rows: TableCell[][] = [
+    [
+      "Subtotal",
+      { text: formatMoney(totals.sub, invoice.currency), alignment: "right" },
+    ],
+    [
+      "Tax",
+      { text: formatMoney(totals.tax, invoice.currency), alignment: "right" },
+    ],
+    [
+      "Discount",
+      {
+        text: formatMoney(totals.discount, invoice.currency),
+        alignment: "right",
+      },
+    ],
+    [
+      { text: "Total", bold: true },
+      {
+        text: formatMoney(totals.total, invoice.currency),
+        bold: true,
+        alignment: "right",
+      },
+    ],
+  ];
+
+  return {
+    table: {
+      widths: ["*", "auto"],
+      body: rows,
+    },
+    layout: "noBorders",
+    margin: m(0, 20, 0, 0),
+  };
+}
+
+//
+// ---------- Exported PDF Generator ----------
+//
+export async function downloadInvoicePDF(invoice: Invoice) {
+  const docDefinition: TDocumentDefinitions = {
+    pageSize: "A4",
+    pageMargins: m(40, 60, 40, 60),
+    content: [
+      { text: invoice.businessName, style: "header" },
+      {
+        text: `Invoice #${invoice.invoiceNumber || invoice.id}`,
+        margin: m(0, 0, 0, 20),
+      },
+
+      {
+        columns: [
+          [
+            { text: "Bill To:", bold: true },
+            { text: invoice.clientName || "" },
+            { text: invoice.clientEmail || "" },
+            { text: invoice.clientPhone || "" },
+          ],
+          [
+            { text: "From:", bold: true },
+            { text: invoice.yourName },
+            { text: invoice.yourEmail || "" },
+            { text: invoice.yourPhone || "" },
+          ],
+        ],
+        margin: m(0, 0, 0, 20),
+      },
+
+      buildItemsTable(invoice),
+      buildTotalsTable(invoice),
+
+      ...(invoice.notes
+        ? [{ text: `Notes:\n${invoice.notes}`, margin: m(0, 20, 0, 0) }]
+        : []),
+      ...(invoice.terms
+        ? [{ text: `Terms:\n${invoice.terms}`, margin: m(0, 10, 0, 0) }]
+        : []),
+    ],
+
+    styles: {
+      header: { fontSize: 18, bold: true, margin: m(0, 0, 0, 10) },
+    },
+    defaultStyle: { fontSize: 10 },
   };
 
-  let canvas: HTMLCanvasElement | null = null;
-  try {
-    canvas = await render(); // primary attempt
-  } catch {
-    // Fallback: try with foreignObjectRendering enabled
-    canvas = await render({ foreignObjectRendering: true });
-  } finally {
-    if (!hadId) container.removeAttribute("id");
-  }
-
-  if (!canvas) throw new Error("Failed to render invoice to canvas");
-
-  const imgData = canvas.toDataURL("image/png");
-  const pdf = new jsPDF({ unit: "pt", format: "a4", orientation: "portrait" });
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  const pageHeight = pdf.internal.pageSize.getHeight();
-  const imgWidth = pageWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  let offset = 0;
-  while (offset < imgHeight) {
-    pdf.addImage(
-      imgData,
-      "PNG",
-      0,
-      -offset,
-      imgWidth,
-      imgHeight,
-      undefined,
-      "FAST"
-    );
-    offset += pageHeight;
-    if (offset < imgHeight) pdf.addPage();
-  }
-
-  pdf.save(filename);
+  pdfMake.createPdf(docDefinition).download(`invoice-${invoice.id}.pdf`);
 }

@@ -2,9 +2,11 @@
 import { useForm, useFieldArray, type DefaultValues } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Currency, Invoice, genId, formatMoney } from "@/lib/invoices";
-import { useMemo } from "react";
+import { Currency, Invoice, genId, formatMoney, downloadInvoicePDF } from "@/lib/invoices";
+import { useEffect, useMemo, useState } from "react";
 import { Info } from "lucide-react";
+import { getProfile } from "@/services/profileServices";
+import { toast } from "react-toastify";
 
 const itemSchema = z.object({
   description: z.string().min(1),
@@ -22,10 +24,9 @@ const formSchema = z.object({
   clientName: z.string().optional(),
   clientEmail: z.string().email().optional().or(z.literal("")),
   clientPhone: z.string().optional(),
-  yourName: z.string().min(2),
+  yourName: z.string().min(2).optional(),
   yourEmail: z.string().email().optional().or(z.literal("")),
   yourPhone: z.string().optional(),
-  yourAddress: z.string().optional(),
   invoiceNumber: z.string().optional(),
   issueDate: z.string().optional(),
   dueDate: z.string().optional(),
@@ -42,7 +43,6 @@ type FormData = z.infer<typeof formSchema>;
 const defaultValues: DefaultValues<FormData> = {
   currency: "NGN",
   businessName: "",
-  yourName: "",
   items: [{ description: "", quantity: 1, rate: 0 }],
   customFields: [],
   issueDate: new Date().toISOString().slice(0, 10),
@@ -73,11 +73,13 @@ export default function AddInvoiceForm({
     reset,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(formSchema) as unknown as import("react-hook-form").Resolver<FormData, unknown>,
+    resolver: zodResolver(
+      formSchema
+    ) as unknown as import("react-hook-form").Resolver<FormData, unknown>,
     defaultValues,
   });
 
-  const { fields, remove } = useFieldArray({ control, name: "items" });
+  const { fields, remove, append } = useFieldArray({ control, name: "items" });
 
   const currency = watch("currency");
   const items = watch("items");
@@ -98,37 +100,89 @@ export default function AddInvoiceForm({
     [sub, tax, discount]
   );
 
-  const onSubmit = (data: FormData) => {
-    const invoice: Invoice = {
-      id: genId(),
-      createdAt: Date.now(),
-      currency: data.currency,
-      businessName: data.businessName,
-      clientName: data.clientName || undefined,
-      clientEmail: data.clientEmail || undefined,
-      clientPhone: data.clientPhone || undefined,
-      yourName: data.yourName,
-      yourEmail: data.yourEmail || undefined,
-      yourPhone: data.yourPhone || undefined,
-      yourAddress: data.yourAddress || undefined,
-      invoiceNumber: data.invoiceNumber || undefined,
-      issueDate: data.issueDate || undefined,
-      dueDate: data.dueDate || undefined,
-      items: data.items,
-      taxPercent: Number.isNaN(Number(data.taxPercent))
-        ? 0
-        : Number(data.taxPercent),
-      discount: Number.isNaN(Number(data.discount)) ? 0 : Number(data.discount),
-      notes: data.notes || undefined,
-      terms: data.terms || undefined,
-      customFields: data.customFields?.filter((f) => f.label && f.value),
+  const [loading, setLoading] = useState(false);
+  const [profile, setProfile] = useState<{
+    name: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await getProfile();
+        setProfile(response);
+
+        // ✅ prefill form with profile once loaded
+        reset((prev) => ({
+          ...prev,
+          yourName: response?.name,
+          yourEmail: response?.email,
+          yourPhone: response?.phone,
+        }));
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+      }
     };
-    onCreate(invoice);
-    reset();
+
+    fetchProfile();
+  }, [reset]);
+
+  const onSubmit = async (data: FormData) => {
+    setLoading(true);
+    try {
+      const invoice: Invoice = {
+        id: genId(),
+        createdAt: Date.now(),
+        currency: data.currency,
+        businessName: data.businessName,
+        clientName: data.clientName || undefined,
+        clientEmail: data.clientEmail || undefined,
+        clientPhone: data.clientPhone || undefined,
+        yourName: profile?.name ?? "",
+        yourEmail: profile?.email || undefined,
+        yourPhone: profile?.phone || undefined,
+        invoiceNumber: data.invoiceNumber || undefined,
+        issueDate: data.issueDate || undefined,
+        dueDate: data.dueDate || undefined,
+        items: data.items,
+        taxPercent: Number.isNaN(Number(data.taxPercent))
+          ? 0
+          : Number(data.taxPercent),
+        discount: Number.isNaN(Number(data.discount))
+          ? 0
+          : Number(data.discount),
+        notes: data.notes || undefined,
+        terms: data.terms || undefined,
+        customFields: data.customFields?.filter((f) => f.label && f.value),
+      };
+
+      // Call parent
+      onCreate(invoice);
+
+      await downloadInvoicePDF(invoice);
+
+      toast.success("Invoice created & downloaded 🎉");
+      reset();
+    } catch (err) {
+      console.error("Profile failed to submit", err);
+    } finally {
+      setLoading(false);
+      console.log("Profile failed to submit");
+      toast.error("Failed to create invoice ❌");
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form
+      onSubmit={handleSubmit(onSubmit, (err) => {
+        console.log("Validation errors:", err);
+
+        toast.error("Please fix the highlighted errors ⚠️");
+      })}
+      className="space-y-6"
+    >
       {/* Currency */}
       <div className="flex items-center gap-2">
         <label className="text-sm text-gray-300 flex items-center">
@@ -158,7 +212,8 @@ export default function AddInvoiceForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className=" text-sm text-gray-300 mb-1 flex items-center">
-            Business (Bill To) <Tooltip text="Who you’re billing (e.g. company name)" />
+            Business (Bill To){" "}
+            <Tooltip text="Who you’re billing (e.g. company name)" />
           </label>
           <input
             {...register("businessName")}
@@ -236,10 +291,14 @@ export default function AddInvoiceForm({
       {/* Items */}
       <div>
         <label className=" text-sm text-gray-300 mb-2 flex items-center">
-          Items <Tooltip text="List products or services with quantity & rate" />
+          Items{" "}
+          <Tooltip text="List products or services with quantity & rate" />
         </label>
         {fields.map((f, i) => (
-          <div key={f.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
+          <div
+            key={f.id}
+            className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3"
+          >
             <input
               placeholder="Description"
               {...register(`items.${i}.description` as const)}
@@ -261,13 +320,22 @@ export default function AddInvoiceForm({
               {...register(`items.${i}.rate` as const)}
               className="md:col-span-3 px-2 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
             />
-            <div className="md:col-span-2">
+            <div className="md:col-span-2 flex gap-2">
               <button
                 type="button"
                 onClick={() => remove(i)}
                 className="w-full bg-[#3a1020] text-red-200 border border-red-800/40 rounded px-2 py-2"
               >
                 Remove
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  append({ description: "", quantity: 1, rate: 0 })
+                }
+                className="w-full bg-[#147f18] text-red-200 border border-green-800/40 rounded px-2 py-2"
+              >
+                ADD
               </button>
             </div>
           </div>
@@ -296,7 +364,8 @@ export default function AddInvoiceForm({
         </div>
         <div>
           <label className=" text-sm text-gray-300 mb-1 flex items-center">
-            Discount ({currency}) <Tooltip text="Fixed discount in selected currency" />
+            Discount ({currency}){" "}
+            <Tooltip text="Fixed discount in selected currency" />
           </label>
           <input
             type="number"
@@ -310,7 +379,9 @@ export default function AddInvoiceForm({
           <p className="text-sm text-gray-300">
             Subtotal: {formatMoney(sub, currency)}
           </p>
-          <p className="text-sm text-gray-300">Tax: {formatMoney(tax, currency)}</p>
+          <p className="text-sm text-gray-300">
+            Tax: {formatMoney(tax, currency)}
+          </p>
           <p className="text-lg text-white font-semibold mt-1">
             Total: {formatMoney(total, currency)}
           </p>
@@ -343,9 +414,10 @@ export default function AddInvoiceForm({
 
       <button
         type="submit"
-        className="w-full bg-[#985EFF] hover:bg-[#8851e4] transition text-white py-2 rounded-md"
+        disabled={loading}
+        className="w-full bg-[#985EFF] hover:bg-[#8851e4] transition text-white py-2 rounded-md cursor-pointer"
       >
-        Create
+        {loading ? "Loading..." : "Create & Download"}
       </button>
     </form>
   );
