@@ -27,7 +27,7 @@ export default function InvoicesPage() {
     await new Promise((r) => setTimeout(r, 30));
     if (printRef.current) {
       await downloadInvoicePDF(
-        printRef.current,
+        inv,
         `invoice_${inv.invoiceNumber || inv.id}.pdf`
       );
       setActive(null);

@@ -20,25 +20,26 @@ export default function NewInvoicePage() {
     await new Promise((r) => setTimeout(r, 30));
     if (printRef.current) {
       await downloadInvoicePDF(
-        printRef.current,
+        inv,
         `invoice_${inv.invoiceNumber || inv.id}.pdf`
       );
+      setActive(null);
     }
   };
 
   return (
     <DashboardLayout>
-        <div className="md:p-6 p-3 text-white max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">New Invoice</h1>
-      </div>
+      <div className="md:p-6 p-3 text-white max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold">New Invoice</h1>
+        </div>
 
-      <AddInvoiceForm onCreate={handleCreate} />
+        <AddInvoiceForm onCreate={handleCreate} />
 
-      <div className="fixed -left-[9999px] top-0">
-        {active && <InvoicePreview ref={printRef} invoice={active} />}
+        <div className="fixed -left-[9999px] top-0">
+          {active && <InvoicePreview ref={printRef} invoice={active} />}
+        </div>
       </div>
-    </div>
     </DashboardLayout>
   );
 }
