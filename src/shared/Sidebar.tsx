@@ -13,6 +13,7 @@ import {
   BookOpen,
   Zap,
   LogOut,
+  Receipt,
 } from "lucide-react";
 import { cn } from "@/lib";
 import { motion } from "framer-motion";
@@ -23,7 +24,7 @@ const links = [
   { name: "Projects", href: "/projects", icon: Folder },
   { name: "Vortexes", href: "/vortexes", icon: Zap },
   { name: "Reviews", href: "/reviews", icon: Star },
-  { name: "Invoice", href: "/invoice/new", icon: Folder },
+  { name: "Invoice", href: "/invoice/new", icon: Receipt },
   { name: "Team", href: "/team", icon: UserCog },
   { name: "Settings", href: "/settings", icon: Settings },
   { name: "Logs", href: "/logs", icon: BookOpen },
@@ -34,11 +35,8 @@ const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
 
-  const Logout = async (
-    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
-  ) => {
+  const Logout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-
     try {
       await handleLogout();
       router.push("/login");
@@ -48,12 +46,13 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="hidden md:flex flex-col w-64 h-full bg-[#090909] border-r backdrop-blur-lg p-6 shadow-[inset_0_0_10px_#1E1E3F]">
+    <aside className="hidden md:flex flex-col w-64 h-full bg-[#090909] border-r border-[#2F2F41] backdrop-blur-lg p-6 shadow-inner">
+      {/* Brand */}
       <div className="mb-10 flex items-center gap-2">
         <motion.div
-          animate={{ rotate: [0, 20, -10, 0] }}
+          animate={{ rotate: [0, 15, -10, 0] }}
           transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 3 }}
-          className="text-[#985EFF]"
+          className="text-[#985EFF] text-2xl"
         >
           ⚡
         </motion.div>
@@ -62,7 +61,8 @@ const Sidebar = () => {
         </h1>
       </div>
 
-      <nav className="space-y-1">
+      {/* Navigation */}
+      <nav className="flex-1 space-y-1">
         {links.map(({ href, name, icon: Icon, logout }) => {
           const isActive = pathname === href;
 
@@ -73,9 +73,8 @@ const Sidebar = () => {
                 href={href}
                 onClick={Logout}
                 className={cn(
-                  "flex items-center gap-5 px-4 py-4 rounded-lg transition-colors",
-                  "hover:bg-[#ba93fd] hover:text-white",
-                  "text-white"
+                  "flex items-center gap-4 px-4 py-3 rounded-lg text-gray-300 transition-all",
+                  "hover:bg-[#ba93fd]/10 hover:text-[#ba93fd]"
                 )}
               >
                 <Icon size={18} className="shrink-0" />
@@ -90,11 +89,10 @@ const Sidebar = () => {
               href={href}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex items-center gap-5 px-4 py-4 rounded-lg transition-colors",
-                "hover:bg-[#ba93fd] hover:text-white",
+                "flex items-center gap-4 px-4 py-3 rounded-lg transition-all",
                 isActive
-                  ? "bg-[#985EFF] text-white font-medium"
-                  : "text-white"
+                  ? "bg-gradient-to-r from-[#985EFF] to-[#BA93FD] text-white font-medium shadow-md"
+                  : "text-gray-300 hover:bg-[#ba93fd]/10 hover:text-white"
               )}
             >
               <Icon size={18} className="shrink-0" />
@@ -103,6 +101,11 @@ const Sidebar = () => {
           );
         })}
       </nav>
+
+      {/* Footer */}
+      <div className="mt-6 text-xs text-gray-500">
+        <p className="font-light">© {new Date().getFullYear()} Vortex</p>
+      </div>
     </aside>
   );
 };

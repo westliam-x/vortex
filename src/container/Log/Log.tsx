@@ -59,7 +59,7 @@ const LogsPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-6">
+      <div className="md:p-6 p-3">
         <h2 className="text-xl font-semibold text-white mb-4">Activity Logs</h2>
         <LogsFilters onFilter={handleFilter} />
         {loading ? (

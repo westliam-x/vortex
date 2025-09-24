@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Currency, Invoice, genId, formatMoney } from "@/lib/invoices";
 import { useMemo } from "react";
+import { Info } from "lucide-react";
 
 const itemSchema = z.object({
   description: z.string().min(1),
@@ -46,6 +47,19 @@ const defaultValues: DefaultValues<FormData> = {
   customFields: [],
   issueDate: new Date().toISOString().slice(0, 10),
 };
+
+// Simple tooltip component
+function Tooltip({ text }: { text: string }) {
+  return (
+    <div className="relative group inline-">
+      <Info size={14} className="ml-1 text-gray-400 cursor-pointer" />
+      <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1 hidden group-hover: w-max bg-black/80 text-xs text-gray-200 px-2 py-1 rounded-md shadow-lg z-10">
+        {text}
+      </span>
+    </div>
+  );
+}
+
 export default function AddInvoiceForm({
   onCreate,
 }: {
@@ -60,15 +74,10 @@ export default function AddInvoiceForm({
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema) as unknown as import("react-hook-form").Resolver<FormData, unknown>,
-    defaultValues
+    defaultValues,
   });
 
   const { fields, remove } = useFieldArray({ control, name: "items" });
-  const {
-    fields: cfFields,
-    append: cfAppend,
-    remove: cfRemove,
-  } = useFieldArray({ control, name: "customFields" });
 
   const currency = watch("currency");
   const items = watch("items");
@@ -119,10 +128,12 @@ export default function AddInvoiceForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Currency */}
-      <div className="flex items-center gap-3">
-        <label className="text-sm text-gray-300">Currency</label>
+      <div className="flex items-center gap-2">
+        <label className="text-sm text-gray-300 flex items-center">
+          Currency <Tooltip text="Select the currency for this invoice" />
+        </label>
         <div className="flex bg-[#141421] rounded-md border border-gray-700 overflow-hidden">
           {(["NGN", "USD"] as Currency[]).map((c) => (
             <label
@@ -142,11 +153,12 @@ export default function AddInvoiceForm({
           ))}
         </div>
       </div>
-      {/* Head */}
+
+      {/* Business & Invoice Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm text-gray-300 mb-1">
-            Business (Bill To)
+          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+            Business (Bill To) <Tooltip text="Who you’re billing (e.g. company name)" />
           </label>
           <input
             {...register("businessName")}
@@ -159,14 +171,18 @@ export default function AddInvoiceForm({
           )}
         </div>
         <div>
-          <label className="block text-sm text-gray-300 mb-1">Invoice #</label>
+          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+            Invoice # <Tooltip text="Optional unique number for tracking" />
+          </label>
           <input
             {...register("invoiceNumber")}
             className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-300 mb-1">Issue Date</label>
+          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+            Issue Date <Tooltip text="When this invoice is created" />
+          </label>
           <input
             type="date"
             {...register("issueDate")}
@@ -174,7 +190,9 @@ export default function AddInvoiceForm({
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-300 mb-1">Due Date</label>
+          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+            Due Date <Tooltip text="The deadline for payment" />
+          </label>
           <input
             type="date"
             {...register("dueDate")}
@@ -183,11 +201,11 @@ export default function AddInvoiceForm({
         </div>
       </div>
 
-      {/* Client */}
+      {/* Client Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm text-gray-300 mb-1">
-            Client Name
+          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+            Client Name <Tooltip text="Full name of the client being billed" />
           </label>
           <input
             {...register("clientName")}
@@ -195,8 +213,8 @@ export default function AddInvoiceForm({
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-300 mb-1">
-            Client Email
+          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+            Client Email <Tooltip text="Client’s email for invoice delivery" />
           </label>
           <input
             type="email"
@@ -205,8 +223,8 @@ export default function AddInvoiceForm({
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-300 mb-1">
-            Client Phone
+          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+            Client Phone <Tooltip text="Optional phone number for contact" />
           </label>
           <input
             {...register("clientPhone")}
@@ -215,53 +233,45 @@ export default function AddInvoiceForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="md:col-span-2">
-          <label className="block text-sm text-gray-300 mb-1">Your Name</label>
-          <input
-            {...register("yourName")}
-            className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
-          />
-          {errors.yourName && (
-            <p className="text-xs text-red-400 mt-1">
-              {String(errors.yourName.message)}
-            </p>
-          )}
-          {fields.map((f, i) => (
-            <div key={f.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 mt-4">
-              <input
-                placeholder="Description"
-                {...register(`items.${i}.description` as const)}
-                className="md:col-span-6 px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
-              />
-              <input
-                type="number"
-                min={1}
-                step={1}
-                placeholder="Qty"
-                {...register(`items.${i}.quantity` as const)}
-                className="md:col-span-3 px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
-              />
-              <input
-                type="number"
-                min={0}
-                step="0.01"
-                placeholder="Rate"
-                {...register(`items.${i}.rate` as const)}
-                className="md:col-span-3 px-2 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
-              />
-              <div className="md:col-span-3">
-                <button
-                  type="button"
-                  onClick={() => remove(i)}
-                  className="w-full bg-[#3a1020] text-red-200 border border-red-800/40 rounded px-2"
-                >
-                  Remove
-                </button>
-              </div>
+      {/* Items */}
+      <div>
+        <label className=" text-sm text-gray-300 mb-2 flex items-center">
+          Items <Tooltip text="List products or services with quantity & rate" />
+        </label>
+        {fields.map((f, i) => (
+          <div key={f.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
+            <input
+              placeholder="Description"
+              {...register(`items.${i}.description` as const)}
+              className="md:col-span-6 px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+            />
+            <input
+              type="number"
+              min={1}
+              step={1}
+              placeholder="Qty"
+              {...register(`items.${i}.quantity` as const)}
+              className="md:col-span-3 px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+            />
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              placeholder="Rate"
+              {...register(`items.${i}.rate` as const)}
+              className="md:col-span-3 px-2 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+            />
+            <div className="md:col-span-2">
+              <button
+                type="button"
+                onClick={() => remove(i)}
+                className="w-full bg-[#3a1020] text-red-200 border border-red-800/40 rounded px-2 py-2"
+              >
+                Remove
+              </button>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
         {errors.items && (
           <p className="text-xs text-red-400 mt-1">
             {String(errors.items.message)}
@@ -269,52 +279,12 @@ export default function AddInvoiceForm({
         )}
       </div>
 
-      {/* Custom fields */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="text-sm text-gray-300">Additional Details</label>
-          <button
-            type="button"
-            onClick={() => cfAppend({ label: "", value: "" })}
-            className="text-xs bg-[#2b2b3d] hover:bg-[#34344a] text-white px-2 py-1 rounded"
-          >
-            + Add Field
-          </button>
-        </div>
-        {cfFields.length > 0 && (
-          <div className="space-y-2">
-            {cfFields.map((f, i) => (
-              <div
-                key={f.id}
-                className="grid grid-cols-1 md:grid-cols-12 gap-2"
-              >
-                <input
-                  placeholder="Label"
-                  {...register(`customFields.${i}.label` as const)}
-                  className="md:col-span-4 px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
-                />
-                <input
-                  placeholder="Value"
-                  {...register(`customFields.${i}.value` as const)}
-                  className="md:col-span-6 px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
-                />
-                <button
-                  type="button"
-                  onClick={() => cfRemove(i)}
-                  className="md:col-span-2 bg-[#3a1020] text-red-200 border border-red-800/40 rounded px-2"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
       {/* Totals */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
         <div>
-          <label className="block text-sm text-gray-300 mb-1">Tax %</label>
+          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+            Tax % <Tooltip text="Percentage tax to apply on subtotal" />
+          </label>
           <input
             type="number"
             step="0.01"
@@ -325,8 +295,8 @@ export default function AddInvoiceForm({
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-300 mb-1">
-            Discount ({currency})
+          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+            Discount ({currency}) <Tooltip text="Fixed discount in selected currency" />
           </label>
           <input
             type="number"
@@ -340,9 +310,7 @@ export default function AddInvoiceForm({
           <p className="text-sm text-gray-300">
             Subtotal: {formatMoney(sub, currency)}
           </p>
-          <p className="text-sm text-gray-300">
-            Tax: {formatMoney(tax, currency)}
-          </p>
+          <p className="text-sm text-gray-300">Tax: {formatMoney(tax, currency)}</p>
           <p className="text-lg text-white font-semibold mt-1">
             Total: {formatMoney(total, currency)}
           </p>
@@ -352,7 +320,9 @@ export default function AddInvoiceForm({
       {/* Notes / Terms */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm text-gray-300 mb-1">Notes</label>
+          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+            Notes <Tooltip text="Optional message for the client" />
+          </label>
           <textarea
             rows={3}
             {...register("notes")}
@@ -360,7 +330,9 @@ export default function AddInvoiceForm({
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-300 mb-1">Terms</label>
+          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+            Terms <Tooltip text="Payment terms or conditions" />
+          </label>
           <textarea
             rows={3}
             {...register("terms")}

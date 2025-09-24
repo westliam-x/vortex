@@ -9,6 +9,7 @@ const Navbar = () => {
   const openSidebar = useMobileSidebar((state) => state.open);
   const [time, setTime] = useState(new Date().toLocaleTimeString());
   const [profile, setProfile] = useState<USER_RESPONSE>();
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -21,6 +22,7 @@ const Navbar = () => {
 
     fetchProfile();
   }, []);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTime(new Date().toLocaleTimeString());
@@ -29,23 +31,30 @@ const Navbar = () => {
   }, []);
 
   return (
-    <div className="sticky top-0 z-30 flex justify-between items-center px-4 h-14 border-b border-gray-800 bg-[#090909] backdrop-blur">
-      <div className="flex items-center gap-2">
+    <header className="sticky top-0 z-30 flex justify-between items-center px-4 h-14 border-b border-[#2F2F41] bg-[#090909] backdrop-blur-lg shadow-sm">
+      {/* Left Section */}
+      <div className="flex items-center gap-3">
         <button
           onClick={openSidebar}
-          className="md:hidden p-2 rounded-md bg-[#1A1A2B] border border-[#985EFF] text-[985EFF] shadow-md"
+          className="md:hidden p-2 rounded-lg bg-[#1A1A2B] border border-[#2F2F41] text-gray-300 hover:text-white hover:border-[#985EFF] transition-colors"
         >
-          <Menu size={10} />
+          <Menu size={18} />
         </button>
-        <div className="text-xs text-white font-poppins">
-          Current Time: {time}
+        <div className="text-xs text-gray-400 font-mono">
+          ⏰ {time}
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        <span className="text-xs">Hi, {profile?.firstName}</span>
-        <div className="h-8 w-8 rounded-full bg-gray-600" />
+
+      {/* Right Section */}
+      <div className="flex items-center gap-3">
+        <span className="text-sm text-gray-200">
+          Hi, <span className="font-medium text-white">{profile?.firstName}</span>
+        </span>
+        <div className="h-8 w-8 rounded-full bg-gradient-to-r from-[#985EFF] to-[#4A1D96] flex items-center justify-center text-xs text-white font-semibold">
+          {profile?.firstName?.[0] ?? "U"}
+        </div>
       </div>
-    </div>
+    </header>
   );
 };
 

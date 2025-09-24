@@ -7,21 +7,35 @@ interface Props {
 
 const ReviewTable = ({ reviews }: Props) => {
   return (
-    <div className="overflow-x-auto border border-[#2F2F41] rounded-lg">
-      <table className="min-w-full bg-[#090909] text-sm">
+    <div className="overflow-x-auto border border-[#2F2F41] rounded-xl shadow-md">
+      <table className="min-w-full text-sm text-gray-300">
+        {/* Table Head */}
         <thead>
-          <tr className="border-b border-[#2F2F41] text-left text-gray-300">
-            <th className="py-3 px-4">Rating</th>
-            <th className="py-3 px-4">Comment</th>
-            <th className="py-3 px-4">Status</th>
-            <th className="py-3 px-4">Date</th>
-            <th className="py-3 px-4">Actions</th>
+          <tr className="bg-[#141421] border-b border-[#2F2F41]">
+            <th className="py-3 px-4 text-left font-medium">Rating</th>
+            <th className="py-3 px-4 text-left font-medium">Comment</th>
+            <th className="py-3 px-4 text-left font-medium">Status</th>
+            <th className="py-3 px-4 text-left font-medium">Date</th>
+            <th className="py-3 px-4 text-left font-medium">Actions</th>
           </tr>
         </thead>
-        <tbody>
-          {reviews.map((review) => (
-            <ReviewRow key={review.id} review={review} />
-          ))}
+
+        {/* Table Body */}
+        <tbody className="divide-y divide-[#2F2F41]">
+          {reviews.length > 0 ? (
+            reviews.map((review) => (
+              <ReviewRow key={review.id} review={review} />
+            ))
+          ) : (
+            <tr>
+              <td
+                colSpan={5}
+                className="py-6 px-4 text-center text-gray-500 italic"
+              >
+                No reviews available
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

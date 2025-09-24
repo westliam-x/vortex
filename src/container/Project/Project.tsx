@@ -29,7 +29,7 @@ const ProjectPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-6 text-white max-w-6xl">
+      <div className="md:p-6 p-3 text-white max-w-6xl">
         <ProjectHeader />
         {loading ? (
           <p>Loading projects...</p>

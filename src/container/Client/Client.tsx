@@ -10,7 +10,7 @@ export default function ClientContainer() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 space-y-6">
+      <div className="md:p-6 p-3 space-y-6">
         <ClientToolbar onAddClient={() => setIsModalOpen(true)} />
         <ClientList />
         <AddClientModal

@@ -18,16 +18,27 @@ const TeamRow = ({ member, onRoleChange, onRemove }: Props) => {
   };
 
   return (
-    <tr className="border-b border-[#2F2F41]">
-      <td className="py-3 px-4">{member.name}</td>
-      <td className="py-3 px-4">{member.email}</td>
-      <td className="py-3 px-4">{member.role}</td>
+    <tr className="border-b border-[#2F2F41] hover:bg-[#11111a]/60 transition">
+      {/* Name */}
+      <td className="py-3 px-4 font-medium text-white">{member.name}</td>
+
+      {/* Email */}
+      <td className="py-3 px-4 text-gray-300">{member.email}</td>
+
+      {/* Role */}
+      <td className="py-3 px-4">
+        <span className="bg-[#2b2b3d] text-cyan-300 text-xs px-2 py-1 rounded-md">
+          {member.role}
+        </span>
+      </td>
+
+      {/* Projects */}
       <td className="py-3 px-4">
         <div className="flex flex-wrap gap-1">
           {member.projects.map((project) => (
             <span
               key={project}
-              className="bg-cyan-900/40 text-white text-xs px-2 py-0.5 rounded-full"
+              className=" text-white text-xs py-0.5"
             >
               {project}
             </span>
@@ -35,29 +46,44 @@ const TeamRow = ({ member, onRoleChange, onRemove }: Props) => {
         </div>
       </td>
 
+      {/* Status */}
       <td className="py-3 px-4">
         <span
-          className={
-            member.status === "Active" ? "text-green-400" : "text-yellow-400"
-          }
+          className={`px-2 py-1 text-xs rounded-full ${
+            member.status === "Active"
+              ? "bg-green-900/40 text-green-300"
+              : "bg-yellow-900/40 text-yellow-300"
+          }`}
         >
           {member.status}
         </span>
       </td>
-      <td className="py-3 px-4">
+
+      {/* Joined Date */}
+      <td className="py-3 px-4 text-gray-400">
         {format(new Date(member.joinedAt), "dd MMM yyyy")}
       </td>
-      <td className="py-3 px-4 flex gap-2">
-        <Button size="xs" variant="outline" onClick={handleRoleChange}>
-          Change Role
-        </Button>
-        <Button
-          size="xs"
-          variant="destructive"
-          onClick={() => onRemove?.(member.id)}
-        >
-          Remove
-        </Button>
+
+      {/* Actions */}
+      <td className="py-3 px-4">
+        <div className="flex gap-2">
+          <Button
+            size="xs"
+            variant="outline"
+            className="border-gray-600 text-gray-200 hover:bg-[#222]"
+            onClick={handleRoleChange}
+          >
+            Change Role
+          </Button>
+          <Button
+            size="xs"
+            variant="destructive"
+            className="bg-red-600/80 hover:bg-red-600 text-white"
+            onClick={() => onRemove?.(member.id)}
+          >
+            Remove
+          </Button>
+        </div>
       </td>
     </tr>
   );
