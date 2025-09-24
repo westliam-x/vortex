@@ -15,6 +15,7 @@ const links = [
   { name: "Projects", href: "/projects" },
   { name: "Vortexes", href: "/vortexes" },
   { name: "Reviews", href: "/reviews" },
+  { name: "Invoice", href: "/invoice/new" },
   { name: "Team", href: "/team" },
   { name: "Settings", href: "/settings" },
   { name: "Logs", href: "/logs" },
