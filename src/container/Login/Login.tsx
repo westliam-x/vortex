@@ -230,7 +230,7 @@ export default function LoginPage() {
                 variants={fadeUp}
                 type="submit"
                 disabled={loading}
-                className={`group inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[${ACCENT}] px-4 py-3 font-semibold text-white transition hover:bg-[#8d5df9] disabled:opacity-70`}
+                className={`group inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[${ACCENT}] px-4 py-3 font-semibold text-white transition hover:bg-[#8d5df9] disabled:opacity-70 cursor-pointer`}
               >
                 {loading ? (
                   <>
