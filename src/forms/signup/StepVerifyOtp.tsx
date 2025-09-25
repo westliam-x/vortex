@@ -44,7 +44,6 @@ const StepVerifyOTP = ({
   const reduce = useReducedMotion();
   const {
     handleSubmit,
-    setError,
     setValue,
     clearErrors,
     formState: { errors, isSubmitting },
