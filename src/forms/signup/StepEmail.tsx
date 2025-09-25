@@ -6,12 +6,17 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, type Variants, useReducedMotion } from "framer-motion";
 import { Mail, Sparkles, ArrowRight } from "lucide-react";
+import { makeRequest } from "@/api/request";
+import API_ROUTES from "@/endpoints/routes";
+import { toast } from "react-toastify";
+
 
 const schema = z.object({
   email: z.string().email("Invalid email"),
   purpose: z.string().optional(),
 });
 type FormData = z.infer<typeof schema>;
+
 
 const ACCENT = "#985EFF";
 const easeBezier: [number, number, number, number] = [0.21, 1, 0.21, 1];
@@ -49,7 +54,22 @@ const StepEmail = ({
   });
 
   const emailValue = watch("email");
-  const onSubmit = (data: FormData) => onNext(data.email);
+
+  
+  const onSubmit = async (data: FormData) => {
+    try {
+      await makeRequest({
+        url: API_ROUTES.AUTH.SEND_OTP,
+        method: "POST",
+        data: { email: data.email },
+      });
+      toast.success("OTP sent, please check your email!");
+      onNext(data.email); 
+    } catch (error) {
+      toast.error("Failed to send OTP.");
+      console.error("Failed to send OTP", error);
+    }
+  };
 
   return (
     <section className="relative w-full">
@@ -64,7 +84,7 @@ const StepEmail = ({
 
       <motion.div initial="hidden" animate="show" variants={fade} className="w-full max-w-xl mx-auto">
         <div className="rounded-2xl border border-white/10 bg-[#0f0f0f]/90 shadow-[0_0_0_1px_rgba(255,255,255,0.06)] overflow-hidden">
-          {/* Top bar with stepper (33%) */}
+          {/* Top bar with stepper */}
           <div className="relative h-2 bg-black/30">
             <div
               className="absolute inset-y-0 left-0"
@@ -88,7 +108,10 @@ const StepEmail = ({
                 Enter your email to begin setting up your Vortex workspace.
               </motion.p>
 
-              <motion.ol variants={fadeUp} className="mt-4 flex items-center justify-center gap-3 text-[11px] text-gray-400">
+              <motion.ol
+                variants={fadeUp}
+                className="mt-4 flex items-center justify-center gap-3 text-[11px] text-gray-400"
+              >
                 <li className="font-medium text-white">1. Email</li>
                 <span className="opacity-40">•</span>
                 <li>2. Verify</li>
@@ -97,6 +120,7 @@ const StepEmail = ({
               </motion.ol>
             </motion.div>
 
+            {/* Form */}
             <motion.form
               variants={stagger}
               initial="hidden"

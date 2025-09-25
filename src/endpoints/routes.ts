@@ -3,7 +3,9 @@ const API_ROUTES = {
     REGISTER: "/auth/register",
     LOGIN: "/auth/login",
     LOGOUT: "/auth/logout",
-    PROFILE: "/auth/profile"
+    PROFILE: "/auth/profile",
+    SEND_OTP: "/auth/send-otp",
+    VERIFY_OTP: "/auth/verify-otp",
   },
   PROJECT:{
     CREATE: "/project/create",

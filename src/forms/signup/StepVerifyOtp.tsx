@@ -5,6 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion, type Variants, useReducedMotion } from "framer-motion";
 import { ShieldCheck, ArrowRight } from "lucide-react";
+import { makeRequest } from "@/api/request";
+import { toast } from "react-toastify";
+import API_ROUTES from "@/endpoints/routes";
 
 type FormShape = { otp: string };
 
@@ -129,12 +132,21 @@ const StepVerifyOTP = ({
   const codeFilled = digits.every((d) => d.length === 1);
   const code = digits.join("");
 
-  const submitHandler = () => {
-    if (code === "123456") {
+  const submitHandler = async () => {
+
+    try {
+      makeRequest({
+        url: API_ROUTES.AUTH.VERIFY_OTP,
+        method: "POST",
+        data: { email, otp: code },
+      });
+      toast.success("OTP verified successfully!");
       onVerified();
-    } else {
-      setError("otp", { type: "validate", message: "Invalid code" });
+    } catch (error) {
+      toast.error("Invalid OTP, please try again.");
+      console.error("OTP verification failed", error);
     }
+  
   };
 
   const onSubmit = handleSubmit(submitHandler);
