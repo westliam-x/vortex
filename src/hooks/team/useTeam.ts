@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { TeamMember } from "@/types/team";
 import { fetchTeam, removeTeamMember, updateTeamRole } from "@/services/teamServices";
 

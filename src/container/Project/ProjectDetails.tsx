@@ -28,25 +28,41 @@ const ProjectDetails = () => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState<TabKey>("Overview");
   const projectId = typeof id === "string" ? id : undefined;
-  const { project, client, loading: loadingProject, shareUrl, enableShare, closeProject } =
-    useProjectDetails(projectId);
+  const {
+    project,
+    client,
+    loading: loadingProject,
+    shareUrl,
+    enableShare,
+    closeProject,
+  } = useProjectDetails(projectId);
   const resolvedProjectId = getProjectId(project);
   const fallbackMessages = resolvedProjectId
     ? [
         {
           projectId: resolvedProjectId,
-          authorType: "owner",
+          authorType: "owner" as const,
           body: "Kickoff notes shared.",
           createdAt: project?.createdAt,
         },
       ]
     : [];
-  const { messages, loading: loadingMessages, fetchMessages, sendMessage } = useVortexMessages(
-    resolvedProjectId,
+  const {
+    messages,
+    loading: loadingMessages,
+    fetchMessages,
+    sendMessage,
+  } = useVortexMessages(
+    resolvedProjectId ?? undefined,
     project ? fallbackMessages : []
   );
-  const { files, loading: loadingFiles, uploadProgress, fetchFiles, uploadFile } =
-    useVortexFiles(resolvedProjectId);
+  const {
+    files,
+    loading: loadingFiles,
+    uploadProgress,
+    fetchFiles,
+    uploadFile,
+  } = useVortexFiles(resolvedProjectId ?? undefined);
   const {
     payments,
     paid,
@@ -54,9 +70,13 @@ const ProjectDetails = () => {
     progress,
     loading: loadingPayments,
     fetchPayments,
-  } = useVortexPayments(resolvedProjectId, project?.budget ?? 0);
-  const { review, loading: loadingReview, fetchReview, updateReviewStatus } =
-    useVortexReview(resolvedProjectId);
+  } = useVortexPayments(resolvedProjectId ?? undefined, project?.budget ?? 0);
+  const {
+    review,
+    loading: loadingReview,
+    fetchReview,
+    updateReviewStatus,
+  } = useVortexReview(resolvedProjectId ?? undefined);
   const [messageBody, setMessageBody] = useState("");
   const [showOriginal, setShowOriginal] = useState<Record<string, boolean>>({});
 
@@ -68,7 +88,14 @@ const ProjectDetails = () => {
     if (activeTab === "Files") fetchFiles();
     if (activeTab === "Payments") fetchPayments();
     if (activeTab === "Reviews") fetchReview();
-  }, [activeTab, project, fetchMessages, fetchFiles, fetchPayments, fetchReview]);
+  }, [
+    activeTab,
+    project,
+    fetchMessages,
+    fetchFiles,
+    fetchPayments,
+    fetchReview,
+  ]);
 
   if (!project && !loadingProject) {
     return (
