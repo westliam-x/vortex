@@ -290,7 +290,7 @@ const ProjectDetails = () => {
               ) : messages.length > 0 ? (
                 messages.map((item) => {
                   const key =
-                    item._id ?? item.id ?? item.createdAt ?? item.body;
+                    item?._id ?? item?.id ?? item?.createdAt ?? item?.body;
                   const show = showOriginal[key] ?? false;
                   return (
                     <div
@@ -365,7 +365,7 @@ const ProjectDetails = () => {
                 </p>
               ) : files.length > 0 ? (
                 files.map((file) => {
-                  const key = file._id ?? file.id ?? file.fileName;
+                  const key = file?._id ?? file?.id ?? file?.fileName;
                   return (
                     <div
                       key={key}
@@ -374,12 +374,12 @@ const ProjectDetails = () => {
                       <span className="inline-flex items-center gap-2">
                         <Paperclip size={16} />
                         <a
-                          href={file.url}
+                          href={file?.url}
                           className="underline"
                           target="_blank"
                           rel="noreferrer"
                         >
-                          {file.fileName}
+                          {file?.fileName}
                         </a>
                       </span>
                       <span>{Math.round(file.size / 1024)} KB</span>
@@ -461,12 +461,12 @@ const ProjectDetails = () => {
                 ) : payments.events.length > 0 ? (
                   payments.events.map((event) => (
                     <div
-                      key={event._id ?? event.id ?? event.note}
+                      key={event?._id ?? event?.id ?? event?.note}
                       className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-sm text-[var(--text-muted)]"
                     >
-                      <span>{event.note || "Payment event"}</span>
+                      <span>{event?.note || "Payment event"}</span>
                       <span>
-                        {event.currency} {event.amount}
+                        {event?.currency} {event?.amount}
                       </span>
                     </div>
                   ))
