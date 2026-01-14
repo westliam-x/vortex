@@ -1,7 +1,6 @@
 import API_ROUTES from "@/endpoints/routes";
 import { Project } from "@/types/project";
-import { safeRequest } from "@/lib";
-import { mockProjects } from "@/data/mock";
+import { makeRequest } from "@/api/request";
 
 const normalizeProject = (project: Project & { _id?: string }) => {
   if (!project.id && project._id) {
@@ -11,27 +10,19 @@ const normalizeProject = (project: Project & { _id?: string }) => {
 };
   
 export const fetchProjects = async (): Promise<Project[]> => {
-  const response = await safeRequest<{ projects: Project[] }>(
-    {
-      url: API_ROUTES.PROJECT.LIST,
-      method: "GET",
-    },
-    { projects: mockProjects }
-  );
+  const response = await makeRequest<{ projects: Project[] }>({
+    url: API_ROUTES.PROJECT.LIST,
+    method: "GET",
+  });
 
-  return response.projects.map(normalizeProject);
+  return (response.projects ?? []).map(normalizeProject);
 };
 
 export const fetchProjectById = async (id: string): Promise<Project | null> => {
-  const fallback =
-    mockProjects.find((item) => item.id === id) ?? mockProjects[0] ?? null;
-  const response = await safeRequest<{ project: Project | null }>(
-    {
-      url: `${API_ROUTES.PROJECT.BY_ID}/${id}`,
-      method: "GET",
-    },
-    { project: fallback }
-  );
+  const response = await makeRequest<{ project: Project | null }>({
+    url: `${API_ROUTES.PROJECT.BY_ID}/${id}`,
+    method: "GET",
+  });
 
   return response.project ? normalizeProject(response.project) : null;
 };

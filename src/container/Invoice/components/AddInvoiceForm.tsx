@@ -6,6 +6,7 @@ import { Currency, Invoice, genId, formatMoney, downloadInvoicePDF } from "@/lib
 import { useEffect, useMemo, useState } from "react";
 import { Info } from "lucide-react";
 import { useProfile } from "@/hooks/auth/useProfile";
+import { useInvoices } from "@/hooks/invoices/useInvoices";
 import { toast } from "react-toastify";
 
 const itemSchema = z.object({
@@ -92,6 +93,7 @@ export default function AddInvoiceForm() {
 
   const [loading, setLoading] = useState(false);
   const { profile } = useProfile();
+  const { create } = useInvoices({ autoFetch: false });
 
   useEffect(() => {
     if (!profile) return;
@@ -128,6 +130,7 @@ export default function AddInvoiceForm() {
         customFields: data.customFields?.filter((f) => f.label && f.value),
       };
 
+      await create(invoice);
       await downloadInvoicePDF(invoice);
       toast.success("Invoice created and downloaded.");
       reset();

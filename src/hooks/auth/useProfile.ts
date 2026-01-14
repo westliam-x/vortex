@@ -13,7 +13,15 @@ export const useProfile = () => {
       const response = await getProfile();
       setProfile(response);
     } catch (err) {
-      setProfile(null);
+      setProfile({
+        id: "local",
+        firstName: "Vortex",
+        secondName: "User",
+        name: "Vortex User",
+        email: "user@vortex.app",
+        phone: "",
+        country: "Remote",
+      });
       setError(err instanceof Error ? err.message : "Failed to load profile");
     } finally {
       setLoading(false);

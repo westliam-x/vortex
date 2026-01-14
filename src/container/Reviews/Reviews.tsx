@@ -1,16 +1,16 @@
 "use client";
 
-import { Review } from "@/types/reviews";
-import { useMemo } from "react";
 import { ReviewTable } from "./components";
 import { DashboardLayout } from "@/layouts";
 import { Card, EmptyState } from "@/components/ui";
-import { mockReviews, mockProjects } from "@/data/mock";
 import { LockKeyhole } from "lucide-react";
+import { useReviews } from "@/hooks/reviews/useReviews";
+import { useProjectsList } from "@/hooks/projects/useProjectsList";
 
 const ReviewsPage = () => {
-  const reviews = useMemo<Review[]>(() => mockReviews, []);
-  const projectClosed = mockProjects.some((project) => project.status === "Completed");
+  const { reviews, loading: reviewsLoading } = useReviews();
+  const { projects } = useProjectsList();
+  const projectClosed = projects.some((project) => project.status === "Completed");
 
   return (
     <DashboardLayout>
@@ -32,7 +32,7 @@ const ReviewsPage = () => {
           </Card>
         ) : (
           <Card>
-            <ReviewTable reviews={reviews} locked={!projectClosed} />
+            <ReviewTable reviews={reviews} locked={!projectClosed || reviewsLoading} />
           </Card>
         )}
       </div>

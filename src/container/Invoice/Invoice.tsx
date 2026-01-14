@@ -1,26 +1,18 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import {
   Invoice,
-  getInvoices,
-  saveInvoices,
   downloadInvoicePDF,
 } from "@/lib/invoices";
 import { InvoiceGrid, InvoicePreview } from "./components";
 import { DashboardLayout } from "@/layouts";
+import { useInvoices } from "@/hooks/invoices/useInvoices";
 
 export default function InvoicesPage() {
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const { invoices, loading } = useInvoices();
   const [active, setActive] = useState<Invoice | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setInvoices(getInvoices());
-  }, []);
-  useEffect(() => {
-    saveInvoices(invoices);
-  }, [invoices]);
 
   const triggerDownload = async (inv: Invoice) => {
     setActive(inv);
@@ -48,7 +40,7 @@ export default function InvoicesPage() {
         </Link>
       </div>
 
-      <InvoiceGrid invoices={invoices} onDownload={triggerDownload} />
+      <InvoiceGrid invoices={invoices} onDownload={triggerDownload} loading={loading} />
 
       {/* hidden print area (no off-screen negative positions) */}
       <div

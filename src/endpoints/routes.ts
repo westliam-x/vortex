@@ -37,9 +37,19 @@ const API_ROUTES = {
     REJECT: "/reviews",
     SUBMIT: "/reviews",
     PUBLIC: "/reviews/public",
+    PROJECT: "/reviews/project",
   },
   PAYMENTS: {
     BASE: "/payments",
+  },
+  TEAM: {
+    BASE: "/team",
+  },
+  DASHBOARD: {
+    SUMMARY: "/dashboard/summary",
+  },
+  INVOICES: {
+    BASE: "/invoices",
   },
 };
 

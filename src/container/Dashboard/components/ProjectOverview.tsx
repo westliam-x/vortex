@@ -1,11 +1,10 @@
 "use client";
 
-import { Project } from "@/types/project";
 import { useMemo } from "react";
 import { Badge, Card, EmptyState, Skeleton } from "@/components/ui";
-import { useProjectsList } from "@/hooks/projects/useProjectsList";
+import type { SummaryProject } from "@/services/dashboardServices";
 
-const statusTone = (status: Project["status"]) => {
+const statusTone = (status: SummaryProject["status"]) => {
   switch (status) {
     case "Completed":
       return "success";
@@ -20,8 +19,7 @@ const statusTone = (status: Project["status"]) => {
   }
 };
 
-const ProjectOverview = () => {
-  const { projects, loading } = useProjectsList();
+const ProjectOverview = ({ projects, loading }: { projects: SummaryProject[]; loading: boolean }) => {
   const latestProjects = useMemo(() => projects.slice(0, 6), [projects]);
 
   return (
@@ -50,7 +48,8 @@ const ProjectOverview = () => {
                 Client:{" "}
                 {typeof project.clientId === "object" &&
                 project.clientId &&
-                "name" in project.clientId
+                "name" in project.clientId &&
+                project.clientId.name
                   ? project.clientId.name
                   : "Client"}
               </p>

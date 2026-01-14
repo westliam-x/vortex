@@ -1,24 +1,10 @@
 "use client";
 
 import { MessageSquareText, Quote } from "lucide-react";
-import { Card, EmptyState } from "@/components/ui";
+import { Card, EmptyState, Skeleton } from "@/components/ui";
+import type { VortexMessage } from "@/types/vortex";
 
-const recentComments = [
-  {
-    id: 1,
-    client: "Ava Stone",
-    comment: "Can we add a short demo clip on the hero section?",
-    project: "Vortex Landing Refresh",
-  },
-  {
-    id: 2,
-    client: "Remy Tran",
-    comment: "The onboarding checklist looks great. Approving the layout.",
-    project: "Client Portal MVP",
-  },
-];
-
-const RecentComments = () => {
+const RecentComments = ({ messages, loading }: { messages: VortexMessage[]; loading: boolean }) => {
   return (
     <Card>
       <div className="flex items-center gap-2 mb-5">
@@ -28,24 +14,32 @@ const RecentComments = () => {
         </h2>
       </div>
 
-      {recentComments.length > 0 ? (
+      {loading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+      ) : messages.length > 0 ? (
         <ul className="space-y-5">
-          {recentComments.map((item) => (
+          {messages.map((item) => (
             <li
-              key={item.id}
+              key={item._id ?? item.body}
               className="border-b border-[var(--border)]/60 pb-4 last:border-0"
             >
               <div className="flex items-start gap-2">
                 <Quote size={14} className="text-[var(--accent)] mt-1" />
                 <p className="text-sm text-[var(--text-muted)] italic leading-relaxed">
-                  {item.comment}
+                  {item.body}
                 </p>
               </div>
 
               <div className="flex items-center justify-between mt-3 text-xs">
-                <span className="text-[var(--text-subtle)]">{item.client}</span>
+                <span className="text-[var(--text-subtle)]">
+                  {item.guestEmail ?? item.authorType ?? "Client"}
+                </span>
                 <span className="px-2 py-[2px] rounded-md bg-[var(--surface-2)] text-[var(--text-subtle)]">
-                  {item.project}
+                  {item?.createdAt ? new Date(item.createdAt).toLocaleString() : "Project"}
                 </span>
               </div>
             </li>

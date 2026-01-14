@@ -25,8 +25,8 @@ const TeamRow = ({ member, onRoleChange, onRemove }: Props) => {
         >
           <option value="Admin">Admin</option>
           <option value="Developer">Developer</option>
-          <option value="Designer">Designer</option>
-          <option value="Viewer">Viewer</option>
+          <option value="Project Manager">Project Manager</option>
+          <option value="Client">Client</option>
         </Select>
       </td>
       <td className="py-3 px-4">

@@ -1,7 +1,7 @@
 export interface Review {
   id: string;
   clientId: string;         
-  projectId: { id: string; name: string };            
+  projectId: { id: string; name: string } | string;            
   rating: number;               
   comment: string;             
   createdAt: string;          

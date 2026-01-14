@@ -6,10 +6,15 @@ import { EmptyState } from "@/components/ui";
 export default function InvoiceGrid({
   invoices,
   onDownload,
+  loading,
 }: {
   invoices: Invoice[];
   onDownload: (inv: Invoice) => void;
+  loading?: boolean;
 }) {
+  if (loading) {
+    return <div className="text-sm text-[var(--text-muted)]">Loading invoices...</div>;
+  }
   if (!invoices?.length) {
     return (
       <EmptyState

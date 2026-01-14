@@ -8,11 +8,14 @@ interface Props {
   members: TeamMember[];
   onRoleChange?: (id: string, newRole: string) => void;
   onRemove?: (id: string) => void;
+  loading?: boolean;
 }
 
-const TeamTable = ({ members, onRoleChange, onRemove }: Props) => (
+const TeamTable = ({ members, onRoleChange, onRemove, loading }: Props) => (
   <Card className="p-0 overflow-hidden">
-    {members.length > 0 ? (
+    {loading ? (
+      <div className="p-6 text-sm text-[var(--text-muted)]">Loading team...</div>
+    ) : members.length > 0 ? (
       <div className="overflow-x-auto">
         <table className="min-w-full bg-[var(--surface)] text-sm">
           <thead className="bg-[var(--surface-2)]">

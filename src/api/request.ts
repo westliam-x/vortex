@@ -1,7 +1,10 @@
 import axios, { AxiosError, AxiosRequestConfig, Method } from "axios";
 import { ApiResponse } from "@/types/api";
 
-const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
+const baseURL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "http://localhost:5000/api";
 
 axios.defaults.withCredentials = true;
 

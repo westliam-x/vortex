@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { DashboardLayout } from "@/layouts";
-import { TeamMember } from "@/types/team";
 import { InviteUserModal } from "@/components";
 import { TeamTable } from "./components";
 import { Button, Card } from "@/components/ui";
-import { mockTeam } from "@/data/mock";
+import { useTeam } from "@/hooks/team/useTeam";
+import { toast } from "react-toastify";
 
 export default function TeamPage() {
-  const [team, setTeam] = useState<TeamMember[]>(mockTeam);
+  const { team, loading, changeRole, removeMember } = useTeam();
   const [showInviteModal, setShowInviteModal] = useState(false);
 
   return (
@@ -31,14 +31,21 @@ export default function TeamPage() {
 
         <TeamTable
           members={team}
-          onRoleChange={(id, newRole) =>
-            setTeam((t) =>
-              t.map((m) =>
-                m.id === id ? { ...m, role: newRole as TeamMember["role"] } : m
-              )
-            )
-          }
-          onRemove={(id) => setTeam((t) => t.filter((m) => m.id !== id))}
+          onRoleChange={async (id, newRole) => {
+            try {
+              await changeRole(id, newRole as (typeof team)[number]["role"]);
+            } catch (err) {
+              toast.error(err instanceof Error ? err.message : "Failed to update role");
+            }
+          }}
+          onRemove={async (id) => {
+            try {
+              await removeMember(id);
+            } catch (err) {
+              toast.error(err instanceof Error ? err.message : "Failed to remove member");
+            }
+          }}
+          loading={loading}
         />
 
         <InviteUserModal

@@ -1,31 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getLogs } from "@/services/clientServices";
 import { LogEntry } from "@/types/logs";
 import { Activity, User } from "lucide-react";
 import { Card, EmptyState, Skeleton } from "@/components/ui";
 
-const RecentActivity = () => {
-  const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchLogs = async () => {
-      try {
-        const response = await getLogs();
-        const sortedLogs = response.sort(
-          (a, b) =>
-            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-        );
-        setLogs(sortedLogs.slice(0, 3));
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchLogs();
-  }, []);
-
+const RecentActivity = ({ logs, loading }: { logs: LogEntry[]; loading: boolean }) => {
   return (
     <Card>
       <div className="flex items-center gap-2 mb-5">

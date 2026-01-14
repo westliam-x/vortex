@@ -22,7 +22,7 @@ export type CustomField = { label: string; value: string };
 
 export type Invoice = {
   id: string;
-  createdAt: number;
+  createdAt: number | string;
   currency: Currency;
   businessName: string;
   clientName?: string;

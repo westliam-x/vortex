@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import API_ROUTES from "@/endpoints/routes";
-import { safeRequest } from "@/lib";
+import { makeRequest } from "@/api/request";
 
 type PaymentEvent = {
   _id?: string;
@@ -28,37 +28,44 @@ export const useVortexPayments = (projectId?: string, fallbackTotal = 0) => {
     }, [fallbackTotal]);
 
 
-  const fetchPayments = useCallback(async () => {
+  const fetchPayments = useCallback(async (signal?: AbortSignal) => {
     if (!projectId) return;
     setLoading(true);
     setError(null);
     try {
-      const response = await safeRequest<{
+      const response = await makeRequest<{
         events: PaymentEvent[];
         totals: { total: number };
         currency: string;
-      }>(
-        {
-          url: `${API_ROUTES.PAYMENTS.BASE}/${projectId}`,
-          method: "GET",
-        },
-        {
-          events: [],
-          totals: { total: fallbackRef.current },
-          currency: "USD",
-        }
-      );
+      }>({
+        url: `${API_ROUTES.PAYMENTS.BASE}/${projectId}`,
+        method: "GET",
+        config: signal ? { signal } : undefined,
+      });
       setPayments({
         total: response.totals?.total ?? fallbackRef.current,
         currency: response.currency ?? "USD",
         events: response.events ?? [],
       });
     } catch (err) {
+      if (signal?.aborted || (err instanceof Error && err.message === "aborted")) return;
       setError(err instanceof Error ? err.message : "Failed to load payments");
+      setPayments({
+        total: fallbackRef.current,
+        currency: "USD",
+        events: [],
+      });
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) setLoading(false);
     }
   }, [projectId]);
+
+  useEffect(() => {
+    if (!projectId) return;
+    const controller = new AbortController();
+    fetchPayments(controller.signal);
+    return () => controller.abort();
+  }, [projectId, fetchPayments]);
 
   const paid = payments.events.reduce((sum, event) => {
     return event.status === "posted" ? sum + event.amount : sum;
