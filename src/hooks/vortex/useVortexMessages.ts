@@ -1,13 +1,21 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { makeRequest } from "@/api/request";
 import API_ROUTES from "@/endpoints/routes";
 import { safeRequest } from "@/lib";
 import type { VortexMessage } from "@/types/vortex";
 
-export const useVortexMessages = (projectId?: string, fallback?: VortexMessage[]) => {
+export const useVortexMessages = (
+  projectId?: string,
+  fallback?: VortexMessage[]
+) => {
   const [messages, setMessages] = useState<VortexMessage[]>(fallback ?? []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const fallbackRef = useRef<VortexMessage[]>(fallback ?? []);
+
+  useEffect(() => {
+    fallbackRef.current = fallback ?? [];
+  }, [fallback]);
 
   const fetchMessages = useCallback(async () => {
     if (!projectId) return;
@@ -19,7 +27,7 @@ export const useVortexMessages = (projectId?: string, fallback?: VortexMessage[]
           url: `${API_ROUTES.VORTEX.SUMMARY}/${projectId}/messages`,
           method: "GET",
         },
-        fallback ?? []
+        fallbackRef.current
       );
       setMessages(response);
     } catch (err) {
@@ -27,7 +35,7 @@ export const useVortexMessages = (projectId?: string, fallback?: VortexMessage[]
     } finally {
       setLoading(false);
     }
-  }, [projectId, fallback]);
+  }, [projectId]);
 
   const sendMessage = useCallback(
     async (body: string) => {

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import API_ROUTES from "@/endpoints/routes";
 import { safeRequest } from "@/lib";
 
@@ -21,6 +21,13 @@ export const useVortexPayments = (projectId?: string, fallbackTotal = 0) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const fallbackRef = useRef<number>(fallbackTotal ?? 0);
+  
+    useEffect(() => {
+      fallbackRef.current = fallbackTotal ?? 0;
+    }, [fallbackTotal]);
+
+
   const fetchPayments = useCallback(async () => {
     if (!projectId) return;
     setLoading(true);
@@ -37,12 +44,12 @@ export const useVortexPayments = (projectId?: string, fallbackTotal = 0) => {
         },
         {
           events: [],
-          totals: { total: fallbackTotal },
+          totals: { total: fallbackRef.current },
           currency: "USD",
         }
       );
       setPayments({
-        total: response.totals?.total ?? fallbackTotal,
+        total: response.totals?.total ?? fallbackRef.current,
         currency: response.currency ?? "USD",
         events: response.events ?? [],
       });
@@ -51,7 +58,7 @@ export const useVortexPayments = (projectId?: string, fallbackTotal = 0) => {
     } finally {
       setLoading(false);
     }
-  }, [projectId, fallbackTotal]);
+  }, [projectId]);
 
   const paid = payments.events.reduce((sum, event) => {
     return event.status === "posted" ? sum + event.amount : sum;
