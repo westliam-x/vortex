@@ -6,11 +6,8 @@ export const useTeam = () => {
   const [team, setTeam] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const inFlightRef = useRef(false);
 
   const load = useCallback(async (signal?: AbortSignal) => {
-    if (inFlightRef.current) return;
-    inFlightRef.current = true;
     setLoading(true);
     setError(null);
     try {
@@ -21,7 +18,6 @@ export const useTeam = () => {
       if (signal?.aborted || (err instanceof Error && err.message === "aborted")) return;
       setError(err instanceof Error ? err.message : "Failed to load team");
     } finally {
-      inFlightRef.current = false;
       if (!signal?.aborted) setLoading(false);
     }
   }, []);
