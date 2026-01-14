@@ -5,6 +5,7 @@ import { Project } from "@/types/project";
 import Link from "next/link";
 import { Badge, Card } from "@/components/ui";
 import { CalendarDays, ChevronRight } from "lucide-react";
+import { getProjectId } from "@/lib/ids";
 
 interface Props {
   project: Project;
@@ -22,6 +23,7 @@ const ProjectCard = ({ project }: Props) => {
     typeof project.clientId === "object" && project.clientId && "name" in project.clientId
       ? project.clientId.name
       : "Client";
+  const projectId = getProjectId(project);
 
   return (
     <Card className="p-4">
@@ -46,7 +48,7 @@ const ProjectCard = ({ project }: Props) => {
       </div>
 
       <Link
-        href={`/projects/${project.id}`}
+        href={projectId ? `/projects/${projectId}` : "/projects"}
         className="mt-4 inline-flex items-center gap-1 text-sm text-[var(--accent)] hover:text-[var(--accent-strong)]"
       >
         Enter Vortex <ChevronRight size={16} />

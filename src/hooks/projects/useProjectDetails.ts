@@ -5,6 +5,7 @@ import { fetchProjectById } from "@/services/projectServices";
 import { makeRequest } from "@/api/request";
 import API_ROUTES from "@/endpoints/routes";
 import { mockClients } from "@/data/mock";
+import { getId, getProjectId } from "@/lib/ids";
 
 export const useProjectDetails = (projectId?: string) => {
   const [project, setProject] = useState<Project | null>(null);
@@ -32,20 +33,23 @@ export const useProjectDetails = (projectId?: string) => {
 
   const client = useMemo<Client | null>(() => {
     if (!project) return null;
-    if (typeof project.clientId === "object" && project.clientId && "name" in project.clientId) {
-      return project.clientId as Client;
+    if (
+      typeof project?.clientId === "object" &&
+      project?.clientId &&
+      "name" in project?.clientId
+    ) {
+      return project?.clientId as Client;
     }
-    const clientId =
-      typeof project.clientId === "string"
-        ? project.clientId
-        : (project.clientId as Client)._id;
-    return mockClients.find((item) => item._id === clientId) ?? null;
+    const clientId = getId(project?.clientId);
+    if (!clientId) return null;
+    return mockClients.find((item) => getId(item) === clientId) ?? null;
   }, [project]);
 
   const enableShare = useCallback(async () => {
-    if (!project) return;
+    const resolvedProjectId = getProjectId(project);
+    if (!resolvedProjectId) return;
     const response = await makeRequest<{ shareUrl: string }>({
-      url: `${API_ROUTES.VORTEX.SUMMARY}/${project.id}/share-enable`,
+      url: `${API_ROUTES.VORTEX.SUMMARY}/${resolvedProjectId}/share-enable`,
       method: "POST",
       data: {},
     });
@@ -53,9 +57,10 @@ export const useProjectDetails = (projectId?: string) => {
   }, [project]);
 
   const closeProject = useCallback(async () => {
-    if (!project) return;
+    const resolvedProjectId = getProjectId(project);
+    if (!resolvedProjectId) return;
     const response = await makeRequest<{ project: Project }>({
-      url: `${API_ROUTES.PROJECT.BY_ID}/${project.id}`,
+      url: `${API_ROUTES.PROJECT.BY_ID}/${resolvedProjectId}`,
       method: "PATCH",
       data: { status: "Completed" },
     });

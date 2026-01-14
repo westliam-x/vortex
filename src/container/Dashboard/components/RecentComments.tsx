@@ -3,6 +3,7 @@
 import { MessageSquareText, Quote } from "lucide-react";
 import { Card, EmptyState, Skeleton } from "@/components/ui";
 import type { VortexMessage } from "@/types/vortex";
+import { getId } from "@/lib/ids";
 
 const RecentComments = ({ messages, loading }: { messages: VortexMessage[]; loading: boolean }) => {
   return (
@@ -24,7 +25,7 @@ const RecentComments = ({ messages, loading }: { messages: VortexMessage[]; load
         <ul className="space-y-5">
           {messages.map((item) => (
             <li
-              key={item._id ?? item.body}
+              key={getId(item) ?? item.body}
               className="border-b border-[var(--border)]/60 pb-4 last:border-0"
             >
               <div className="flex items-start gap-2">

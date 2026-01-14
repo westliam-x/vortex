@@ -4,6 +4,7 @@ import { Client } from "@/types/client";
 import { useRouter } from "next/navigation";
 import { Building2, Mail } from "lucide-react";
 import { Badge, Card, Button } from "@/components/ui";
+import { getId } from "@/lib/ids";
 
 const ClientCard = ({ client }: { client: Client }) => {
   const router = useRouter();
@@ -45,7 +46,12 @@ const ClientCard = ({ client }: { client: Client }) => {
       <Button
         variant="secondary"
         className="w-full"
-        onClick={() => router.push(`/clients/${client._id}`)}
+        onClick={() => {
+          const clientId = getId(client);
+          if (clientId) {
+            router.push(`/clients/${clientId}`);
+          }
+        }}
       >
         View details
       </Button>

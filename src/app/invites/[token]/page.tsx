@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Badge, Button, Card, EmptyState } from "@/components/ui";
 import { toast } from "react-toastify";
 import { useInvite } from "@/hooks/invites/useInvite";
+import { getProjectId } from "@/lib/ids";
 
 const hasLoginCookie = () => {
   if (typeof document === "undefined") return false;
@@ -50,7 +51,7 @@ export default function InvitePage() {
         return;
       }
 
-      const projectId = projects[0]?.id ?? projects[0]?._id;
+      const projectId = getProjectId(projects[0]);
       if (projectId) {
         router.replace(`/projects/${projectId}`);
         return;
@@ -150,11 +151,14 @@ export default function InvitePage() {
                 <div>
                   <p className="mb-2">Projects:</p>
                   <ul className="space-y-1">
-                    {projects.map((project) => (
-                      <li key={project.id ?? project._id} className="text-[var(--text)]">
-                        {project.title ?? "Untitled project"}
-                      </li>
-                    ))}
+                    {projects.map((project) => {
+                      const projectId = getProjectId(project) ?? project.title ?? "unknown";
+                      return (
+                        <li key={projectId} className="text-[var(--text)]">
+                          {project.title ?? "Untitled project"}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               ) : null}

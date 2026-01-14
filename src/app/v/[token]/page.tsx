@@ -7,6 +7,7 @@ import { Badge, Button, Card, EmptyState, Input, Textarea } from "@/components/u
 import { Paperclip, ShieldCheck } from "lucide-react";
 import { toast } from "react-toastify";
 import { useGuestVortex } from "@/hooks/guest/useGuestVortex";
+import { getId } from "@/lib/ids";
 
 export default function VortexGuestPage() {
   const { token } = useParams();
@@ -112,7 +113,7 @@ export default function VortexGuestPage() {
                     <p className="text-sm text-[var(--text-muted)]">No messages yet.</p>
                   ) : (
                     messages.map((item) => (
-                      <div key={item._id ?? item.body} className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
+                      <div key={getId(item) ?? item.body} className="rounded-lg border border-[var(--border)] bg-[var(--surface-2)] p-3">
                         <p className="text-xs text-[var(--text-subtle)]">{item.authorType}</p>
                         <p className="text-sm text-[var(--text)]">{item.body}</p>
                       </div>
@@ -149,7 +150,7 @@ export default function VortexGuestPage() {
                   ) : (
                     files.map((file) => (
                       <div
-                        key={file._id ?? file.fileName}
+                        key={getId(file) ?? file.fileName}
                         className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-sm text-[var(--text-muted)]"
                       >
                         <span className="inline-flex items-center gap-2">

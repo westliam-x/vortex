@@ -10,7 +10,6 @@ export const useDashboardSummary = () => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchSummary = useCallback(async (signal?: AbortSignal) => {
-    console.log("Fetching dashboard summary...");
 
     setLoading(true);
     setError(null);

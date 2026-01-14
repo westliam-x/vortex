@@ -5,6 +5,7 @@ import { ClientCard } from "@/components";
 import { Client } from "@/types/client";
 import { fetchClients } from "@/services/clientServices";
 import { Button, EmptyState, ErrorState, Skeleton } from "@/components/ui";
+import { getId } from "@/lib/ids";
 
 const ClientList = () => {
   const [clients, setClients] = useState<Client[]>([]);
@@ -60,7 +61,7 @@ const ClientList = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {clients.map((client) => (
-        <ClientCard key={client._id} client={client} />
+        <ClientCard key={getId(client) ?? client.email} client={client} />
       ))}
     </div>
   );

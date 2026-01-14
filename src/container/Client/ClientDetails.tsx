@@ -7,13 +7,14 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { Button, Card, EmptyState } from "@/components/ui";
 import { mockClients } from "@/data/mock";
+import { getId, getProjectId } from "@/lib/ids";
 
 export default function ClientDetails() {
   const { id } = useParams();
 
   const client = useMemo(() => {
     if (typeof id !== "string") return null;
-    return mockClients.find((item) => item._id === id) ?? mockClients[0] ?? null;
+    return mockClients.find((item) => getId(item) === id) ?? mockClients[0] ?? null;
   }, [id]);
 
   if (!client) {
@@ -94,17 +95,23 @@ export default function ClientDetails() {
                   </tr>
                 </thead>
                 <tbody>
-                  {client.projects.map((project) => (
-                    <tr key={project.id} className="border-b border-[var(--border)]">
+                  {client.projects.map((project) => {
+                    const projectId = getProjectId(project);
+                    return (
+                    <tr key={projectId ?? project.title} className="border-b border-[var(--border)]">
                       <td className="py-3 px-4 text-[var(--text)]">{project.title}</td>
                       <td className="py-3 px-4 text-[var(--text-muted)]">{project.status}</td>
                       <td className="py-3 px-4">
-                        <Link href={`/projects/${project.id}`} className="text-[var(--accent)] hover:text-[var(--accent-strong)]">
+                        <Link
+                          href={projectId ? `/projects/${projectId}` : "/projects"}
+                          className="text-[var(--accent)] hover:text-[var(--accent-strong)]"
+                        >
                           View Project
                         </Link>
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

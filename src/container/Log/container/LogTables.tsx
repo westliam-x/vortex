@@ -4,6 +4,7 @@ import { useState } from "react";
 import { LogEntry } from "@/types/logs";
 import { format } from "date-fns";
 import { Badge, Button, Card } from "@/components/ui";
+import { getId } from "@/lib/ids";
 
 interface Props {
   logs: LogEntry[];
@@ -34,7 +35,7 @@ const LogsTable = ({ logs, rowsPerPage = 8 }: Props) => {
             {paginatedLogs.length > 0 ? (
               paginatedLogs.map((log) => (
                 <tr
-                  key={log._id}
+                  key={getId(log) ?? log.timestamp}
                   className="border-t border-[var(--border)] hover:bg-[var(--surface-2)] transition"
                 >
                   <td className="px-4 py-3 text-[var(--text)]">{log.action}</td>

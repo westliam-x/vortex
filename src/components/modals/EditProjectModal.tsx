@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { Project } from "@/types/project";
 import { Client } from "@/types/client";
+import { getId } from "@/lib/ids";
 
 const formSchema = z.object({
   title: z.string().min(2, "Title is too short"),
@@ -39,7 +40,7 @@ const EditProjectModal = ({ isOpen, onClose, project, onSubmit, clients = [] }: 
     defaultValues: {
       title: project.title,
       description: project.description,
-      clientId: typeof project.clientId === "string" ? project.clientId : project.clientId._id,
+      clientId: getId(project.clientId) ?? "",
       deadline: project.deadline ? new Date(project.deadline).toISOString().split("T")[0] : "",
       priority: project.priority,
       status: project.status,
@@ -50,7 +51,7 @@ const EditProjectModal = ({ isOpen, onClose, project, onSubmit, clients = [] }: 
     reset({
       title: project.title,
       description: project.description,
-      clientId: typeof project.clientId === "string" ? project.clientId : project.clientId._id,
+      clientId: getId(project.clientId) ?? "",
       deadline: project.deadline ? new Date(project.deadline).toISOString().split("T")[0] : "",
       priority: project.priority,
       status: project.status,
@@ -105,11 +106,15 @@ const EditProjectModal = ({ isOpen, onClose, project, onSubmit, clients = [] }: 
                   className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
                 >
                   <option value="">Select client</option>
-                  {clients.map((c) => (
-                    <option key={c._id} value={c._id}>
-                      {c.name}
-                    </option>
-                  ))}
+                  {clients.map((c) => {
+                    const clientId = getId(c);
+                    if (!clientId) return null;
+                    return (
+                      <option key={clientId} value={clientId}>
+                        {c.name}
+                      </option>
+                    );
+                  })}
                 </select>
                 {errors.clientId ? (
                   <p className="text-xs text-[var(--error)] mt-1">{errors.clientId.message}</p>

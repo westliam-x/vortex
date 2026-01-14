@@ -3,6 +3,7 @@
 import { LogEntry } from "@/types/logs";
 import { Activity, User } from "lucide-react";
 import { Card, EmptyState, Skeleton } from "@/components/ui";
+import { getId } from "@/lib/ids";
 
 const RecentActivity = ({ logs, loading }: { logs: LogEntry[]; loading: boolean }) => {
   return (
@@ -22,7 +23,7 @@ const RecentActivity = ({ logs, loading }: { logs: LogEntry[]; loading: boolean 
         <ul className="space-y-4">
           {logs.map((log) => (
             <li
-              key={log._id ?? log.timestamp}
+              key={getId(log) ?? log.timestamp}
               className="border-b border-[var(--border)]/60 pb-3 last:border-0"
             >
               <div className="flex items-start justify-between gap-3">

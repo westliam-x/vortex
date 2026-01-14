@@ -14,7 +14,6 @@ export const useReviews = () => {
   try {
     const res = await fetchReviews(signal ? { signal } : undefined);
     if (signal?.aborted) return;
-    console.log("Reviews loaded:", res);
 
     const reviews = res ?? [];
     setReviews(reviews);

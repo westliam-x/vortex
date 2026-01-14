@@ -13,6 +13,7 @@ import { useVortexMessages } from "@/hooks/vortex/useVortexMessages";
 import { useVortexFiles } from "@/hooks/vortex/useVortexFiles";
 import { useVortexPayments } from "@/hooks/vortex/useVortexPayments";
 import { useVortexReview } from "@/hooks/vortex/useVortexReview";
+import { getId, getProjectId } from "@/lib/ids";
 
 const tabList = [
   "Overview",
@@ -29,21 +30,23 @@ const ProjectDetails = () => {
   const projectId = typeof id === "string" ? id : undefined;
   const { project, client, loading: loadingProject, shareUrl, enableShare, closeProject } =
     useProjectDetails(projectId);
+  const resolvedProjectId = getProjectId(project);
+  const fallbackMessages = resolvedProjectId
+    ? [
+        {
+          projectId: resolvedProjectId,
+          authorType: "owner",
+          body: "Kickoff notes shared.",
+          createdAt: project?.createdAt,
+        },
+      ]
+    : [];
   const { messages, loading: loadingMessages, fetchMessages, sendMessage } = useVortexMessages(
-    project?.id,
-    project
-      ? [
-          {
-            projectId: project.id,
-            authorType: "owner",
-            body: "Kickoff notes shared.",
-            createdAt: project.createdAt,
-          },
-        ]
-      : []
+    resolvedProjectId,
+    project ? fallbackMessages : []
   );
   const { files, loading: loadingFiles, uploadProgress, fetchFiles, uploadFile } =
-    useVortexFiles(project?.id);
+    useVortexFiles(resolvedProjectId);
   const {
     payments,
     paid,
@@ -51,9 +54,9 @@ const ProjectDetails = () => {
     progress,
     loading: loadingPayments,
     fetchPayments,
-  } = useVortexPayments(project?.id, project?.budget ?? 0);
+  } = useVortexPayments(resolvedProjectId, project?.budget ?? 0);
   const { review, loading: loadingReview, fetchReview, updateReviewStatus } =
-    useVortexReview(project?.id);
+    useVortexReview(resolvedProjectId);
   const [messageBody, setMessageBody] = useState("");
   const [showOriginal, setShowOriginal] = useState<Record<string, boolean>>({});
 
@@ -289,8 +292,7 @@ const ProjectDetails = () => {
                 </p>
               ) : messages.length > 0 ? (
                 messages.map((item) => {
-                  const key =
-                    item?._id ?? item?.id ?? item?.createdAt ?? item?.body;
+                  const key = getId(item) ?? item?.createdAt ?? item?.body;
                   const show = showOriginal[key] ?? false;
                   return (
                     <div
@@ -365,7 +367,7 @@ const ProjectDetails = () => {
                 </p>
               ) : files.length > 0 ? (
                 files.map((file) => {
-                  const key = file?._id ?? file?.id ?? file?.fileName;
+                  const key = getId(file) ?? file?.fileName;
                   return (
                     <div
                       key={key}
@@ -461,7 +463,7 @@ const ProjectDetails = () => {
                 ) : payments.events.length > 0 ? (
                   payments.events.map((event) => (
                     <div
-                      key={event?._id ?? event?.id ?? event?.note}
+                      key={getId(event) ?? event?.note}
                       className="flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-sm text-[var(--text-muted)]"
                     >
                       <span>{event?.note || "Payment event"}</span>

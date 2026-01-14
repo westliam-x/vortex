@@ -10,6 +10,7 @@ import { Client } from "@/types/client";
 import { makeRequest } from "@/api/request";
 import { toast } from "react-toastify";
 import API_ROUTES from "@/endpoints/routes";
+import { getId } from "@/lib/ids";
 
 const formSchema = z
   .object({
@@ -164,11 +165,15 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
                       className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
                     >
                       <option value="">Select a client</option>
-                      {clients.map((client) => (
-                        <option key={client._id} value={client._id}>
-                          {client.name} ({client.company || "No company"})
-                        </option>
-                      ))}
+                      {clients.map((client) => {
+                        const clientId = getId(client);
+                        if (!clientId) return null;
+                        return (
+                          <option key={clientId} value={clientId}>
+                            {client.name} ({client.company || "No company"})
+                          </option>
+                        );
+                      })}
                     </select>
                     {errors.clientId ? (
                       <p className="text-xs text-[var(--error)] mt-1">{errors.clientId.message}</p>
