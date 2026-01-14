@@ -1,12 +1,54 @@
 @import "tailwindcss";
 
 :root {
-  --background: #090909;
+  color-scheme: dark;
+  --bg: #0b0d12;
+  --bg-elevated: #0f1218;
+  --surface: #141822;
+  --surface-2: #1a2030;
+  --border: #262d3d;
+  --text: #e6ecf7;
+  --text-muted: #9aa7bd;
+  --text-subtle: #75839b;
+  --accent: #22d3ee;
+  --accent-strong: #06b6d4;
+  --accent-soft: rgba(34, 211, 238, 0.15);
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #60a5fa;
 }
 
 body {
-  background: var(--background);
+  background: var(--bg);
+  color: var(--text);
   font-family: "Poppins", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+}
+
+.surface {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.surface-2 {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-subtle {
+  color: var(--text-subtle);
 }
 
 /* ==== FIRA CODE FONT ==== */

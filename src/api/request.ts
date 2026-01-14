@@ -3,7 +3,9 @@ import { ApiResponse } from "@/types/api";
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
 
-const axiosInstance = axios.create({
+axios.defaults.withCredentials = true;
+
+export const axiosInstance = axios.create({
   baseURL,
   withCredentials: true,
   headers: {
@@ -18,7 +20,7 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-type RequestParams = {
+export type RequestParams = {
   url: string;
   method?: Method;
   data?: unknown;

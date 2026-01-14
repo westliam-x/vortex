@@ -3,47 +3,47 @@
 import { AddProjectModal, InviteUserModal } from "@/components";
 import { useState } from "react";
 import { PlusCircle, UserPlus, Settings } from "lucide-react";
+import { Button, Card } from "@/components/ui";
+import Link from "next/link";
 
 const QuickActions = () => {
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
 
   return (
-    <div className="bg-gradient-to-br from-[#0F0F0F] to-[#1A1A1F] border border-[#2F2F41] rounded-2xl p-5 shadow-lg h-full">
-      <h2 className="text-white text-lg font-semibold mb-5">Quick Actions</h2>
+    <Card className="h-full">
+      <h2 className="text-[var(--text)] text-lg font-semibold mb-5">
+        Quick actions
+      </h2>
 
       <div className="grid gap-3">
-        {/* Add Project */}
-        <button
+        <Button
           onClick={() => setShowProjectModal(true)}
-          className="flex items-center gap-2 bg-[#985EFF] hover:bg-[#864fe0] text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-          aria-label="Add New Project"
+          className="gap-2"
+          aria-label="Add new project"
         >
           <PlusCircle size={16} />
-          Add New Project
-        </button>
+          Add project
+        </Button>
 
-        {/* Invite Client */}
-        <button
+        <Button
           onClick={() => setShowInviteModal(true)}
-          className="flex items-center gap-2 bg-[#2F2F41] hover:bg-[#3b3b55] text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-          aria-label="Invite Client"
+          variant="secondary"
+          className="gap-2"
+          aria-label="Invite client"
         >
           <UserPlus size={16} />
-          Invite Client
-        </button>
+          Invite client
+        </Button>
 
-        {/* Settings */}
-        <button
-          className="flex items-center gap-2 bg-[#2F2F41] hover:bg-[#3b3b55] text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-          aria-label="Go to Settings"
-        >
-          <Settings size={16} />
-          Go to Settings
-        </button>
+        <Link href="/settings">
+          <Button variant="ghost" className="w-full gap-2" aria-label="Go to settings">
+            <Settings size={16} />
+            Workspace settings
+          </Button>
+        </Link>
       </div>
 
-      {/* Modals */}
       <AddProjectModal
         isOpen={showProjectModal}
         onClose={() => setShowProjectModal(false)}
@@ -59,7 +59,7 @@ const QuickActions = () => {
           }
         }}
       />
-    </div>
+    </Card>
   );
 };
 

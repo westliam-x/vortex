@@ -3,34 +3,36 @@ import ReviewRow from "./ReviewRow";
 
 interface Props {
   reviews: Review[];
+  locked: boolean;
 }
 
-const ReviewTable = ({ reviews }: Props) => {
+const ReviewTable = ({ reviews, locked }: Props) => {
   return (
-    <div className="overflow-x-auto border border-[#2F2F41] rounded-xl shadow-md">
-      <table className="min-w-full text-sm text-gray-300">
+    <div className="overflow-x-auto border border-[var(--border)] rounded-xl">
+      <table className="min-w-full text-sm text-[var(--text-muted)]">
         {/* Table Head */}
         <thead>
-          <tr className="bg-[#141421] border-b border-[#2F2F41]">
-            <th className="py-3 px-4 text-left font-medium">Rating</th>
-            <th className="py-3 px-4 text-left font-medium">Comment</th>
-            <th className="py-3 px-4 text-left font-medium">Status</th>
-            <th className="py-3 px-4 text-left font-medium">Date</th>
-            <th className="py-3 px-4 text-left font-medium">Actions</th>
+          <tr className="bg-[var(--surface-2)] border-b border-[var(--border)]">
+            <th className="py-3 px-4 text-left font-medium text-[var(--text-subtle)]">Rating</th>
+            <th className="py-3 px-4 text-left font-medium text-[var(--text-subtle)]">Comment</th>
+            <th className="py-3 px-4 text-left font-medium text-[var(--text-subtle)]">Status</th>
+            <th className="py-3 px-4 text-left font-medium text-[var(--text-subtle)]">Date</th>
+            <th className="py-3 px-4 text-left font-medium text-[var(--text-subtle)]">Visibility</th>
+            <th className="py-3 px-4 text-left font-medium text-[var(--text-subtle)]">Actions</th>
           </tr>
         </thead>
 
         {/* Table Body */}
-        <tbody className="divide-y divide-[#2F2F41]">
+        <tbody className="divide-y divide-[var(--border)]">
           {reviews.length > 0 ? (
             reviews.map((review) => (
-              <ReviewRow key={review.id} review={review} />
+              <ReviewRow key={review.id} review={review} locked={locked} />
             ))
           ) : (
             <tr>
               <td
-                colSpan={5}
-                className="py-6 px-4 text-center text-gray-500 italic"
+                colSpan={6}
+                className="py-6 px-4 text-center text-[var(--text-subtle)] italic"
               >
                 No reviews available
               </td>

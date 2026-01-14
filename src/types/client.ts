@@ -1,6 +1,7 @@
 import { Project } from "./project";
 
 export interface Client {
+  id?: string;
   _id: string;
   name: string;
   email: string;

@@ -3,6 +3,7 @@ import { Client } from "./client";
 // types/project.ts
 export interface Project {
   id: string;
+  _id?: string;
   title: string;
   description?: string;
   status: "Pending" | "In Progress" | "Completed" | "Archived";

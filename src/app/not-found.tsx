@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white text-center px-6 py-12">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--bg)] text-[var(--text)] text-center px-6 py-12">
       <Image
         src="/illustrations/lost.svg"
         alt="Lost in space"
@@ -14,14 +14,14 @@ export default function NotFound() {
         className="mb-8"
         priority
       />
-      <h1 className="text-6xl font-bold mb-4">404</h1>
-      <p className="text-xl mb-2">You seem to be lost...</p>
-      <p className="text-gray-400 mb-6">
-        Let’s find your way back home — don’t get lost in the vortex 🌌
+      <h1 className="text-6xl font-semibold mb-4">404</h1>
+      <p className="text-xl mb-2">You seem to be lost.</p>
+      <p className="text-[var(--text-muted)] mb-6">
+        Let&apos;s get you back to your workspace.
       </p>
       <Link
         href="/"
-        className="px-5 py-2.5 bg-[#985EFF] text-white rounded-md hover:bg-[#7f4fd6] transition"
+        className="px-5 py-2.5 bg-[var(--accent-strong)] text-[#041017] rounded-md hover:bg-[var(--accent)] transition"
       >
         Take me home
       </Link>

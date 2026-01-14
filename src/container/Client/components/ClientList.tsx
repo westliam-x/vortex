@@ -3,58 +3,65 @@
 import { useEffect, useState } from "react";
 import { ClientCard } from "@/components";
 import { Client } from "@/types/client";
-import { makeRequest } from "@/api/request";
-import API_ROUTES from "@/endpoints/routes";
-import { Loader2 } from "lucide-react";
+import { fetchClients } from "@/services/clientServices";
+import { Button, EmptyState, ErrorState, Skeleton } from "@/components/ui";
 
 const ClientList = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(false);
+
+  const loadClients = async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const response = await fetchClients();
+      setClients(response);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const response = await makeRequest({
-          url: API_ROUTES.CLIENT.LIST,
-        });
-
-        setClients((response as { clients: Client[] }).clients);
-      } catch (err) {
-        console.error(err);
-        setError("⚠️ Unable to load clients. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchClients();
+    loadClients();
   }, []);
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-10">
-        <Loader2 className="animate-spin text-cyan-400" size={28} />
-        <span className="ml-2 text-gray-300">Fetching clients...</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {Array.from({ length: 4 }).map((_, idx) => (
+          <Skeleton key={idx} className="h-40" />
+        ))}
       </div>
     );
   }
 
   if (error) {
-    return <p className="text-center text-red-400">{error}</p>;
+    return (
+      <ErrorState
+        title="Unable to load clients"
+        description="Check your connection or try again."
+        action={<Button onClick={loadClients}>Retry</Button>}
+      />
+    );
+  }
+
+  if (clients.length === 0) {
+    return (
+      <EmptyState
+        title="No clients yet"
+        description="Invite a client to start collaborating."
+      />
+    );
   }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {clients?.length > 0 ? (
-        clients.map((client) => (
-          <ClientCard key={client._id} client={client} />
-        ))
-      ) : (
-        <div className="col-span-full flex justify-center py-10">
-          <p className="text-gray-500 italic">No clients found yet.</p>
-        </div>
-      )}
+      {clients.map((client) => (
+        <ClientCard key={client._id} client={client} />
+      ))}
     </div>
   );
 };

@@ -12,7 +12,8 @@ const API_ROUTES = {
     UPDATE: "/project/update",
     DELETE: "/project/delete",
     LIST: "/project/list",
-    DETAILS: "/project/details"
+    DETAILS: "/project/details",
+    BY_ID: "/project"
   },
   CLIENT:{
     CREATE: "/client/create",
@@ -26,7 +27,20 @@ const API_ROUTES = {
   },
   LOGS:{
     GET: "/logs",
-  }
+  },
+  VORTEX: {
+    SUMMARY: "/vortex",
+  },
+  REVIEWS: {
+    LIST: "/reviews",
+    APPROVE: "/reviews",
+    REJECT: "/reviews",
+    SUBMIT: "/reviews",
+    PUBLIC: "/reviews/public",
+  },
+  PAYMENTS: {
+    BASE: "/payments",
+  },
 };
 
 export default API_ROUTES;

@@ -1,73 +1,63 @@
 "use client";
 
-import { MessageCircle, Quote } from "lucide-react";
+import { MessageSquareText, Quote } from "lucide-react";
+import { Card, EmptyState } from "@/components/ui";
 
 const recentComments = [
   {
     id: 1,
-    client: "Adaobi",
-    comment: "Can we change the font on the homepage?",
-    project: "Landing Page",
+    client: "Ava Stone",
+    comment: "Can we add a short demo clip on the hero section?",
+    project: "Vortex Landing Refresh",
   },
   {
     id: 2,
-    client: "Jide",
-    comment: "The login page is not mobile-friendly yet.",
-    project: "Booking App",
-  },
-  {
-    id: 3,
-    client: "Jide",
-    comment: "The signup page is not mobile-friendly yet.",
-    project: "Booking App",
-  },
-  {
-    id: 4,
-    client: "Jide",
-    comment: "The signup page is not mobile-friendly yet.",
-    project: "Booking App",
+    client: "Remy Tran",
+    comment: "The onboarding checklist looks great. Approving the layout.",
+    project: "Client Portal MVP",
   },
 ];
 
 const RecentComments = () => {
   return (
-    <div className="bg-gradient-to-br from-[#0F0F0F] to-[#1A1A1F] border border-[#2F2F41] rounded-2xl p-5 shadow-lg">
+    <Card>
       <div className="flex items-center gap-2 mb-5">
-        <MessageCircle size={20} className="text-[#985EFF]" />
-        <h2 className="text-gray-200 text-lg font-semibold">Client Comments</h2>
+        <MessageSquareText size={20} className="text-[var(--accent)]" />
+        <h2 className="text-[var(--text)] text-lg font-semibold">
+          Client comments
+        </h2>
       </div>
 
-      <ul className="space-y-5">
-        {recentComments.length > 0 ? (
-          recentComments.map((item) => (
+      {recentComments.length > 0 ? (
+        <ul className="space-y-5">
+          {recentComments.map((item) => (
             <li
               key={item.id}
-              className="border-b border-[#2F2F41]/60 pb-4 last:border-0"
+              className="border-b border-[var(--border)]/60 pb-4 last:border-0"
             >
-              {/* Comment text */}
               <div className="flex items-start gap-2">
-                <Quote size={14} className="text-[#985EFF] mt-1" />
-                <p className="text-sm text-gray-300 italic leading-relaxed">
-                  “{item.comment}”
+                <Quote size={14} className="text-[var(--accent)] mt-1" />
+                <p className="text-sm text-[var(--text-muted)] italic leading-relaxed">
+                  {item.comment}
                 </p>
               </div>
 
-              {/* Client + Project */}
               <div className="flex items-center justify-between mt-3 text-xs">
-                <span className="text-gray-400">— {item.client}</span>
-                <span className="px-2 py-[2px] text-[10px] rounded-md bg-[#2F2F41] text-[#985EFF] font-medium">
+                <span className="text-[var(--text-subtle)]">{item.client}</span>
+                <span className="px-2 py-[2px] rounded-md bg-[var(--surface-2)] text-[var(--text-subtle)]">
                   {item.project}
                 </span>
               </div>
             </li>
-          ))
-        ) : (
-          <li className="text-sm text-gray-500 italic">
-            No recent client comments.
-          </li>
-        )}
-      </ul>
-    </div>
+          ))}
+        </ul>
+      ) : (
+        <EmptyState
+          title="No comments yet"
+          description="Client feedback will show up here as soon as it arrives."
+        />
+      )}
+    </Card>
   );
 };
 

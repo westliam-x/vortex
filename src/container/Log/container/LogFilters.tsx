@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components";
+import { Button, Card, Input, Select } from "@/components/ui";
 
 type LogFilter = {
   target?: string;
@@ -44,72 +44,59 @@ const LogsFilters = ({ onFilter }: FiltersProps) => {
   };
 
   return (
-    <div className="p-4 mb-6 bg-[#111118] border border-[#2F2F41] rounded-xl shadow-sm">
+    <Card>
       <form
         onSubmit={handleSubmit}
         className="grid grid-cols-1 md:grid-cols-6 gap-4 items-end"
       >
-        {/* Actor */}
         <div className="flex flex-col">
-          <label className="text-xs text-gray-400 mb-1">Actor</label>
-          <input
-            placeholder="Actor Name"
+          <label className="text-xs text-[var(--text-subtle)] mb-1">Actor</label>
+          <Input
+            placeholder="Actor name"
             value={actor}
             onChange={(e) => setActor(e.target.value)}
-            className="bg-[#1A1A28] border border-gray-600 text-white px-3 py-2 rounded-md focus:ring-2 focus:ring-cyan-500 focus:outline-none"
           />
         </div>
 
-        {/* Action */}
         <div className="flex flex-col">
-          <label className="text-xs text-gray-400 mb-1">Action</label>
-          <input
+          <label className="text-xs text-[var(--text-subtle)] mb-1">Action</label>
+          <Input
             placeholder="Action performed"
             value={action}
             onChange={(e) => setAction(e.target.value)}
-            className="bg-[#1A1A28] border border-gray-600 text-white px-3 py-2 rounded-md focus:ring-2 focus:ring-cyan-500 focus:outline-none"
           />
         </div>
 
-        {/* Status */}
         <div className="flex flex-col">
-          <label className="text-xs text-gray-400 mb-1">Status</label>
-          <select
+          <label className="text-xs text-[var(--text-subtle)] mb-1">Status</label>
+          <Select
             value={status}
-            onChange={(e) =>
-              setStatus(e.target.value as "" | "success" | "failure")
-            }
-            className="bg-[#1A1A28] border border-gray-600 text-white px-3 py-2 rounded-md focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+            onChange={(e) => setStatus(e.target.value as "" | "success" | "failure")}
           >
             <option value="">All</option>
-            <option value="success">✅ Success</option>
-            <option value="failure">❌ Failure</option>
-          </select>
+            <option value="success">Success</option>
+            <option value="failure">Failure</option>
+          </Select>
         </div>
 
-        {/* From Date */}
         <div className="flex flex-col">
-          <label className="text-xs text-gray-400 mb-1">From</label>
-          <input
+          <label className="text-xs text-[var(--text-subtle)] mb-1">From</label>
+          <Input
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
-            className="bg-[#1A1A28] border border-gray-600 text-white px-3 py-2 rounded-md focus:ring-2 focus:ring-cyan-500 focus:outline-none"
           />
         </div>
 
-        {/* To Date */}
         <div className="flex flex-col">
-          <label className="text-xs text-gray-400 mb-1">To</label>
-          <input
+          <label className="text-xs text-[var(--text-subtle)] mb-1">To</label>
+          <Input
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
-            className="bg-[#1A1A28] border border-gray-600 text-white px-3 py-2 rounded-md focus:ring-2 focus:ring-cyan-500 focus:outline-none"
           />
         </div>
 
-        {/* Buttons */}
         <div className="flex gap-2">
           <Button type="submit" className="w-full">
             Apply
@@ -124,7 +111,7 @@ const LogsFilters = ({ onFilter }: FiltersProps) => {
           </Button>
         </div>
       </form>
-    </div>
+    </Card>
   );
 };
 

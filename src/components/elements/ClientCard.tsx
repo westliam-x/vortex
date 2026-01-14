@@ -2,47 +2,54 @@
 
 import { Client } from "@/types/client";
 import { useRouter } from "next/navigation";
-import { Folder, Mail } from "lucide-react";
+import { Building2, Mail } from "lucide-react";
+import { Badge, Card, Button } from "@/components/ui";
 
 const ClientCard = ({ client }: { client: Client }) => {
   const router = useRouter();
 
-  return (
-    <div className="group bg-[#0C0C14] border border-[#2F2F41] rounded-xl p-5 shadow-sm hover:shadow-lg hover:border-cyan-500 transition-all duration-200">
-      {/* Name & Email */}
-      <h2 className="text-lg font-semibold text-white truncate group-hover:text-cyan-400">
-        {client.name}
-      </h2>
-      <p className="flex items-center gap-1 text-sm text-gray-400 truncate">
-        <Mail size={14} className="text-gray-500" />
-        {client.email}
-      </p>
+  const statusTone =
+    client.status === "Active"
+      ? "success"
+      : client.status === "Pending"
+      ? "warning"
+      : "default";
 
-      {/* Projects & Status */}
-      <div className="mt-4 flex justify-between items-center text-sm">
-        <span className="flex items-center gap-1 text-gray-300">
-          <Folder size={14} className="text-gray-500" />
-          {(client?.projects || []).length} Projects
-        </span>
-        <span
-          className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-            client.status === "Active"
-              ? "bg-green-500/20 text-green-400"
-              : "bg-yellow-500/20 text-yellow-400"
-          }`}
-        >
-          {client.status}
-        </span>
+  return (
+    <Card className="p-5 space-y-4">
+      <div>
+        <h2 className="text-lg font-semibold text-[var(--text)] truncate">
+          {client.name}
+        </h2>
+        <p className="flex items-center gap-1 text-sm text-[var(--text-muted)] truncate">
+          <Mail size={14} className="text-[var(--text-subtle)]" />
+          {client.email}
+        </p>
       </div>
 
-      {/* Action Button */}
-      <button
-        className="mt-5 w-full cursor-pointer bg-gradient-to-r from-[#985EFF] to-[#6D28D9] hover:opacity-90 text-white text-sm py-2 rounded-lg font-medium transition"
+      <div className="flex justify-between items-center text-sm">
+        <span className="flex items-center gap-1 text-[var(--text-muted)]">
+          <Building2 size={14} className="text-[var(--text-subtle)]" />
+          {client.company || "Independent"}
+        </span>
+        <Badge tone={statusTone as "success" | "warning" | "default"}>
+          {client.status}
+        </Badge>
+      </div>
+
+      <div className="flex items-center justify-between text-xs text-[var(--text-subtle)]">
+        <span>{client.projects?.length ?? 0} projects</span>
+        <span>Joined {new Date(client.joinedAt).toLocaleDateString()}</span>
+      </div>
+
+      <Button
+        variant="secondary"
+        className="w-full"
         onClick={() => router.push(`/clients/${client._id}`)}
       >
-        View Details
-      </button>
-    </div>
+        View details
+      </Button>
+    </Card>
   );
 };
 

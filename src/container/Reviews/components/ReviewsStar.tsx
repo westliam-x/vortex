@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import { Star } from "lucide-react";
 
 interface Props {
   rating: number;
@@ -6,8 +8,10 @@ interface Props {
 
 const RatingStars = ({ rating }: Props) => {
   return (
-    <span className="text-yellow-400">
-      {"★".repeat(rating)}{"☆".repeat(5 - rating)}
+    <span className="inline-flex items-center gap-1 text-[var(--warning)]">
+      {Array.from({ length: 5 }).map((_, idx) => (
+        <Star key={idx} size={14} fill={idx < rating ? "currentColor" : "none"} />
+      ))}
     </span>
   );
 };

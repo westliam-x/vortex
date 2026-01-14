@@ -4,29 +4,26 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { handleLogout } from "@/services/authServices";
 import {
-  Home,
-  Users,
-  Folder,
-  Star,
-  UserCog,
-  Settings,
   BookOpen,
-  Zap,
+  FolderKanban,
+  LayoutDashboard,
   LogOut,
-  Receipt,
+  ReceiptText,
+  Settings,
+  Star,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib";
-import { motion } from "framer-motion";
 
 const links = [
-  { name: "Dashboard", href: "/dashboard", icon: Home },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Clients", href: "/clients", icon: Users },
-  { name: "Projects", href: "/projects", icon: Folder },
-  { name: "Vortexes", href: "/vortexes", icon: Zap },
+  { name: "Projects", href: "/projects", icon: FolderKanban },
+  // { name: "Vortex Spaces", href: "/vortexes", icon: Zap, badge: "Soon" },
   { name: "Reviews", href: "/reviews", icon: Star },
-  { name: "Invoice", href: "/invoice/new", icon: Receipt },
-  { name: "Team", href: "/team", icon: UserCog },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Invoices", href: "/invoice", icon: ReceiptText },
+  { name: "Team", href: "/team", icon: Users },
+  { name: "Settings", href: "/settings", icon: Settings, badge: "Soon" },
   { name: "Logs", href: "/logs", icon: BookOpen },
   { name: "Logout", href: "#", icon: LogOut, logout: true },
 ];
@@ -35,46 +32,41 @@ const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
 
-  const Logout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const logout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     try {
       await handleLogout();
       router.push("/login");
-    } catch (error) {
-      console.error("Logout failed", error);
+    } catch {
+      router.push("/login");
     }
   };
 
   return (
-    <aside className="hidden md:flex flex-col w-64 h-full bg-[#090909] border-r border-[#2F2F41] backdrop-blur-lg p-6 shadow-inner">
-      {/* Brand */}
-      <div className="mb-10 flex items-center gap-2">
-        <motion.div
-          animate={{ rotate: [0, 15, -10, 0] }}
-          transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 3 }}
-          className="text-[#985EFF] text-2xl"
-        >
-          ⚡
-        </motion.div>
-        <h1 className="text-2xl font-poppins font-semibold text-white tracking-wide">
-          Vortex
-        </h1>
+    <aside className="hidden md:flex flex-col w-64 h-full bg-[var(--bg-elevated)] border-r border-[var(--border)] p-6">
+      <div className="mb-8 flex items-center gap-3">
+        <div className="h-10 w-10 rounded-xl bg-[var(--accent-soft)] border border-[var(--accent-strong)]/40 flex items-center justify-center text-[var(--accent)] font-semibold">
+          V
+        </div>
+        <div>
+          <p className="text-sm text-[var(--text-subtle)]">Workspace</p>
+          <h1 className="text-lg font-semibold text-[var(--text)]">Vortex</h1>
+        </div>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 space-y-1">
-        {links.map(({ href, name, icon: Icon, logout }) => {
+        {links.map(({ href, name, icon: Icon, logout: isLogout, badge }) => {
           const isActive = pathname === href;
 
-          if (logout) {
+          if (isLogout) {
             return (
               <a
                 key={name}
                 href={href}
-                onClick={Logout}
+                onClick={logout}
                 className={cn(
-                  "flex items-center gap-4 px-4 py-3 rounded-lg text-gray-300 transition-all",
-                  "hover:bg-[#ba93fd]/10 hover:text-[#ba93fd]"
+                  "flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-[var(--text-muted)] transition-all",
+                  "hover:bg-[var(--surface)] hover:text-[var(--text)]"
                 )}
               >
                 <Icon size={18} className="shrink-0" />
@@ -89,22 +81,28 @@ const Sidebar = () => {
               href={href}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex items-center gap-4 px-4 py-3 rounded-lg transition-all",
+                "flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm transition-all",
                 isActive
-                  ? "bg-gradient-to-r from-[#985EFF] to-[#BA93FD] text-white font-medium shadow-md"
-                  : "text-gray-300 hover:bg-[#ba93fd]/10 hover:text-white"
+                  ? "bg-[var(--accent-soft)] text-[var(--text)] border border-[var(--accent-strong)]/40"
+                  : "text-[var(--text-muted)] hover:bg-[var(--surface)] hover:text-[var(--text)]"
               )}
             >
-              <Icon size={18} className="shrink-0" />
-              <span className="truncate">{name}</span>
+              <span className="flex items-center gap-3">
+                <Icon size={18} className="shrink-0" />
+                <span className="truncate">{name}</span>
+              </span>
+              {badge ? (
+                <span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[10px] text-[var(--text-subtle)]">
+                  {badge}
+                </span>
+              ) : null}
             </Link>
           );
         })}
       </nav>
 
-      {/* Footer */}
-      <div className="mt-6 text-xs text-gray-500">
-        <p className="font-light">© {new Date().getFullYear()} Vortex</p>
+      <div className="mt-6 text-xs text-[var(--text-subtle)]">
+        <p>Ac {new Date().getFullYear()} Vortex</p>
       </div>
     </aside>
   );

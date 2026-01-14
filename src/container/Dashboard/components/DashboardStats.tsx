@@ -5,32 +5,36 @@ import { Briefcase, CheckCircle, Clock, DollarSign } from "lucide-react";
 
 const stats = [
   {
-    label: "Total Revenue",
-    value: "₦1,250,000",
+    label: "Revenue",
+    value: "$48,200",
     icon: DollarSign,
-    color: "text-[#985EFF]",
+    tone: "info",
+    description: "Last 90 days",
   },
   {
-    label: "Ongoing Projects",
+    label: "Active Projects",
     value: "5",
     icon: Clock,
-    color: "text-[#985EFF]",
+    tone: "warning",
+    description: "2 due this month",
   },
   {
-    label: "Completed Projects",
+    label: "Completed",
     value: "32",
     icon: CheckCircle,
-    color: "text-[#985EFF]",
+    tone: "success",
+    description: "All-time total",
   },
   {
     label: "Clients",
     value: "14",
     icon: Briefcase,
-    color: "text-[#985EFF]",
+    tone: "default",
+    description: "8 active",
   },
 ];
 
-const DashboardStats = ({}) => {
+const DashboardStats = () => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map((stat) => (
@@ -39,11 +43,12 @@ const DashboardStats = ({}) => {
           label={stat.label}
           value={stat.value}
           icon={stat.icon}
-          color={stat.color}
+          tone={stat.tone as "default" | "success" | "warning" | "info"}
+          description={stat.description}
         />
       ))}
     </div>
   );
-}
+};
 
 export default DashboardStats;

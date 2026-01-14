@@ -2,147 +2,104 @@
 
 import { DashboardLayout } from "@/layouts";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Client } from "@/types/client";
+import { useMemo } from "react";
 import Link from "next/link";
 import { format } from "date-fns";
-import { Button, EditClientModal } from "@/components";
-
-const mockClientData: Record<string, Client> = {
-  "1": {
-    _id: "1",
-    name: "Chris Johnson",
-    email: "chris@example.com",
-    phone: "+1-202-555-0176",
-    company: "Johnson Media",
-    projects: [
-      { id: "p1", title: "Website Redesign", status: "In Progress",type:"Free", clientId: "1", createdAt: "2024-11-01T10:00:00Z" },
-      { id: "p2", title: "Brand Identity", status: "Completed",type:"Free", clientId: "1", createdAt: "2024-10-15T12:00:00Z" },
-    ],
-    status: "Active",
-    joinedAt: "2024-12-01T14:35:00Z",
-    notes: "Interested in expanding project scope.",
-    createdBy: "admin",
-    assignedTo: ["user1", "user2"],
-  },
-  "2": {
-    _id: "2",
-    name: "Amaka Obi",
-    email: "amaka@obi.io",
-    phone: "+234-802-555-0133",
-    company: "Obi Design Studio",
-    projects: [{ id: "p3", title: "E-commerce Platform",type:"Free", status: "Pending", clientId: "2", createdAt: "2024-11-01T10:00:00Z"  }],
-    status: "Inactive",
-    joinedAt: "2025-02-15T09:00:00Z",
-    notes: "Awaiting feedback on initial design.",
-    createdBy: "admin",
-    assignedTo: ["user3"],
-  },
-};
+import { Button, Card, EmptyState } from "@/components/ui";
+import { mockClients } from "@/data/mock";
 
 export default function ClientDetails() {
   const { id } = useParams();
-  const [client, setClient] = useState<Client | null>(null);
-  const [showEditModal, setShowEditModal] = useState(false);
-  useEffect(() => {
-    if (typeof id === "string") {
-      setClient(mockClientData[id] ?? null);
-    }
-  }, [id]);
 
-  const handleUpdateClient = (updatedClient: Client) => {
-    setClient(updatedClient);
-  };
+  const client = useMemo(() => {
+    if (typeof id !== "string") return null;
+    return mockClients.find((item) => item._id === id) ?? mockClients[0] ?? null;
+  }, [id]);
 
   if (!client) {
     return (
       <DashboardLayout>
-        <div className="p-6 text-white">
-          <Link href="/clients">
-            <button className="mb-6 text-sm text-white hover:text-white">
-              ← Back to Clients
-            </button>
-          </Link>
-
-          <h1 className="text-2xl font-semibold">Client not found</h1>
-        </div>
+        <EmptyState
+          title="Client not found"
+          description="We could not find that client."
+          action={
+            <Link href="/clients">
+              <Button variant="secondary">Back to clients</Button>
+            </Link>
+          }
+        />
       </DashboardLayout>
     );
   }
 
   return (
     <DashboardLayout>
-      <div className="p-2 max-w-6xl mx-auto text-white">
-        <Link href="/clients">
-          <button className="mb-6 text-sm text-white hover:text-white">
-            ← Back to Clients
-          </button>
+      <div className="space-y-6">
+        <Link href="/clients" className="text-sm text-[var(--text-subtle)] hover:text-[var(--text)]">
+          Back to Clients
         </Link>
 
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-white">{client.name}</h1>
-            <p className="text-sm text-gray-400">
-              {client.company ? client.company : "No company specified"}
-            </p>
+        <Card className="space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-semibold text-[var(--text)]">{client.name}</h1>
+              <p className="text-sm text-[var(--text-muted)]">
+                {client.company ? client.company : "No company specified"}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button>Edit client</Button>
+              <Button variant="secondary">Message client</Button>
+              <Button variant="destructive">Remove client</Button>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button onClick={() => setShowEditModal(true)} variant="primary">
-              Edit Client
-            </Button>
-            <Button variant="secondary">Message Client</Button>
-            <Button variant="destructive">Remove Client</Button>
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-[#1E1E2E] p-4 rounded-lg border border-[#2F2F41]">
-          <div>
-            <p className="text-sm text-gray-400 mb-1">Email</p>
-            <p>{client.email}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="text-[var(--text-subtle)]">Email</p>
+              <p className="text-[var(--text)]">{client.email}</p>
+            </div>
+            <div>
+              <p className="text-[var(--text-subtle)]">Phone</p>
+              <p className="text-[var(--text)]">{client.phone || "Not provided"}</p>
+            </div>
+            <div>
+              <p className="text-[var(--text-subtle)]">Status</p>
+              <p className="text-[var(--text)]">{client.status}</p>
+            </div>
+            <div>
+              <p className="text-[var(--text-subtle)]">Joined</p>
+              <p className="text-[var(--text)]">{format(new Date(client.joinedAt), "dd MMM yyyy")}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm text-gray-400 mb-1">Phone</p>
-            <p>{client.phone || "—"}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-400 mb-1">Status</p>
-            <p>{client.status}</p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-400 mb-1">Joined</p>
-            <p>{format(new Date(client.joinedAt), "dd MMM yyyy")}</p>
-          </div>
-        </div>
+        </Card>
 
-        {client.notes && (
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-white mb-2">Notes</h2>
-            <p className="text-gray-300">{client.notes}</p>
-          </div>
-        )}
+        {client.notes ? (
+          <Card>
+            <h2 className="text-lg font-semibold text-[var(--text)] mb-2">Notes</h2>
+            <p className="text-[var(--text-muted)]">{client.notes}</p>
+          </Card>
+        ) : null}
 
-        <div>
-          <h2 className="text-xl font-semibold text-white mb-4">Projects</h2>
+        <Card>
+          <h2 className="text-lg font-semibold text-[var(--text)] mb-4">Projects</h2>
           {client.projects.length > 0 ? (
-            <div className="overflow-x-auto border border-[#2F2F41] rounded-lg">
-              <table className="min-w-full bg-[#1E1E2E] text-sm">
+            <div className="overflow-x-auto border border-[var(--border)] rounded-lg">
+              <table className="min-w-full bg-[var(--surface)] text-sm">
                 <thead>
-                  <tr className="border-b border-[#2F2F41]">
-                    <th className="text-left py-3 px-4">Title</th>
-                    <th className="text-left py-3 px-4">Status</th>
-                    <th className="text-left py-3 px-4">Action</th>
+                  <tr className="border-b border-[var(--border)] text-left text-[var(--text-subtle)]">
+                    <th className="py-3 px-4">Title</th>
+                    <th className="py-3 px-4">Status</th>
+                    <th className="py-3 px-4">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {client.projects.map((project) => (
-                    <tr key={project.id} className="border-b border-[#2F2F41]">
-                      <td className="py-3 px-4">{project.title}</td>
-                      <td className="py-3 px-4">{project.status}</td>
+                    <tr key={project.id} className="border-b border-[var(--border)]">
+                      <td className="py-3 px-4 text-[var(--text)]">{project.title}</td>
+                      <td className="py-3 px-4 text-[var(--text-muted)]">{project.status}</td>
                       <td className="py-3 px-4">
-                        <Link
-                          href={`/projects/${project.id}`}
-                          className="text-white hover:underline"
-                        >
+                        <Link href={`/projects/${project.id}`} className="text-[var(--accent)] hover:text-[var(--accent-strong)]">
                           View Project
                         </Link>
                       </td>
@@ -152,16 +109,10 @@ export default function ClientDetails() {
               </table>
             </div>
           ) : (
-            <p className="text-gray-400">No projects linked to this client.</p>
+            <p className="text-[var(--text-muted)]">No projects linked to this client.</p>
           )}
-        </div>
+        </Card>
       </div>
-      <EditClientModal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        client={client}
-        onUpdate={handleUpdateClient}
-      />
     </DashboardLayout>
   );
 }

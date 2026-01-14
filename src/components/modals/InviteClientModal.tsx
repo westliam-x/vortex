@@ -2,7 +2,6 @@
 
 import { makeRequest } from "@/api/request";
 import API_ROUTES from "@/endpoints/routes";
-import { cn } from "@/lib";
 import { fetchProjects } from "@/services/projectServices";
 import { Project } from "@/types/project";
 import {
@@ -21,7 +20,6 @@ import { z } from "zod";
 
 const roles = ["Admin", "Developer", "Designer", "Marketer"];
 
-// Schema setup
 const baseSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Enter a valid email"),
@@ -48,10 +46,7 @@ interface InviteUserModalProps {
   onSubmit: (data: InviteFormData) => void;
 }
 
-const InviteUserModal = ({
-  isOpen,
-  onClose,
-}: InviteUserModalProps) => {
+const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
   const {
     register,
     handleSubmit,
@@ -62,23 +57,17 @@ const InviteUserModal = ({
     resolver: zodResolver(extendedSchema),
     defaultValues: { type: "Client" },
   });
-  
-const [projects, setProjects] = useState<Project[]>([]);
 
-useEffect(() => {
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
     const load = async () => {
-      try {
-        const data = await fetchProjects();
-        setProjects(data);
-      } catch (error) {
-        toast.error("Failed to fetch projects.");
-        console.error("Fetch error:", error);
-      } 
+      const data = await fetchProjects();
+      setProjects(data);
     };
 
     load();
   }, []);
-
 
   const userType = watch("type");
 
@@ -93,9 +82,7 @@ useEffect(() => {
       reset({ type: "Client" });
       onClose();
     } catch (err) {
-      console.error("Invite error:", err);
       toast.error(err instanceof Error ? err.message : "Invite failed");
-      toast.error("Invite failed");
     }
   };
 
@@ -108,30 +95,27 @@ useEffect(() => {
 
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <TransitionChild as={Fragment}>
-            <DialogPanel className="w-full max-w-md bg-[#1E1E2E] border border-[#2F2F41] p-6 rounded-xl">
+            <DialogPanel className="w-full max-w-md bg-[var(--surface)] border border-[var(--border)] p-6 rounded-xl">
               <div className="flex justify-between items-center mb-4">
-                <DialogTitle className="text-lg font-semibold text-gray-100">
-                  Invite a User
+                <DialogTitle className="text-lg font-semibold text-[var(--text)]">
+                  Invite a user
                 </DialogTitle>
                 <button
                   onClick={onClose}
-                  className="text-gray-400 hover:text-white"
+                  className="text-[var(--text-subtle)] hover:text-[var(--text)]"
                 >
                   <X size={20} />
                 </button>
               </div>
 
-              <form
-                onSubmit={handleSubmit(handleFormSubmit)}
-                className="space-y-4"
-              >
+              <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">
+                  <label className="block text-sm text-[var(--text-muted)] mb-1">
                     Invite as
                   </label>
                   <select
                     {...register("type")}
-                    className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+                    className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
                   >
                     <option value="Client">Client</option>
                     <option value="Team">Team Member</option>
@@ -139,110 +123,89 @@ useEffect(() => {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">
+                  <label className="block text-sm text-[var(--text-muted)] mb-1">
                     Full Name
                   </label>
                   <input
                     type="text"
                     {...register("name")}
-                    className={cn(
-                      "w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700",
-                      errors.name && "border-red-500"
-                    )}
+                    className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
                   />
-                  {errors.name && (
-                    <p className="text-xs text-red-400 mt-1">
-                      {errors.name.message}
-                    </p>
-                  )}
+                  {errors.name ? (
+                    <p className="text-xs text-[var(--error)] mt-1">{errors.name.message}</p>
+                  ) : null}
                 </div>
 
-                {/* Email */}
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">
+                  <label className="block text-sm text-[var(--text-muted)] mb-1">
                     Email
                   </label>
                   <input
                     type="email"
                     {...register("email")}
-                    className={cn(
-                      "w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700",
-                      errors.email && "border-red-500"
-                    )}
+                    className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
                   />
-                  {errors.email && (
-                    <p className="text-xs text-red-400 mt-1">
-                      {errors.email.message}
-                    </p>
-                  )}
+                  {errors.email ? (
+                    <p className="text-xs text-[var(--error)] mt-1">{errors.email.message}</p>
+                  ) : null}
                 </div>
 
-                {userType === "Client" && (
+                {userType === "Client" ? (
                   <div>
-                    <label className="block text-sm text-gray-300 mb-1">
+                    <label className="block text-sm text-[var(--text-muted)] mb-1">
                       Assign to Project
                     </label>
                     <select
                       {...register("projectId")}
-                      className={cn(
-                        "w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700",
-                        "projectId" in errors && "border-red-500"
-                      )}
+                      className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
                     >
-                      <option value="">-- Select Project --</option>
+                      <option value="">Select project</option>
                       {projects.map((proj) => (
                         <option key={proj.id} value={proj.id}>
                           {proj.title}
                         </option>
                       ))}
                     </select>
-                    {"projectId" in errors && errors.projectId?.message && (
-                      <p className="text-xs text-red-400 mt-1">
+                    {"projectId" in errors && errors.projectId?.message ? (
+                      <p className="text-xs text-[var(--error)] mt-1">
                         {errors.projectId.message}
                       </p>
-                    )}
+                    ) : null}
                   </div>
-                )}
+                ) : null}
 
-                {/* Team Role & Project Assignments */}
-                {userType === "Team" && (
+                {userType === "Team" ? (
                   <>
                     <div>
-                      <label className="block text-sm text-gray-300 mb-1">
+                      <label className="block text-sm text-[var(--text-muted)] mb-1">
                         Select Role
                       </label>
                       <select
                         {...register("role")}
-                        className={cn(
-                          "w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700",
-                          "role" in errors && "border-red-500"
-                        )}
+                        className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
                       >
-                        <option value="">-- Select Role --</option>
+                        <option value="">Select role</option>
                         {roles.map((role) => (
                           <option key={role} value={role}>
                             {role}
                           </option>
                         ))}
                       </select>
-                      {"role" in errors && errors.role?.message && (
-                        <p className="text-xs text-red-400 mt-1">
+                      {"role" in errors && errors.role?.message ? (
+                        <p className="text-xs text-[var(--error)] mt-1">
                           {errors.role.message}
                         </p>
-                      )}
+                      ) : null}
                     </div>
 
                     <div>
-                      <label className="block text-sm text-gray-300 mb-1">
+                      <label className="block text-sm text-[var(--text-muted)] mb-1">
                         Assign to Projects
                       </label>
                       <select
                         {...register("projectIds")}
                         multiple
-                        className={cn(
-                          "w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700",
-                          "projectIds" in errors && "border-red-500"
-                        )}
+                        className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
                       >
                         {projects.map((proj) => (
                           <option key={proj.id} value={proj.id}>
@@ -250,19 +213,18 @@ useEffect(() => {
                           </option>
                         ))}
                       </select>
-                      {"projectIds" in errors && errors.projectIds?.message && (
-                        <p className="text-xs text-red-400 mt-1">
+                      {"projectIds" in errors && errors.projectIds?.message ? (
+                        <p className="text-xs text-[var(--error)] mt-1">
                           {errors.projectIds.message}
                         </p>
-                      )}
+                      ) : null}
                     </div>
                   </>
-                )}
+                ) : null}
 
-                {/* Submit */}
                 <button
                   type="submit"
-                  className="w-full mt-4 bg-[#985EFF] hover:bg-[#985EFF] transition text-white py-2 rounded-md"
+                  className="w-full mt-4 bg-[var(--accent-strong)] hover:bg-[var(--accent)] transition text-[#041017] py-2 rounded-md"
                 >
                   Send Invite
                 </button>

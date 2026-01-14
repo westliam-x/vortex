@@ -28,13 +28,7 @@ interface Props {
   clients?: Client[];
 }
 
-const EditProjectModal = ({
-  isOpen,
-  onClose,
-  project,
-  onSubmit,
-  clients = [],
-}: Props) => {
+const EditProjectModal = ({ isOpen, onClose, project, onSubmit, clients = [] }: Props) => {
   const {
     register,
     handleSubmit,
@@ -45,13 +39,8 @@ const EditProjectModal = ({
     defaultValues: {
       title: project.title,
       description: project.description,
-      clientId:
-        typeof project.clientId === "string"
-          ? project.clientId
-          : project.clientId._id,
-      deadline: project.deadline
-        ? new Date(project.deadline).toISOString().split("T")[0]
-        : "",
+      clientId: typeof project.clientId === "string" ? project.clientId : project.clientId._id,
+      deadline: project.deadline ? new Date(project.deadline).toISOString().split("T")[0] : "",
       priority: project.priority,
       status: project.status,
     },
@@ -61,13 +50,8 @@ const EditProjectModal = ({
     reset({
       title: project.title,
       description: project.description,
-      clientId:
-        typeof project.clientId === "string"
-          ? project.clientId
-          : project.clientId._id,
-      deadline: project.deadline
-        ? new Date(project.deadline).toISOString().split("T")[0]
-        : "",
+      clientId: typeof project.clientId === "string" ? project.clientId : project.clientId._id,
+      deadline: project.deadline ? new Date(project.deadline).toISOString().split("T")[0] : "",
       priority: project.priority,
       status: project.status,
     });
@@ -83,56 +67,42 @@ const EditProjectModal = ({
       <Dialog as="div" onClose={onClose} className="relative z-50">
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="w-full max-w-lg bg-[#1E1E2E] border border-[#2F2F41] rounded-xl p-6">
+          <Dialog.Panel className="w-full max-w-lg bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6">
             <div className="flex justify-between items-center mb-4">
-              <Dialog.Title className="text-lg font-semibold text-white">
+              <Dialog.Title className="text-lg font-semibold text-[var(--text)]">
                 Edit Project
               </Dialog.Title>
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-white"
-              >
+              <button onClick={onClose} className="text-[var(--text-subtle)] hover:text-[var(--text)]">
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
-              {/* Title */}
               <div>
-                <label className="block text-sm text-gray-300 mb-1">
-                  Title
-                </label>
+                <label className="block text-sm text-[var(--text-muted)] mb-1">Title</label>
                 <input
                   {...register("title")}
-                  className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+                  className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
                 />
-                {errors.title && (
-                  <p className="text-xs text-red-400 mt-1">
-                    {errors.title.message}
-                  </p>
-                )}
+                {errors.title ? (
+                  <p className="text-xs text-[var(--error)] mt-1">{errors.title.message}</p>
+                ) : null}
               </div>
 
-              {/* Description */}
               <div>
-                <label className="block text-sm text-gray-300 mb-1">
-                  Description
-                </label>
+                <label className="block text-sm text-[var(--text-muted)] mb-1">Description</label>
                 <textarea
                   {...register("description")}
                   rows={3}
-                  className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+                  className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
                 />
               </div>
 
-              {/* Client */}
               <div>
-                <label className="block text-sm text-gray-300 mb-1">
-                  Client
-                </label>
+                <label className="block text-sm text-[var(--text-muted)] mb-1">Client</label>
                 <select
                   {...register("clientId")}
-                  className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+                  className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
                 >
                   <option value="">Select client</option>
                   {clients.map((c) => (
@@ -141,33 +111,25 @@ const EditProjectModal = ({
                     </option>
                   ))}
                 </select>
-                {errors.clientId && (
-                  <p className="text-xs text-red-400 mt-1">
-                    {errors.clientId.message}
-                  </p>
-                )}
+                {errors.clientId ? (
+                  <p className="text-xs text-[var(--error)] mt-1">{errors.clientId.message}</p>
+                ) : null}
               </div>
 
-              {/* Deadline */}
               <div>
-                <label className="block text-sm text-gray-300 mb-1">
-                  Deadline
-                </label>
+                <label className="block text-sm text-[var(--text-muted)] mb-1">Deadline</label>
                 <input
                   type="date"
                   {...register("deadline")}
-                  className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+                  className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
                 />
               </div>
 
-              {/* Priority */}
               <div>
-                <label className="block text-sm text-gray-300 mb-1">
-                  Priority
-                </label>
+                <label className="block text-sm text-[var(--text-muted)] mb-1">Priority</label>
                 <select
                   {...register("priority")}
-                  className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+                  className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
                 >
                   <option value="">Select</option>
                   <option value="Low">Low</option>
@@ -176,14 +138,11 @@ const EditProjectModal = ({
                 </select>
               </div>
 
-              {/* Status */}
               <div>
-                <label className="block text-sm text-gray-300 mb-1">
-                  Status
-                </label>
+                <label className="block text-sm text-[var(--text-muted)] mb-1">Status</label>
                 <select
                   {...register("status")}
-                  className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+                  className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
                 >
                   <option value="Pending">Pending</option>
                   <option value="In Progress">In Progress</option>
@@ -194,7 +153,7 @@ const EditProjectModal = ({
 
               <button
                 type="submit"
-                className="w-full bg-[#985EFF] hover:bg-[#985EFF] transition text-white py-2 rounded-md"
+                className="w-full bg-[var(--accent-strong)] hover:bg-[var(--accent)] transition text-[#041017] py-2 rounded-md"
               >
                 Update Project
               </button>

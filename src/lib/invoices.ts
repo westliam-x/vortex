@@ -166,7 +166,7 @@ function buildTotalsTable(invoice: Invoice): Content {
 //
 // ---------- Exported PDF Generator ----------
 //
-export async function downloadInvoicePDF(invoice: Invoice, p0: string) {
+export async function downloadInvoicePDF(invoice: Invoice) {
   const docDefinition: TDocumentDefinitions = {
     pageSize: "A4",
     pageMargins: m(40, 60, 40, 60),

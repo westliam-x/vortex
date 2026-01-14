@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-[#0C0C1C] text-white min-h-screen">
+      <body className="bg-[var(--bg)] text-[var(--text)] min-h-screen">
         <ToastContainer
           position="top-right"
           autoClose={3000}

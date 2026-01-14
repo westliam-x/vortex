@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getLogs } from "@/services/clientServices";
 import { LogEntry } from "@/types/logs";
 import { Activity, User } from "lucide-react";
+import { Card, EmptyState, Skeleton } from "@/components/ui";
 
 const RecentActivity = () => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
@@ -14,11 +15,10 @@ const RecentActivity = () => {
       try {
         const response = await getLogs();
         const sortedLogs = response.sort(
-          (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+          (a, b) =>
+            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
         );
         setLogs(sortedLogs.slice(0, 3));
-      } catch (error) {
-        console.error("Failed to fetch logs:", error);
       } finally {
         setLoading(false);
       }
@@ -27,34 +27,37 @@ const RecentActivity = () => {
   }, []);
 
   return (
-    <div className="bg-gradient-to-br from-[#0F0F0F] to-[#1A1A1F] border border-[#2F2F41] rounded-2xl p-5 shadow-lg">
-      {/* Header */}
+    <Card>
       <div className="flex items-center gap-2 mb-5">
-        <Activity size={20} className="text-[#985EFF]" />
-        <h2 className="text-gray-200 text-lg font-semibold">Recent Activity</h2>
+        <Activity size={20} className="text-[var(--accent)]" />
+        <h2 className="text-[var(--text)] text-lg font-semibold">Recent activity</h2>
       </div>
 
-      {/* Activity List */}
-      <ul className="space-y-4">
-        {loading ? (
-          <li className="text-sm text-gray-500 italic">Loading...</li>
-        ) : logs.length > 0 ? (
-          logs.map((log) => (
+      {loading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+      ) : logs.length > 0 ? (
+        <ul className="space-y-4">
+          {logs.map((log) => (
             <li
               key={log._id ?? log.timestamp}
-              className="border-b border-[#2F2F41]/60 pb-3 last:border-0"
+              className="border-b border-[var(--border)]/60 pb-3 last:border-0"
             >
-              {/* Action + Details */}
-              <div className="flex items-start justify-between">
+              <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm text-white font-medium">
+                  <p className="text-sm text-[var(--text)] font-medium">
                     {log.action}
                   </p>
-                  {log.details && (
-                    <p className="text-xs text-gray-400">{log.details}</p>
-                  )}
+                  {log.details ? (
+                    <p className="text-xs text-[var(--text-muted)]">
+                      {log.details}
+                    </p>
+                  ) : null}
                 </div>
-                <span className="text-[10px] text-gray-500 whitespace-nowrap">
+                <span className="text-[10px] text-[var(--text-subtle)] whitespace-nowrap">
                   {new Date(log.timestamp).toLocaleString("en-US", {
                     month: "short",
                     day: "numeric",
@@ -64,25 +67,27 @@ const RecentActivity = () => {
                 </span>
               </div>
 
-              {/* Actor Info */}
               <div className="flex items-center gap-2 mt-2">
-                <User size={14} className="text-gray-500" />
-                <span className="text-xs text-gray-300">
-                  {log.actor?.name && <span>{log.actor.name}</span>}{" "}
-                  {log.actor?.role && (
-                    <span className="ml-1 px-2 py-[2px] text-[10px] rounded-md bg-[#2F2F41] text-gray-400">
+                <User size={14} className="text-[var(--text-subtle)]" />
+                <span className="text-xs text-[var(--text-muted)]">
+                  {log.actor?.name ?? "Unknown"}
+                  {log.actor?.role ? (
+                    <span className="ml-2 px-2 py-[2px] text-[10px] rounded-md bg-[var(--surface-2)] text-[var(--text-subtle)]">
                       {log.actor.role}
                     </span>
-                  )}
+                  ) : null}
                 </span>
               </div>
             </li>
-          ))
-        ) : (
-          <li className="text-sm text-gray-500 italic">No recent activity.</li>
-        )}
-      </ul>
-    </div>
+          ))}
+        </ul>
+      ) : (
+        <EmptyState
+          title="No activity yet"
+          description="Recent updates, uploads, and approvals will appear here."
+        />
+      )}
+    </Card>
   );
 };
 

@@ -9,7 +9,6 @@ export const handleLogout = async (): Promise<void> => {
       method: "POST",
     });
   } catch (error) {
-    console.error("Logout failed", error);
     throw error;
   }
 };

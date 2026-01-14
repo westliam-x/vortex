@@ -6,6 +6,7 @@ import LogsFilters from "./container/LogFilters";
 import LogsTable from "./container/LogTables";
 import { getLogs } from "@/services/clientServices";
 import { LogEntry } from "@/types/logs";
+import { Button, Card, EmptyState, ErrorState, Skeleton } from "@/components/ui";
 
 type LogFilter = {
   target?: string;
@@ -20,21 +21,24 @@ const LogsPage = () => {
   const [allLogs, setAllLogs] = useState<LogEntry[]>([]);
   const [filteredLogs, setFilteredLogs] = useState<LogEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const loadLogs = async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const logs = await getLogs();
+      setAllLogs(logs);
+      setFilteredLogs(logs);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchLogs = async () => {
-      try {
-        const logs = await getLogs();
-        setAllLogs(logs);
-        setFilteredLogs(logs);
-      } catch (error) {
-        console.error("Failed to fetch logs:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchLogs();
+    loadLogs();
   }, []);
 
   const handleFilter = (filters: LogFilter) => {
@@ -59,11 +63,38 @@ const LogsPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="md:p-6 p-3">
-        <h2 className="text-xl font-semibold text-white mb-4">Activity Logs</h2>
+      <div className="space-y-6">
+        <Card className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-semibold text-[var(--text)]">Activity logs</h2>
+            <p className="text-sm text-[var(--text-muted)]">
+              Every action inside a Vortex space, in one timeline.
+            </p>
+          </div>
+          <Button variant="secondary">Export (coming soon)</Button>
+        </Card>
+
         <LogsFilters onFilter={handleFilter} />
+
         {loading ? (
-          <p className="text-gray-400 mt-4">Loading logs...</p>
+          <Card>
+            <div className="space-y-3">
+              {Array.from({ length: 5 }).map((_, idx) => (
+                <Skeleton key={idx} className="h-10 w-full" />
+              ))}
+            </div>
+          </Card>
+        ) : error ? (
+          <ErrorState
+            title="Unable to load logs"
+            description="Try refreshing the page or check your connection."
+            action={<Button onClick={loadLogs}>Retry</Button>}
+          />
+        ) : filteredLogs.length === 0 ? (
+          <EmptyState
+            title="No activity found"
+            description="Try adjusting filters or check back after new activity."
+          />
         ) : (
           <LogsTable logs={filteredLogs} />
         )}

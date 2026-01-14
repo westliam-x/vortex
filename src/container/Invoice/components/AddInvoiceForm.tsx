@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Currency, Invoice, genId, formatMoney, downloadInvoicePDF } from "@/lib/invoices";
 import { useEffect, useMemo, useState } from "react";
 import { Info } from "lucide-react";
-import { getProfile } from "@/services/profileServices";
+import { useProfile } from "@/hooks/auth/useProfile";
 import { toast } from "react-toastify";
 
 const itemSchema = z.object({
@@ -48,12 +48,11 @@ const defaultValues: DefaultValues<FormData> = {
   issueDate: new Date().toISOString().slice(0, 10),
 };
 
-// Simple tooltip component
 function Tooltip({ text }: { text: string }) {
   return (
-    <div className="relative group inline-">
-      <Info size={14} className="ml-1 text-gray-400 cursor-pointer" />
-      <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1 hidden group-hover: w-max bg-black/80 text-xs text-gray-200 px-2 py-1 rounded-md shadow-lg z-10">
+    <div className="relative group inline-flex">
+      <Info size={14} className="ml-1 text-[var(--text-subtle)] cursor-pointer" />
+      <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1 hidden group-hover:block w-max bg-black/80 text-xs text-gray-200 px-2 py-1 rounded-md shadow-lg z-10">
         {text}
       </span>
     </div>
@@ -69,9 +68,7 @@ export default function AddInvoiceForm() {
     reset,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(
-      formSchema
-    ) as unknown as import("react-hook-form").Resolver<FormData, unknown>,
+    resolver: zodResolver(formSchema) as unknown as import("react-hook-form").Resolver<FormData, unknown>,
     defaultValues,
   });
 
@@ -91,39 +88,20 @@ export default function AddInvoiceForm() {
     [items]
   );
   const tax = useMemo(() => (sub * taxPercent) / 100, [sub, taxPercent]);
-  const total = useMemo(
-    () => Math.max(0, sub + tax - discount),
-    [sub, tax, discount]
-  );
+  const total = useMemo(() => Math.max(0, sub + tax - discount), [sub, tax, discount]);
 
   const [loading, setLoading] = useState(false);
-  const [profile, setProfile] = useState<{
-    name: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-  } | null>(null);
+  const { profile } = useProfile();
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await getProfile();
-        setProfile(response);
-
-        // ✅ prefill form with profile once loaded
-        reset((prev) => ({
-          ...prev,
-          yourName: response?.name,
-          yourEmail: response?.email,
-          yourPhone: response?.phone,
-        }));
-      } catch (error) {
-        console.error("Failed to fetch profile:", error);
-      }
-    };
-
-    fetchProfile();
-  }, [reset]);
+    if (!profile) return;
+    reset((prev) => ({
+      ...prev,
+      yourName: profile.name,
+      yourEmail: profile.email,
+      yourPhone: profile.phone,
+    }));
+  }, [profile, reset]);
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
@@ -143,165 +121,134 @@ export default function AddInvoiceForm() {
         issueDate: data.issueDate || undefined,
         dueDate: data.dueDate || undefined,
         items: data.items,
-        taxPercent: Number.isNaN(Number(data.taxPercent))
-          ? 0
-          : Number(data.taxPercent),
-        discount: Number.isNaN(Number(data.discount))
-          ? 0
-          : Number(data.discount),
+        taxPercent: Number.isNaN(Number(data.taxPercent)) ? 0 : Number(data.taxPercent),
+        discount: Number.isNaN(Number(data.discount)) ? 0 : Number(data.discount),
         notes: data.notes || undefined,
         terms: data.terms || undefined,
         customFields: data.customFields?.filter((f) => f.label && f.value),
       };
 
-      // Call parent
-      // onCreate(invoice);
-
-      await downloadInvoicePDF(
-        invoice,
-        `invoice_${invoice.invoiceNumber || invoice.id}.pdf`
-      );
-
-      toast.success("Invoice created & downloaded 🎉");
+      await downloadInvoicePDF(invoice);
+      toast.success("Invoice created and downloaded.");
       reset();
-    } catch (err) {
-      console.error("Profile failed to submit", err);
+    } catch {
+      toast.error("Failed to create invoice.");
     } finally {
       setLoading(false);
-      console.log("Profile failed to submit");
-      toast.error("Failed to create invoice ❌");
     }
   };
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit, (err) => {
-        console.log("Validation errors:", err);
-
-        toast.error("Please fix the highlighted errors ⚠️");
+      onSubmit={handleSubmit(onSubmit, () => {
+        toast.error("Please fix the highlighted errors.");
       })}
       className="space-y-6"
     >
-      {/* Currency */}
       <div className="flex items-center gap-2">
-        <label className="text-sm text-gray-300 flex items-center">
+        <label className="text-sm text-[var(--text-muted)] flex items-center">
           Currency <Tooltip text="Select the currency for this invoice" />
         </label>
-        <div className="flex bg-[#141421] rounded-md border border-gray-700 overflow-hidden">
+        <div className="flex bg-[var(--surface-2)] rounded-md border border-[var(--border)] overflow-hidden">
           {(["NGN", "USD"] as Currency[]).map((c) => (
             <label
               key={c}
               className={`px-3 py-1 text-sm cursor-pointer ${
-                currency === c ? "bg-[#985EFF] text-white" : "text-gray-300"
+                currency === c ? "bg-[var(--accent-strong)] text-[#041017]" : "text-[var(--text-muted)]"
               }`}
             >
-              <input
-                {...register("currency")}
-                type="radio"
-                value={c}
-                className="hidden"
-              />
+              <input {...register("currency")} type="radio" value={c} className="hidden" />
               {c}
             </label>
           ))}
         </div>
       </div>
 
-      {/* Business & Invoice Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className=" text-sm text-gray-300 mb-1 flex items-center">
-            Business (Bill To){" "}
-            <Tooltip text="Who you’re billing (e.g. company name)" />
+          <label className="text-sm text-[var(--text-muted)] mb-1 flex items-center">
+            Business (Bill To) <Tooltip text="Who you are billing" />
           </label>
           <input
             {...register("businessName")}
-            className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+            className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
           />
-          {errors.businessName && (
-            <p className="text-xs text-red-400 mt-1">
-              {String(errors.businessName.message)}
-            </p>
-          )}
+          {errors.businessName ? (
+            <p className="text-xs text-[var(--error)] mt-1">{String(errors.businessName.message)}</p>
+          ) : null}
         </div>
         <div>
-          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+          <label className="text-sm text-[var(--text-muted)] mb-1 flex items-center">
             Invoice # <Tooltip text="Optional unique number for tracking" />
           </label>
           <input
             {...register("invoiceNumber")}
-            className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+            className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
           />
         </div>
         <div>
-          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+          <label className="text-sm text-[var(--text-muted)] mb-1 flex items-center">
             Issue Date <Tooltip text="When this invoice is created" />
           </label>
           <input
             type="date"
             {...register("issueDate")}
-            className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+            className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
           />
         </div>
         <div>
-          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+          <label className="text-sm text-[var(--text-muted)] mb-1 flex items-center">
             Due Date <Tooltip text="The deadline for payment" />
           </label>
           <input
             type="date"
             {...register("dueDate")}
-            className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+            className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
           />
         </div>
       </div>
 
-      {/* Client Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+          <label className="text-sm text-[var(--text-muted)] mb-1 flex items-center">
             Client Name <Tooltip text="Full name of the client being billed" />
           </label>
           <input
             {...register("clientName")}
-            className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+            className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
           />
         </div>
         <div>
-          <label className=" text-sm text-gray-300 mb-1 flex items-center">
-            Client Email <Tooltip text="Client’s email for invoice delivery" />
+          <label className="text-sm text-[var(--text-muted)] mb-1 flex items-center">
+            Client Email <Tooltip text="Client email for invoice delivery" />
           </label>
           <input
             type="email"
             {...register("clientEmail")}
-            className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+            className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
           />
         </div>
         <div>
-          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+          <label className="text-sm text-[var(--text-muted)] mb-1 flex items-center">
             Client Phone <Tooltip text="Optional phone number for contact" />
           </label>
           <input
             {...register("clientPhone")}
-            className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+            className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
           />
         </div>
       </div>
 
-      {/* Items */}
       <div>
-        <label className=" text-sm text-gray-300 mb-2 flex items-center">
-          Items{" "}
-          <Tooltip text="List products or services with quantity & rate" />
+        <label className="text-sm text-[var(--text-muted)] mb-2 flex items-center">
+          Items <Tooltip text="List products or services with quantity and rate" />
         </label>
         {fields.map((f, i) => (
-          <div
-            key={f.id}
-            className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3"
-          >
+          <div key={f.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
             <input
               placeholder="Description"
               {...register(`items.${i}.description` as const)}
-              className="md:col-span-6 px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+              className="md:col-span-6 px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
             />
             <input
               type="number"
@@ -309,7 +256,7 @@ export default function AddInvoiceForm() {
               step={1}
               placeholder="Qty"
               {...register(`items.${i}.quantity` as const)}
-              className="md:col-span-3 px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+              className="md:col-span-2 px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
             />
             <input
               type="number"
@@ -317,39 +264,34 @@ export default function AddInvoiceForm() {
               step="0.01"
               placeholder="Rate"
               {...register(`items.${i}.rate` as const)}
-              className="md:col-span-3 px-2 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+              className="md:col-span-2 px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
             />
             <div className="md:col-span-2 flex gap-2">
               <button
                 type="button"
                 onClick={() => remove(i)}
-                className="w-full bg-[#3a1020] text-red-200 border border-red-800/40 rounded px-2 py-2"
+                className="w-full bg-[rgba(239,68,68,0.12)] text-[var(--error)] border border-[var(--error)]/40 rounded px-2 py-2"
               >
                 Remove
               </button>
               <button
                 type="button"
-                onClick={() =>
-                  append({ description: "", quantity: 1, rate: 0 })
-                }
-                className="w-full bg-[#147f18] text-red-200 border border-green-800/40 rounded px-2 py-2"
+                onClick={() => append({ description: "", quantity: 1, rate: 0 })}
+                className="w-full bg-[rgba(34,197,94,0.12)] text-[var(--success)] border border-[var(--success)]/40 rounded px-2 py-2"
               >
-                ADD
+                Add
               </button>
             </div>
           </div>
         ))}
-        {errors.items && (
-          <p className="text-xs text-red-400 mt-1">
-            {String(errors.items.message)}
-          </p>
-        )}
+        {errors.items ? (
+          <p className="text-xs text-[var(--error)] mt-1">{String(errors.items.message)}</p>
+        ) : null}
       </div>
 
-      {/* Totals */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
         <div>
-          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+          <label className="text-sm text-[var(--text-muted)] mb-1 flex items-center">
             Tax % <Tooltip text="Percentage tax to apply on subtotal" />
           </label>
           <input
@@ -358,55 +300,51 @@ export default function AddInvoiceForm() {
             min="0"
             max="100"
             {...register("taxPercent")}
-            className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+            className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
           />
         </div>
         <div>
-          <label className=" text-sm text-gray-300 mb-1 flex items-center">
-            Discount ({currency}){" "}
-            <Tooltip text="Fixed discount in selected currency" />
+          <label className="text-sm text-[var(--text-muted)] mb-1 flex items-center">
+            Discount ({currency}) <Tooltip text="Fixed discount in selected currency" />
           </label>
           <input
             type="number"
             step="0.01"
             min="0"
             {...register("discount")}
-            className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+            className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
           />
         </div>
         <div className="md:col-span-2 text-right">
-          <p className="text-sm text-gray-300">
+          <p className="text-sm text-[var(--text-muted)]">
             Subtotal: {formatMoney(sub, currency)}
           </p>
-          <p className="text-sm text-gray-300">
-            Tax: {formatMoney(tax, currency)}
-          </p>
-          <p className="text-lg text-white font-semibold mt-1">
+          <p className="text-sm text-[var(--text-muted)]">Tax: {formatMoney(tax, currency)}</p>
+          <p className="text-lg text-[var(--text)] font-semibold mt-1">
             Total: {formatMoney(total, currency)}
           </p>
         </div>
       </div>
 
-      {/* Notes / Terms */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+          <label className="text-sm text-[var(--text-muted)] mb-1 flex items-center">
             Notes <Tooltip text="Optional message for the client" />
           </label>
           <textarea
             rows={3}
             {...register("notes")}
-            className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+            className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
           />
         </div>
         <div>
-          <label className=" text-sm text-gray-300 mb-1 flex items-center">
+          <label className="text-sm text-[var(--text-muted)] mb-1 flex items-center">
             Terms <Tooltip text="Payment terms or conditions" />
           </label>
           <textarea
             rows={3}
             {...register("terms")}
-            className="w-full px-3 py-2 rounded-md bg-[#141421] text-white border border-gray-700"
+            className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
           />
         </div>
       </div>
@@ -414,9 +352,9 @@ export default function AddInvoiceForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-[#985EFF] hover:bg-[#8851e4] transition text-white py-2 rounded-md cursor-pointer"
+        className="w-full bg-[var(--accent-strong)] hover:bg-[var(--accent)] transition text-[#041017] py-2 rounded-md cursor-pointer"
       >
-        {loading ? "Loading..." : "Create & Download"}
+        {loading ? "Creating..." : "Create & Download"}
       </button>
     </form>
   );

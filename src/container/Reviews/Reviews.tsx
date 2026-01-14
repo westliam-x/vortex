@@ -1,47 +1,43 @@
 "use client";
 
 import { Review } from "@/types/reviews";
-import { useState } from "react";
+import { useMemo } from "react";
 import { ReviewTable } from "./components";
 import { DashboardLayout } from "@/layouts";
-// Mock data
-const mockReviews: Review[] = [
-  {
-    id: "r1",
-    clientId: "1",
-    projectId: "p1",
-    rating: 5,
-    comment: "Absolutely amazing work, very professional!",
-    createdAt: "2025-07-10T12:30:00Z",
-    status: "Approved",
-    featured: true,
-  },
-  {
-    id: "r2",
-    clientId: "2",
-    projectId: "p3",
-    rating: 3,
-    comment: "Good delivery, but could improve communication.",
-    createdAt: "2025-07-08T10:15:00Z",
-    status: "Pending",
-  },
-];
+import { Card, EmptyState } from "@/components/ui";
+import { mockReviews, mockProjects } from "@/data/mock";
+import { LockKeyhole } from "lucide-react";
 
-const ReviewsPage = () =>{
-  const [reviews] = useState<Review[]>(mockReviews);
+const ReviewsPage = () => {
+  const reviews = useMemo<Review[]>(() => mockReviews, []);
+  const projectClosed = mockProjects.some((project) => project.status === "Completed");
 
   return (
-   <DashboardLayout>
-     <div className="md:p-6 p-3 text-white max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white">Client Reviews</h1>
-        <p className="text-gray-400 text-sm">See what your clients are saying</p>
+    <DashboardLayout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-semibold text-[var(--text)]">Client reviews</h1>
+          <p className="text-sm text-[var(--text-muted)]">
+            Reviews unlock after project closure and require client approval before public display.
+          </p>
+        </div>
+
+        {!projectClosed ? (
+          <Card className="p-10">
+            <EmptyState
+              title="Reviews are locked"
+              description="Close a project to unlock the review workflow."
+              icon={<LockKeyhole size={28} />}
+            />
+          </Card>
+        ) : (
+          <Card>
+            <ReviewTable reviews={reviews} locked={!projectClosed} />
+          </Card>
+        )}
       </div>
-      <ReviewTable reviews={reviews} />
-    </div>
-   </DashboardLayout>
+    </DashboardLayout>
   );
-}
+};
 
 export default ReviewsPage;
-

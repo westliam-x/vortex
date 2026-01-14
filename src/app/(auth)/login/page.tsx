@@ -1,9 +1,10 @@
+import { Suspense } from "react";
 import { Login } from "@/container";
 
 export default function LoginPage() {
-    return(
-        <div>
-            <Login/>
-        </div>
-    )
+  return (
+    <Suspense fallback={null}>
+      <Login />
+    </Suspense>
+  );
 }

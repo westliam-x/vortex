@@ -44,19 +44,17 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
         method: "POST",
         data,
       });
-      toast.success("🎉 New client added successfully!");
+      toast.success("Client added successfully.");
       reset();
       onClose();
-    } catch (error) {
-      console.error(error);
-      toast.error("❌ Failed to create client.");
+    } catch {
+      toast.error("Failed to create client.");
     }
   };
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" onClose={onClose} className="relative z-50">
-        {/* Overlay */}
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-200"
@@ -69,7 +67,6 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
         </Transition.Child>
 
-        {/* Modal */}
         <div className="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto">
           <Transition.Child
             as={Fragment}
@@ -80,102 +77,90 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="w-full max-w-xl bg-[#1E1E2E] border border-[#2F2F41] rounded-xl p-6 shadow-lg max-h-screen overflow-y-auto">
-              {/* Header */}
+            <Dialog.Panel className="w-full max-w-xl bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 shadow-lg max-h-screen overflow-y-auto">
               <div className="flex justify-between items-center mb-6">
-                <Dialog.Title className="text-xl font-semibold text-white">
-                  ➕ Add New Client
+                <Dialog.Title className="text-xl font-semibold text-[var(--text)]">
+                  Add New Client
                 </Dialog.Title>
                 <button
                   onClick={onClose}
-                  className="text-gray-400 hover:text-white transition"
+                  className="text-[var(--text-subtle)] hover:text-[var(--text)] transition"
                 >
                   <X size={20} />
                 </button>
               </div>
 
-              {/* Form */}
               <form onSubmit={handleSubmit(submitHandler)} className="space-y-5">
-                {/* Name */}
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">
+                  <label className="block text-sm text-[var(--text-muted)] mb-1">
                     Client Name
                   </label>
                   <input
                     {...register("name")}
-                    className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-[#985EFF] outline-none"
+                    className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
                   />
-                  {errors.name && (
-                    <p className="text-xs text-red-400 mt-1">
-                      {errors.name.message}
-                    </p>
-                  )}
+                  {errors.name ? (
+                    <p className="text-xs text-[var(--error)] mt-1">{errors.name.message}</p>
+                  ) : null}
                 </div>
 
-                {/* Email */}
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">
+                  <label className="block text-sm text-[var(--text-muted)] mb-1">
                     Email Address
                   </label>
                   <input
                     {...register("email")}
                     type="email"
-                    className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-[#985EFF] outline-none"
+                    className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
                   />
-                  {errors.email && (
-                    <p className="text-xs text-red-400 mt-1">
-                      {errors.email.message}
-                    </p>
-                  )}
+                  {errors.email ? (
+                    <p className="text-xs text-[var(--error)] mt-1">{errors.email.message}</p>
+                  ) : null}
                 </div>
 
-                {/* Company + Phone */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-gray-300 mb-1">
+                    <label className="block text-sm text-[var(--text-muted)] mb-1">
                       Company
                     </label>
                     <input
                       {...register("company")}
-                      className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-[#985EFF] outline-none"
+                      className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-300 mb-1">
+                    <label className="block text-sm text-[var(--text-muted)] mb-1">
                       Phone Number
                     </label>
                     <input
                       {...register("phone")}
                       type="tel"
-                      className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-[#985EFF] outline-none"
+                      className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
                     />
-                    {errors.phone && (
-                      <p className="text-xs text-red-400 mt-1">
-                        {errors.phone.message}
-                      </p>
-                    )}
+                    {errors.phone ? (
+                      <p className="text-xs text-[var(--error)] mt-1">{errors.phone.message}</p>
+                    ) : null}
                   </div>
                 </div>
 
-                {/* Project Type + Status */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-gray-300 mb-1">
+                    <label className="block text-sm text-[var(--text-muted)] mb-1">
                       Project Type
                     </label>
                     <input
                       {...register("projectType")}
                       placeholder="e.g., Website, Branding"
-                      className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-[#985EFF] outline-none"
+                      className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-300 mb-1">
+                    <label className="block text-sm text-[var(--text-muted)] mb-1">
                       Status
                     </label>
                     <select
                       {...register("status")}
-                      className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-[#985EFF] outline-none"
+                      className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
                     >
                       <option value="Active">Active</option>
                       <option value="Inactive">Inactive</option>
@@ -184,27 +169,23 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
                   </div>
                 </div>
 
-                {/* Notes */}
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">
+                  <label className="block text-sm text-[var(--text-muted)] mb-1">
                     Notes
                   </label>
                   <textarea
                     {...register("notes")}
                     rows={3}
-                    className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-[#985EFF] outline-none"
+                    className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
                   />
-                  {errors.notes && (
-                    <p className="text-xs text-red-400 mt-1">
-                      {errors.notes.message}
-                    </p>
-                  )}
+                  {errors.notes ? (
+                    <p className="text-xs text-[var(--error)] mt-1">{errors.notes.message}</p>
+                  ) : null}
                 </div>
 
-                {/* Submit */}
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-[#985EFF] to-[#6D28D9] hover:opacity-90 text-white py-2 rounded-lg font-medium transition"
+                  className="w-full bg-[var(--accent-strong)] hover:bg-[var(--accent)] text-[#041017] py-2 rounded-lg font-medium transition"
                 >
                   Add Client
                 </button>

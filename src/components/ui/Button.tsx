@@ -4,15 +4,20 @@ import clsx from "clsx";
 import { ButtonHTMLAttributes } from "react";
 
 const buttonStyles = cva(
-  "inline-flex items-center cursor-pointer justify-center rounded-md font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-2",
+  "inline-flex items-center cursor-pointer justify-center rounded-md font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60",
   {
     variants: {
       variant: {
-      outline: "bg-transparent border border-gray-600 text-gray-200 hover:bg-gray-700",
-        primary: "bg-[#985EFF] hover:bg-[#985EFF] text-white",
-        secondary: "bg-gray-700 hover:bg-gray-600 text-white",
-        destructive: "bg-red-600 hover:bg-red-700 text-white",
-        ghost: "bg-transparent text-white hover:bg-white/10",
+        outline:
+          "bg-transparent border border-[var(--border)] text-[var(--text)] hover:bg-[var(--surface)] focus:ring-[var(--accent)]/40",
+        primary:
+          "bg-[var(--accent-strong)] hover:bg-[var(--accent)] text-[#041017] focus:ring-[var(--accent)]/40",
+        secondary:
+          "bg-[var(--surface-2)] hover:bg-[var(--surface)] text-[var(--text)] focus:ring-[var(--accent)]/30",
+        destructive:
+          "bg-[var(--error)] hover:bg-[#dc2626] text-white focus:ring-[var(--error)]/40",
+        ghost:
+          "bg-transparent text-[var(--text)] hover:bg-[var(--surface)] focus:ring-[var(--accent)]/30",
       },
       size: {
         xs: "px-2 py-1 text-xs",

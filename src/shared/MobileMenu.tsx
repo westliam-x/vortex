@@ -7,17 +7,17 @@ import Link from "next/link";
 import { useMobileSidebar } from "@/store/useMobileSidebar";
 import { cn } from "@/lib";
 import { handleLogout } from "@/services/authServices";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 const links = [
   { name: "Dashboard", href: "/dashboard" },
   { name: "Clients", href: "/clients" },
   { name: "Projects", href: "/projects" },
-  { name: "Vortexes", href: "/vortexes" },
+  // { name: "Vortex Spaces", href: "/vortexes", badge: "Soon" },
   { name: "Reviews", href: "/reviews" },
-  { name: "Invoice", href: "/invoice/new" },
+  { name: "Invoices", href: "/invoice" },
   { name: "Team", href: "/team" },
-  { name: "Settings", href: "/settings" },
+  { name: "Settings", href: "/settings", badge: "Soon" },
   { name: "Logs", href: "/logs" },
   { name: "Logout", href: "#logout", logout: true },
 ];
@@ -27,7 +27,6 @@ const sidebarVariants = {
   visible: { x: "0%", opacity: 1, transition: { duration: 0.3 } },
   exit: { x: "-100%", opacity: 0, transition: { duration: 0.2 } },
 };
-
 
 const MobileSidebar = () => {
   const { isOpen, close } = useMobileSidebar();
@@ -39,8 +38,8 @@ const MobileSidebar = () => {
       try {
         await handleLogout();
         router.push("/login");
-      } catch (error) {
-        console.error("Logout failed", error);
+      } catch {
+        router.push("/login");
       }
       return;
     }
@@ -53,32 +52,37 @@ const MobileSidebar = () => {
     <AnimatePresence>
       {isOpen && (
         <Dialog open={isOpen} onClose={close} className="relative z-50 md:hidden">
-          {/* Background Overlay */}
           <motion.div
             key="overlay"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.5 }}
+            animate={{ opacity: 0.6 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black backdrop-blur-sm"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
           />
 
-           <motion.div
+          <motion.div
             key="sidebar"
             initial="hidden"
             animate="visible"
             exit="exit"
             variants={sidebarVariants}
-            className="fixed top-0 left-0 w-64 h-full bg-[#090909] p-6 shadow-xl border-r border-white"
+            className="fixed top-0 left-0 w-72 h-full bg-[var(--bg-elevated)] p-6 shadow-xl border-r border-[var(--border)]"
           >
-            {/* Header */}
-            <div className="flex justify-between items-center mb-10">
-              <h2 className="text-xl font-bold text-white tracking-wide">⚡ Vortex</h2>
-              <button onClick={close} className="text-gray-400 hover:text-white transition">
+            <div className="flex justify-between items-center mb-8">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl bg-[var(--accent-soft)] border border-[var(--accent-strong)]/40 flex items-center justify-center text-[var(--accent)] font-semibold">
+                  V
+                </div>
+                <div>
+                  <p className="text-xs text-[var(--text-subtle)]">Workspace</p>
+                  <h2 className="text-lg font-semibold text-[var(--text)]">Vortex</h2>
+                </div>
+              </div>
+              <button onClick={close} className="text-[var(--text-muted)] hover:text-[var(--text)] transition">
                 <X size={22} />
               </button>
             </div>
 
-            {/* Navigation */}
             <nav className="space-y-2 flex-1">
               {links.map((link) => {
                 const isActive = pathname === link.href;
@@ -92,20 +96,27 @@ const MobileSidebar = () => {
                       handleClick(link);
                     }}
                     className={cn(
-                      "block px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                      "hover:bg-cyan-400/10 hover:text-cyan-300",
-                      isActive && "bg-[#aa7cfa] text-white shadow-sm"
+                      "flex items-center justify-between px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                      isActive
+                        ? "bg-[var(--accent-soft)] text-[var(--text)] border border-[var(--accent-strong)]/40"
+                        : "text-[var(--text-muted)] hover:bg-[var(--surface)] hover:text-[var(--text)]"
                     )}
                   >
-                    {link.name}
+                    <span>{link.name}</span>
+                    {link.badge ? (
+                      <span className="rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-[10px] text-[var(--text-subtle)]">
+                        {link.badge}
+                      </span>
+                    ) : null}
                   </Link>
                 );
               })}
             </nav>
 
-            {/* Footer (Optional, like version or profile quick link) */}
-            <div className="mt-auto pt-6 border-t border-[#2F2F41]">
-              <p className="text-xs text-gray-500">Vortex © {new Date().getFullYear()}</p>
+            <div className="mt-auto pt-6 border-t border-[var(--border)]">
+              <p className="text-xs text-[var(--text-subtle)]">
+                Vortex Ac {new Date().getFullYear()}
+              </p>
             </div>
           </motion.div>
         </Dialog>

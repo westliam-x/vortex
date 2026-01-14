@@ -63,8 +63,7 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
           url: API_ROUTES.CLIENT.LIST,
         });
         setClients(response.clients);
-      } catch (error) {
-        console.error("Failed to load clients:", error);
+      } catch {
         toast.error("Unable to load clients");
       }
     };
@@ -79,19 +78,17 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
         method: "POST",
         data,
       });
-      toast.success("🚀 Project created successfully!");
+      toast.success("Project created successfully.");
       reset();
       onClose();
-    } catch (error) {
-      console.error(error);
-      toast.error("❌ Failed to create project.");
+    } catch {
+      toast.error("Failed to create project.");
     }
   };
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" onClose={onClose} className="relative z-50">
-        {/* Overlay */}
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-200"
@@ -104,7 +101,6 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
         </Transition.Child>
 
-        {/* Modal */}
         <div className="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto">
           <Transition.Child
             as={Fragment}
@@ -115,65 +111,57 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="w-full max-w-lg bg-[#1E1E2E] border border-[#2F2F41] rounded-xl p-6 shadow-lg max-h-screen overflow-y-auto">
-              {/* Header */}
+            <Dialog.Panel className="w-full max-w-lg bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 shadow-lg max-h-screen overflow-y-auto">
               <div className="flex justify-between items-center mb-6">
-                <Dialog.Title className="text-xl font-semibold text-white">
-                  📁 Create New Project
+                <Dialog.Title className="text-xl font-semibold text-[var(--text)]">
+                  Create New Project
                 </Dialog.Title>
                 <button
                   onClick={onClose}
-                  className="text-gray-400 hover:text-white transition"
+                  className="text-[var(--text-subtle)] hover:text-[var(--text)] transition"
                 >
                   <X size={20} />
                 </button>
               </div>
 
-              {/* Form */}
               <form onSubmit={handleSubmit(submitHandler)} className="space-y-5">
-                {/* Title */}
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">Title</label>
+                  <label className="block text-sm text-[var(--text-muted)] mb-1">Title</label>
                   <input
                     {...register("title")}
-                    className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-[#985EFF] outline-none"
+                    className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
                   />
-                  {errors.title && (
-                    <p className="text-xs text-red-400 mt-1">
-                      {errors.title.message}
-                    </p>
-                  )}
+                  {errors.title ? (
+                    <p className="text-xs text-[var(--error)] mt-1">{errors.title.message}</p>
+                  ) : null}
                 </div>
 
-                {/* Description */}
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">Description</label>
+                  <label className="block text-sm text-[var(--text-muted)] mb-1">Description</label>
                   <textarea
                     {...register("description")}
                     rows={3}
-                    className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-[#985EFF] outline-none"
+                    className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
                   />
                 </div>
 
-                {/* Type */}
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">Project Type</label>
+                  <label className="block text-sm text-[var(--text-muted)] mb-1">Project Type</label>
                   <select
                     {...register("type")}
-                    className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-[#985EFF] outline-none"
+                    className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
                   >
                     <option value="Free">Free</option>
                     <option value="Paid">Paid</option>
                   </select>
                 </div>
 
-                {/* Client (Paid only) */}
-                {projectType === "Paid" && (
+                {projectType === "Paid" ? (
                   <div>
-                    <label className="block text-sm text-gray-300 mb-1">Client</label>
+                    <label className="block text-sm text-[var(--text-muted)] mb-1">Client</label>
                     <select
                       {...register("clientId")}
-                      className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-[#985EFF] outline-none"
+                      className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
                     >
                       <option value="">Select a client</option>
                       {clients.map((client) => (
@@ -182,42 +170,37 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
                         </option>
                       ))}
                     </select>
-                    {errors.clientId && (
-                      <p className="text-xs text-red-400 mt-1">
-                        {errors.clientId.message}
-                      </p>
-                    )}
+                    {errors.clientId ? (
+                      <p className="text-xs text-[var(--error)] mt-1">{errors.clientId.message}</p>
+                    ) : null}
                   </div>
-                )}
+                ) : null}
 
-                {/* Budget (Paid only) */}
-                {projectType === "Paid" && (
+                {projectType === "Paid" ? (
                   <div>
-                    <label className="block text-sm text-gray-300 mb-1">Budget</label>
+                    <label className="block text-sm text-[var(--text-muted)] mb-1">Budget</label>
                     <input
                       {...register("budget")}
                       type="number"
-                      className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-[#985EFF] outline-none"
+                      className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
                     />
                   </div>
-                )}
+                ) : null}
 
-                {/* Deadline */}
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">Deadline</label>
+                  <label className="block text-sm text-[var(--text-muted)] mb-1">Deadline</label>
                   <input
                     {...register("deadline")}
                     type="date"
-                    className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-[#985EFF] outline-none"
+                    className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
                   />
                 </div>
 
-                {/* Priority */}
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">Priority</label>
+                  <label className="block text-sm text-[var(--text-muted)] mb-1">Priority</label>
                   <select
                     {...register("priority")}
-                    className="w-full px-3 py-2 bg-[#141421] border border-gray-700 text-white rounded-md focus:ring-2 focus:ring-[#985EFF] outline-none"
+                    className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
                   >
                     <option value="">Select</option>
                     <option value="Low">Low</option>
@@ -226,10 +209,9 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
                   </select>
                 </div>
 
-                {/* Submit */}
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-[#985EFF] to-[#6D28D9] hover:opacity-90 text-white py-2 rounded-lg font-medium transition"
+                  className="w-full bg-[var(--accent-strong)] hover:bg-[var(--accent)] text-[#041017] py-2 rounded-lg font-medium transition"
                 >
                   Create Project
                 </button>

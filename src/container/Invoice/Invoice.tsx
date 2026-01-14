@@ -26,10 +26,7 @@ export default function InvoicesPage() {
     setActive(inv);
     await new Promise((r) => setTimeout(r, 30));
     if (printRef.current) {
-      await downloadInvoicePDF(
-        inv,
-        `invoice_${inv.invoiceNumber || inv.id}.pdf`
-      );
+      await downloadInvoicePDF(inv);
       setActive(null);
     }
   };
@@ -37,10 +34,15 @@ export default function InvoicesPage() {
   return (
     <DashboardLayout>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Invoices</h1>
+        <div>
+          <h1 className="text-3xl font-semibold text-[var(--text)]">Invoices</h1>
+          <p className="text-sm text-[var(--text-muted)]">
+            Create, download, and share invoices with clients.
+          </p>
+        </div>
         <Link
           href="/invoice/new"
-          className="inline-flex items-center gap-2 bg-[#985EFF] hover:bg-[#8851e4] text-white px-4 py-2 rounded-md"
+          className="inline-flex items-center gap-2 bg-[var(--accent-strong)] hover:bg-[var(--accent)] text-[#041017] px-4 py-2 rounded-md"
         >
           + New Invoice
         </Link>

@@ -3,6 +3,7 @@
 
 import { Project } from "@/types/project";
 import ProjectCard from "./ProjectCard";
+import { EmptyState } from "@/components/ui";
 
 interface Props {
   projects: Project[];
@@ -10,7 +11,12 @@ interface Props {
 
 const ProjectGrid = ({ projects }: Props) => {
   if (!projects.length) {
-    return <p className="text-gray-400">No projects created yet.</p>;
+    return (
+      <EmptyState
+        title="No projects yet"
+        description="Create a project to start your first Vortex space."
+      />
+    );
   }
 
   return (

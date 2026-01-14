@@ -1,234 +1,254 @@
-# Vortex Client Management System
+# Vortex Server
 
-A professional, scalable client and project management system for developers and service-based teams. Built with the goal of simplifying project tracking, client collaboration (via Vortex spaces), review collection, and showcasing projects through an external API-ready portfolio.
+Backend API for Vortex, a developer-first freelance workspace. This service handles authentication, project/client management, invites, activity logs, and transactional email (OTP + invites). It uses Express + MongoDB with JWT cookie auth and Zod validation.
+
+This README reflects the current codebase under `src/` and maps the runtime behavior to the actual routes, models, and middleware in this repository.
+
+---
+
+## What This Server Does
+
+Vortex Server provides:
+- **Auth**: email + password, OTP verification, login/logout, profile retrieval.
+- **Projects**: create and list projects owned by the authenticated user.
+- **Clients**: create and list clients owned by the authenticated user.
+- **Invites**: send invites (client/team) via email.
+- **Activity Logs**: persist and retrieve audit logs per user.
 
 ---
 
 ## Tech Stack
 
-* **Framework:** Next.js 14+ (App Router)
-* **Language:** TypeScript
-* **Styling:** Tailwind CSS v4
-* **State Management:** Zustand (Context also considered)
-* **Forms & Validation:** React Hook Form + Zod + @hookform/resolvers
-* **UI Components:** Tailwind Variants + Class Variance Authority + Radix UI (Dialog, Toast, Tabs)
-* **Icons:** Lucide React
-* **Animation:** Framer Motion
-* **API Handling:** Axios
-* **Date Utilities:** date-fns
-* **Helpers:** uuid, clsx
+- **Runtime**: Node.js + Express (TypeScript)
+- **Database**: MongoDB via Mongoose
+- **Auth**: JWT (HTTP-only cookie)
+- **Validation**: Zod
+- **Email**: Nodemailer (Gmail SMTP)
+- **Security/ops**: Helmet, CORS, Morgan, dotenv
 
 ---
 
 ## Project Structure
 
-```bash
+```
 src/
-├── app/                 # Routes for pages (App Router)
-│   ├── dashboard/
-│   ├── projects/
-│   ├── vortex/
-│   ├── clients/
-│   ├── team/
-│   ├── logs/
-│   ├── settings/
-│   ├── layout.tsx
-│   └── page.tsx
-│
-├── components/          # Reusable components
-│   ├── ui/              # Low-level primitives (Button, Input)
-│   ├── elements/        # Mid-level: ProjectCard, ReviewItem
-│   └── shared/          # Navbar, Sidebar, Layout
-│
-├── container/           # Feature-level logic-aware containers
-│   └── DashboardStats.tsx
-│
-├── context/             # React context for auth, theme, vortex
-│   └── AuthContext.tsx
-│
-├── store/               # Zustand stores for global state
-│   └── useSidebar.ts
-│
-├── hooks/               # Custom React hooks
-│   ├── useDarkMode.ts
-│   └── useAuth.ts
-│
-├── forms/               # Form components with validation
-│   └── CreateProjectForm.tsx
-│
-├── data/                # Mock/dummy data during dev
-│   ├── projects.ts
-│   ├── clients.ts
-│   ├── reviews.ts
-│   └── logs.ts
-│
-├── endpoints/           # API endpoint constants
-│   └── index.ts
-│
-├── api/                 # Frontend-side API calls
-│   ├── projects.ts
-│   ├── clients.ts
-│   └── reviews.ts
-│
-├── types/               # TypeScript interfaces and shared types
-│   ├── project.ts
-│   ├── client.ts
-│   └── vortex.ts
-│
-├── constants/           # Routes, roles, status enums
-│   └── index.ts
-│
-├── lib/                 # Utility functions, helpers
-│   ├── formatDate.ts
-│   └── api.ts
-│
-├── layouts/             # Higher-order layout wrappers
-│   └── DashboardLayout.tsx
-│
-├── styles/              # Tailwind config + global styles
-│   └── globals.css
-│
-└── middleware.ts        # Auth/session middleware (future)
+  server.ts                 Express app bootstrap
+  config/db.ts              MongoDB connection
+  routes/                   HTTP routes (auth, project, client, invite, logs)
+  controller/               Request handlers + business logic
+  middleware/               Auth and response helpers
+  models/                   Mongoose schemas
+  types/                    Zod schemas + TS types
+  utils/sendEmail.ts        Nodemailer helpers
+  validators/               Zod validators for input payloads
 ```
 
 ---
 
-## Features (Core Scope)
+## Server Lifecycle
 
-### Developer Dashboard
+`src/server.ts` bootstraps:
+- Loads environment variables
+- Connects to MongoDB
+- Applies middleware (cookie-parser, JSON, CORS, Helmet)
+- Registers API routes
+- Starts the HTTP server
 
-* Total revenue (monthly/yearly)
-* Active and completed jobs count
-* Latest activity logs
-* Recent comments and feedback
+Routes are mounted under `/api/*`:
+- `/api/auth`
+- `/api/project`
+- `/api/client`
+- `/api/users`
+- `/api/logs`
+
+---
+
+## Authentication Flow
+
+### OTP
+1. `POST /api/auth/send-otp`  
+   - Generates a 6-digit OTP
+   - Stores it in `Otp` collection with 10-minute expiry
+   - Sends OTP via `sendOtp()` (Nodemailer)
+
+2. `POST /api/auth/verify-otp`  
+   - Validates OTP and sets `verified` = true
+
+### Register
+`POST /api/auth/register`:
+- Validates payload via Zod schema (`registerSchema`)
+- Creates user with hashed password
+- Logs activity
+- Returns user + JWT token
+
+### Login
+`POST /api/auth/login`:
+- Validates payload via `loginSchema`
+- Compares password (bcrypt)
+- Sets JWT token cookie
+- Logs activity
+- Returns sanitized user object
+
+### Logout
+`POST /api/auth/logout`:
+- Clears token cookie
+
+### Profile
+`GET /api/auth/profile`:
+- Returns current user profile from DB
+
+---
+
+## API Routes (Current)
+
+### Auth
+```
+POST /api/auth/send-otp
+POST /api/auth/verify-otp
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/logout   (protected)
+GET  /api/auth/profile  (protected)
+```
 
 ### Projects
-
-* View, edit, and manage all projects
-* Filter by status, client, timeline
-* Access individual Vortex spaces
-
-### Vortex (Client Workspace)
-
-* Secure space for project-specific collaboration
-* Clients can view dev links, leave comments, and give reviews
-* Developers can respond, mark resolved, and manage lifecycle
+```
+POST /api/project/create  (protected)
+GET  /api/project/list    (protected)
+```
 
 ### Clients
+```
+POST /api/client/create  (protected)
+GET  /api/client/list    (protected)
+```
 
-* List all clients with metadata
-* View client profiles: contact, projects, review history
-
-### Reviews
-
-* Collect and manage feedback from clients
-* Approve, reject, or feature reviews
-* Analytics view of ratings
+### Invites
+```
+POST /api/users/invite   (protected)
+```
 
 ### Logs
-
-* Track who did what and when
-* Includes comments, logins, edits, uploads
-
-### Team
-
-* Invite, assign roles, and monitor team members
-
-### Settings
-
-* Business info
-* Profile settings
-* API key management
-* Future: billing, theme settings
+```
+GET /api/logs            (protected, returns user-specific logs)
+```
 
 ---
 
-## Authentication (Planned)
+## Response Format
 
-* Secure client invite via magic link
-* Role-based access control (RBAC)
-* Developer vs client vs team member permissions
+All responses are normalized via `sendSuccess` and `sendError`:
+
+```json
+{
+  "success": true,
+  "message": "Message here",
+  "data": { ... }
+}
+```
+
+Error response:
+```json
+{
+  "success": false,
+  "message": "Error message",
+  "errors": { ... } // optional
+}
+```
 
 ---
 
-## Theme
+## Models (MongoDB)
 
-**Chosen Palette: Industrial Dark**
+### User
+Fields: email, name, password, role, phone, country, verification flags, profile linkage.  
+Default role is `"Admin"`.
 
-| Role       | Color Name      | Hex     |
-| ---------- | --------------- | ------- |
-| Background | Matte Black     | #121212 |
-| Surface    | Iron Gray       | #1E1E1E |
-| Accent     | Chrome Blue     | #4A90E2 |
-| Highlight  | Tungsten Silver | #777777 |
-| Text       | Platinum White  | #F5F5F5 |
+### Project
+Fields: title, description, status, client, budget, deadline, createdBy, assignedTo, techStack, etc.
+
+### Client
+Fields: name, email, phone, company, status, projects, createdBy, assignedTo.
+
+### Invite
+Fields: name, email, type (Client|Team), role, projectId(s), invitedBy, accepted.
+
+### LogEntry
+Fields: action, actor, target, details, status, timestamp.
+
+### Otp
+Fields: email, otp, expiresAt, verified.
+
+### Review
+Fields: clientId, projectId, rating, comment, status, featured.
+
+### TeamMember
+Fields: name, email, role, projects, status.
 
 ---
 
-## Installation
+## Logging & Auditing
+
+`logActivity()` persists activity logs into `LogEntry`:
+- Used during registration, login attempts, project/client creation, and invites.
+- `GET /api/logs` returns the most recent user logs.
+
+---
+
+## Email Utilities
+
+`src/utils/sendEmail.ts` uses Nodemailer with Gmail SMTP:
+- `sendInviteEmail()` for team/client invites
+- `sendOtp()` for OTP verification
+
+Both require `EMAIL_USER` + `EMAIL_PASS` in the environment.
+
+---
+
+## Environment Variables
+
+The server expects these variables:
+- `PORT`: HTTP port (default: 5000)
+- `MONGO_URI`: MongoDB connection string
+- `CLIENT_URL`: allowed CORS origin
+- `JWT_SECRET`: secret for signing JWTs
+- `JWT_EXPIRES_IN`: token lifetime (default: `1d`)
+- `EMAIL_USER`: SMTP username
+- `EMAIL_PASS`: SMTP password/app password
+- `NODE_ENV`: `development` or `production`
+
+---
+
+## Scripts
 
 ```bash
-git clone https://github.com/yourname/vortex-dashboard.git
-cd vortex-dashboard
+yarn dev    # ts-node-dev with hot reload
+yarn build  # compile TS to dist/
+yarn start  # run compiled server
+```
+
+---
+
+## Notes / Current Gaps
+
+- Invite persistence exists in the schema (`Invite`) but currently only sends email; invites are not saved to DB.
+- Reviews are modeled but no review routes/controllers are implemented yet.
+- Some console logging prints environment values; consider removing before production.
+- `routes.ts` appears empty and unused.
+
+---
+
+## Quick Start (Local)
+
+```bash
 yarn install
 yarn dev
 ```
 
----
-
-## Getting Started
-
-Start the development server:
-
-```bash
-yarn dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to see the result.
-
----
-
-## Development Practices
-
-* Use dummy data in `/data/` for testing UI
-* Abstract all fetch logic in `/api/`
-* Never hardcode endpoints — import from `/endpoints/`
-* Reuse layout from `/components/shared/Layout.tsx` or `/layouts/DashboardLayout.tsx`
-* Keep all hooks in `/hooks/`
-* Store constants and enums in `/constants/`
-* Maintain shared types in `/types/`
-* Organize form logic and validation in `/forms/`
-* Use Zustand or Context API from `/store/` and `/context/`
-* Keep helper functions inside `/lib/`
-* Use `tailwind-variants` for consistent UI theming
-* Animate with Framer Motion for interactivity
-* Use `lucide-react` for modern, accessible icons
-
----
-
-## Next Steps
-
-* [ ] Add Zustand for global state
-* [ ] Add `useDarkMode` toggle
-* [ ] Integrate real backend or Supabase/Prisma
-* [ ] Setup protected routes with middleware
-
----
-
-## Contribution & Maintenance
-
-* Keep folders modular and small
-* Update this README when adding new features
-* Maintain consistent naming
-* Use the `/endpoints` folder to avoid hardcoding URLs
-* Document all shared hooks and utilities
+Make sure your `.env` is configured and MongoDB is reachable.
 
 ---
 
 ## License
 
-This project is private and built by West for internal or licensed use only.
-
----
-
-*This README will be updated as new features are added.*
+MIT
