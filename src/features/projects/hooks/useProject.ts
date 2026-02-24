@@ -4,7 +4,6 @@ import { Client } from "@/types/client";
 import { fetchProjectById } from "../services/projects.service";
 import { makeRequest } from "@/api/request";
 import API_ROUTES from "@/endpoints/routes";
-import { mockClients } from "@/data/mock";
 import { getId, getProjectId } from "@/lib/ids";
 
 export const useProject = (projectId?: string) => {
@@ -42,7 +41,7 @@ export const useProject = (projectId?: string) => {
     }
     const clientId = getId(project?.clientId);
     if (!clientId) return null;
-    return mockClients.find((item) => getId(item) === clientId) ?? null;
+    return null;
   }, [project]);
 
   const enableShare = useCallback(async () => {

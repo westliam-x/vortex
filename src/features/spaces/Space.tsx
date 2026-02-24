@@ -10,7 +10,9 @@ import { useProject } from "@/features/projects";
 import { VoraDraftDrawer } from "@/features/vora";
 import { useVortexMessages } from "@/hooks/vortex/useVortexMessages";
 import { useVortexFiles } from "@/hooks/vortex/useVortexFiles";
+import { useVortexSummary } from "@/hooks/vortex/useVortexSummary";
 import { useVortexReview } from "@/hooks/vortex/useVortexReview";
+import { usePayments } from "@/features/payments";
 import {
   EventStream,
   FilePanel,
@@ -33,6 +35,8 @@ export default function Space() {
 
   const { project, client, loading } = useProject(projectId);
   const resolvedProjectId = getProjectId(project);
+  const { summary, error: summaryError, fetchSummary } = useVortexSummary(resolvedProjectId ?? undefined);
+  const { payments, paid, outstanding, fetchPayments } = usePayments(resolvedProjectId ?? undefined, project?.budget ?? 0);
 
   const {
     messages,
@@ -176,8 +180,11 @@ export default function Space() {
             deadline={project?.deadline ? format(new Date(project.deadline), "dd MMM yyyy") : "Not set"}
             budget={project?.budget ?? null}
             clientName={client?.name}
-            paymentSummary="Awaiting invoice settlement"
-            shareLinkStatus={project?.isPublic ? "Enabled" : "Disabled"}
+            paymentSummary={`${payments.currency} ${paid.toFixed(2)} paid • ${payments.currency} ${Math.max(
+              0,
+              outstanding
+            ).toFixed(2)} outstanding`}
+            shareLinkStatus={summary?.shareEnabled ? "Enabled" : "Disabled"}
             reviewState={reviewState}
             reviewReason="Unlocks after payment confirms"
             reviewLinkHref={reviewState === "published" ? "/reviews" : undefined}
@@ -189,6 +196,23 @@ export default function Space() {
         }
         activityPane={<EventStream events={events} loading={loadingFiles || loadingMessages} />}
       />
+      {summaryError ? (
+        <div className="rounded-lg border border-[var(--border)] bg-[var(--surface2)] px-3 py-2">
+          <p className="text-xs text-[var(--muted)]">
+            Service unavailable. Retry soon.
+            <button
+              type="button"
+              className="ml-2 text-[var(--blue)] underline"
+              onClick={() => {
+                void fetchSummary();
+                void fetchPayments();
+              }}
+            >
+              Retry
+            </button>
+          </p>
+        </div>
+      ) : null}
 
       <VoraDraftDrawer
         open={voraDraftOpen}

@@ -1,16 +1,20 @@
 import API_ROUTES from "@/endpoints/routes";
 import type { LogEntry } from "@/types/logs";
-import { safeRequest } from "@/lib";
-import { mockLogs } from "@/data/mock";
+import { makeRequest } from "@/api/request";
 
-export const getLogs = async (): Promise<LogEntry[]> => {
-  const response = await safeRequest<LogEntry[] | { logs: LogEntry[] }>(
-    {
-      url: API_ROUTES.LOGS.GET,
-      method: "GET",
-    },
-    mockLogs
-  );
+type LogsQuery = {
+  action?: string;
+  status?: string;
+  from?: string;
+  to?: string;
+};
+
+export const getLogs = async (query?: LogsQuery): Promise<LogEntry[]> => {
+  const response = await makeRequest<LogEntry[] | { logs: LogEntry[] }>({
+    url: API_ROUTES.LOGS.GET,
+    method: "GET",
+    config: query ? { params: query } : undefined,
+  });
 
   if (Array.isArray(response)) {
     return response;

@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
 import { PageHeader } from "@/components/layout";
 import { Button, Input, Select, StatusBadge } from "@/components/ui";
-import { DataTable, FilterBar, NoResults } from "@/components/patterns";
+import { DataTable, ErrorStateBlock, FilterBar, NoResults } from "@/components/patterns";
 import { getLogs } from "./services/logs.service";
 import type { LogEntry } from "@/types/logs";
+import gracefulApiError from "@/shared/utils/gracefulApiError";
 
 export default function Logs() {
   const [allLogs, setAllLogs] = useState<LogEntry[]>([]);
@@ -14,20 +15,28 @@ export default function Logs() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
   const [sort, setSort] = useState("recent");
+  const [error, setError] = useState<string | null>(null);
 
-  const loadLogs = async () => {
+  const loadLogs = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
-      const logs = await getLogs();
+      const logs = await getLogs({
+        action: search.trim() || undefined,
+        status: status === "all" ? undefined : status,
+      });
       setAllLogs(logs);
+    } catch {
+      setError(gracefulApiError());
+      setAllLogs([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, status]);
 
   useEffect(() => {
     void loadLogs();
-  }, []);
+  }, [loadLogs]);
 
   const filteredLogs = useMemo(() => {
     const term = search.toLowerCase().trim();
@@ -100,6 +109,12 @@ export default function Logs() {
             setStatus("all");
             setSort("recent");
           }}
+        />
+      ) : error ? (
+        <ErrorStateBlock
+          title="Unable to load logs"
+          description={error}
+          onRetry={() => void loadLogs()}
         />
       ) : (
         <DataTable

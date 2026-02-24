@@ -1,8 +1,7 @@
 import API_ROUTES from "@/endpoints/routes";
-import { safeRequest } from "@/lib";
-import { mockClients } from "@/data/mock";
 import { Client } from "@/types/client";
 import { getId } from "@/lib/ids";
+import { makeRequest } from "@/api/request";
 
 const normalizeClient = (client: Client & { id?: string; _id?: string }) => {
   if (!client.id && client._id) {
@@ -12,13 +11,10 @@ const normalizeClient = (client: Client & { id?: string; _id?: string }) => {
 };
 
 export const fetchClients = async (): Promise<Client[]> => {
-  const response = await safeRequest<{ clients: Client[] }>(
-    {
-      url: API_ROUTES.CLIENT.LIST,
-      method: "GET",
-    },
-    { clients: mockClients }
-  );
+  const response = await makeRequest<{ clients: Client[] }>({
+    url: API_ROUTES.CLIENT.LIST,
+    method: "GET",
+  });
 
   return response.clients.map(normalizeClient);
 };

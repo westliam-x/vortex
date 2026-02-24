@@ -1,10 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import { Drawer, EmptyState } from "@/components/ui";
+import { Drawer } from "@/components/ui";
 import { usePayments } from "../hooks/usePayments";
 import PaymentEventRow, { type PaymentTimelineEvent } from "./PaymentEventRow";
 import PaymentEventsSkeleton from "./PaymentEventsSkeleton";
+import { EmptyStateBlock, ErrorStateBlock } from "@/components/patterns";
+import gracefulApiError from "@/shared/utils/gracefulApiError";
 
 type PaymentEventsDrawerProps = {
   open: boolean;
@@ -25,25 +27,7 @@ export default function PaymentEventsDrawer({
   invoiceId,
   projectId,
 }: PaymentEventsDrawerProps) {
-  const { payments, loading } = usePayments(projectId);
-
-  const fallbackEvents = useMemo<PaymentTimelineEvent[]>(
-    () =>
-      invoiceId
-        ? [
-            {
-              id: `manual-${invoiceId}-1`,
-              status: "pending",
-              source: "Manual",
-              amount: 0,
-              currency: "USD",
-              reference: `INV-${invoiceId}`,
-              occurredAt: new Date().toISOString(),
-            },
-          ]
-        : [],
-    [invoiceId]
-  );
+  const { payments, loading, error, fetchPayments } = usePayments(projectId);
 
   const events = useMemo<PaymentTimelineEvent[]>(() => {
     const mapped = payments.events.map((event, index) => ({
@@ -63,25 +47,36 @@ export default function PaymentEventsDrawer({
     });
   }, [payments.currency, payments.events]);
 
-  const rows = events.length ? events : fallbackEvents;
-
   return (
     <Drawer
       open={open}
       onClose={() => onOpenChange(false)}
       side="right"
       title="Payment Events"
+      description={invoiceId ? `Linked invoice: ${invoiceId}` : undefined}
       className="max-w-lg"
     >
       <div className="space-y-3">
         {loading ? <PaymentEventsSkeleton /> : null}
-        {!loading && rows.length === 0 ? (
-          <EmptyState
-            title="No payment events"
-            description="Payment timeline entries will appear here when available."
+        {!loading && error ? (
+          <ErrorStateBlock
+            title="Unable to load payment events"
+            description={gracefulApiError()}
+            onRetry={() => void fetchPayments()}
           />
         ) : null}
-        {!loading ? rows.map((event) => <PaymentEventRow key={event.id} event={event} />) : null}
+        {!loading && !error && events.length === 0 ? (
+          <EmptyStateBlock
+            title="No payment events"
+            description="Payment timeline entries will appear here when available."
+            primaryAction={{
+              label: "Refresh",
+              variant: "secondary",
+              onClick: () => void fetchPayments(),
+            }}
+          />
+        ) : null}
+        {!loading && !error ? events.map((event) => <PaymentEventRow key={event.id} event={event} />) : null}
       </div>
     </Drawer>
   );

@@ -51,6 +51,11 @@ const API_ROUTES = {
   INVOICES: {
     BASE: "/invoices",
   },
+  SIGNAL: {
+    PROFILE: "/signal/profile",
+    DISCOVER: "/signal/discover",
+    PROJECTS: "/signal/projects",
+  },
 };
 
 export default API_ROUTES;

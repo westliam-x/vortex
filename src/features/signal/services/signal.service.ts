@@ -4,6 +4,8 @@ import {
   type SignalProfile,
   type SignalProjectInvite,
 } from "../types";
+import { makeRequest } from "@/api/request";
+import API_ROUTES from "@/endpoints/routes";
 
 const SIGNAL_ACTIVE_KEY = "vortex:signal:active";
 const SIGNAL_PROFILE_KEY = "vortex:signal:profile";
@@ -85,4 +87,68 @@ export const writeProjectInvites = (projectId: string, invites: SignalProjectInv
 export const appendProjectInvite = (projectId: string, invite: SignalProjectInvite) => {
   const current = readProjectInvites(projectId);
   writeProjectInvites(projectId, [invite, ...current]);
+};
+
+type SignalCollabResponse = {
+  request: {
+    roleNeeded: string;
+    requiredStack: string[];
+    budgetMin?: number;
+    budgetMax?: number;
+    notes?: string;
+    status: "OPEN" | "CLOSED";
+    createdAt: string;
+  } | null;
+};
+
+const normalizeCollabRequest = (projectId: string, input: NonNullable<SignalCollabResponse["request"]>): SignalCollabRequest => ({
+  projectId,
+  roleNeeded: input.roleNeeded as SignalCollabRequest["roleNeeded"],
+  requiredStack: input.requiredStack ?? [],
+  budgetMin: typeof input.budgetMin === "number" ? input.budgetMin : null,
+  budgetMax: typeof input.budgetMax === "number" ? input.budgetMax : null,
+  notes: input.notes ?? "",
+  status: input.status === "OPEN" ? "Open" : "Closed",
+  createdAt: input.createdAt,
+});
+
+export const fetchProjectCollabRequest = async (projectId: string): Promise<SignalCollabRequest | null> => {
+  const response = await makeRequest<SignalCollabResponse>({
+    url: `${API_ROUTES.SIGNAL.PROJECTS}/${projectId}/request`,
+    method: "GET",
+  });
+  if (!response.request) return null;
+  return normalizeCollabRequest(projectId, response.request);
+};
+
+export const upsertProjectCollabRequest = async (
+  projectId: string,
+  payload: Pick<SignalCollabRequest, "roleNeeded" | "requiredStack" | "budgetMin" | "budgetMax" | "notes">
+): Promise<SignalCollabRequest> => {
+  const response = await makeRequest<SignalCollabResponse>({
+    url: `${API_ROUTES.SIGNAL.PROJECTS}/${projectId}/request`,
+    method: "POST",
+    data: {
+      roleNeeded: payload.roleNeeded,
+      requiredStack: payload.requiredStack,
+      budgetMin: payload.budgetMin ?? undefined,
+      budgetMax: payload.budgetMax ?? undefined,
+      notes: payload.notes ?? undefined,
+    },
+  });
+  if (!response.request) {
+    throw new Error("Failed to save collaboration request");
+  }
+  return normalizeCollabRequest(projectId, response.request);
+};
+
+export const closeProjectCollabRequest = async (projectId: string): Promise<SignalCollabRequest> => {
+  const response = await makeRequest<SignalCollabResponse>({
+    url: `${API_ROUTES.SIGNAL.PROJECTS}/${projectId}/request/close`,
+    method: "PATCH",
+  });
+  if (!response.request) {
+    throw new Error("No active collaboration request");
+  }
+  return normalizeCollabRequest(projectId, response.request);
 };

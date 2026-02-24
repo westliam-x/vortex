@@ -19,9 +19,10 @@ import {
   CollabRequestCard,
   CollabRequestModal,
   SmartInviteModal,
-  readCollabRequest,
+  closeProjectCollabRequest,
+  fetchProjectCollabRequest,
   readProjectInvites,
-  writeCollabRequest,
+  upsertProjectCollabRequest,
   type SignalProjectInvite,
   type SignalCollabRequest,
 } from "@/features/signal";
@@ -45,13 +46,8 @@ export default function ProjectDetails() {
   const { project, client, loading: loadingProject, shareUrl, enableShare, closeProject } = useProject(projectId);
   const resolvedProjectId = getProjectId(project);
 
-  const fallbackMessages = resolvedProjectId
-    ? [{ projectId: resolvedProjectId, authorType: "owner" as const, body: "Kickoff notes shared.", createdAt: project?.createdAt }]
-    : [];
-
   const { messages, loading: loadingMessages, fetchMessages, sendMessage } = useVortexMessages(
-    resolvedProjectId ?? undefined,
-    project ? fallbackMessages : []
+    resolvedProjectId ?? undefined
   );
 
   const { files, loading: loadingFiles, uploadProgress, fetchFiles, uploadFile } = useVortexFiles(
@@ -90,8 +86,10 @@ export default function ProjectDetails() {
       setProjectInvites([]);
       return;
     }
-    setCollabRequest(readCollabRequest(resolvedProjectId));
     setProjectInvites(readProjectInvites(resolvedProjectId));
+    fetchProjectCollabRequest(resolvedProjectId)
+      .then((request) => setCollabRequest(request))
+      .catch(() => setCollabRequest(null));
   }, [resolvedProjectId]);
 
   const metadata = useMemo(
@@ -454,11 +452,14 @@ export default function ProjectDetails() {
                     request={collabRequest}
                     onClose={
                       collabRequest.status === "Open"
-                        ? () => {
+                        ? async () => {
                             if (!resolvedProjectId) return;
-                            const closed = { ...collabRequest, status: "Closed" as const };
-                            setCollabRequest(closed);
-                            writeCollabRequest(resolvedProjectId, closed);
+                            try {
+                              const closed = await closeProjectCollabRequest(resolvedProjectId);
+                              setCollabRequest(closed);
+                            } catch (error) {
+                              toast.error(error instanceof Error ? error.message : "Failed to close request");
+                            }
                           }
                         : undefined
                     }
@@ -526,9 +527,19 @@ export default function ProjectDetails() {
           open={collabModalOpen}
           onOpenChange={setCollabModalOpen}
           projectId={resolvedProjectId}
-          onSubmit={(request) => {
-            setCollabRequest(request);
-            writeCollabRequest(resolvedProjectId, request);
+          onSubmit={async (request) => {
+            try {
+              const saved = await upsertProjectCollabRequest(resolvedProjectId, {
+                roleNeeded: request.roleNeeded,
+                requiredStack: request.requiredStack,
+                budgetMin: request.budgetMin,
+                budgetMax: request.budgetMax,
+                notes: request.notes,
+              });
+              setCollabRequest(saved);
+            } catch (error) {
+              toast.error(error instanceof Error ? error.message : "Failed to create request");
+            }
           }}
         />
       ) : null}
