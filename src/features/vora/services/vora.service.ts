@@ -1,6 +1,10 @@
 import { voraConfig } from "../config";
 import type { VoraSendPayload, VoraSendResult } from "../types";
 
+type SendMessageOptions = {
+  mode?: "mock" | "live";
+};
+
 const mockReply = (payload: VoraSendPayload): string => {
   const latest = payload.messages[payload.messages.length - 1];
   const prompt = latest?.content ?? "your request";
@@ -12,8 +16,13 @@ const hasProviderKey = (provider: VoraSendPayload["provider"]): boolean => {
   return Boolean(voraConfig.claudeKey);
 };
 
-export const sendMessage = async (payload: VoraSendPayload): Promise<VoraSendResult> => {
-  if (voraConfig.apiMode === "mock") {
+export const sendMessage = async (
+  payload: VoraSendPayload,
+  options?: SendMessageOptions
+): Promise<VoraSendResult> => {
+  const mode = options?.mode ?? voraConfig.apiMode;
+
+  if (mode === "mock") {
     return { ok: true, reply: mockReply(payload) };
   }
 

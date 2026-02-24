@@ -1,8 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Badge, Button, Drawer, Select, Textarea } from "@/components/ui";
-import { voraConfig, VORA_PROVIDER_STORAGE_KEY } from "../config";
+import { Badge, Button, Drawer, Textarea } from "@/components/ui";
+import {
+  VORA_SETTINGS_CHANGE_EVENT,
+  readVoraPreferences,
+  type VoraApiMode,
+  type VoraTone,
+} from "../config";
 import { sendMessage } from "../services/vora.service";
 import type { Provider, VoraSendPayload } from "../types";
 import VoraQuickActions, { type VoraQuickActionType } from "./VoraQuickActions";
@@ -23,6 +28,7 @@ type VoraDraftDrawerProps = {
 
 const FALLBACK_ERROR_COPY =
   "I’m unable to generate a draft right now. The assistant service is unavailable. Try again soon.";
+const ASSISTANT_UNAVAILABLE_TITLE = "Assistant unavailable";
 
 export default function VoraDraftDrawer({
   open,
@@ -36,25 +42,37 @@ export default function VoraDraftDrawer({
   invoiceStatus,
   lastMessagesSummary,
 }: VoraDraftDrawerProps) {
-  const [provider, setProvider] = useState<Provider>(voraConfig.defaultProvider);
-  const [tone, setTone] = useState("Professional");
+  const [provider, setProvider] = useState<Provider>("openai");
+  const [mode, setMode] = useState<VoraApiMode>("mock");
+  const [tone, setTone] = useState<VoraTone>("Professional");
+  const [signatureEnabled, setSignatureEnabled] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [draft, setDraft] = useState("");
+  const [showUnavailableBanner, setShowUnavailableBanner] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const stored = window.localStorage.getItem(VORA_PROVIDER_STORAGE_KEY);
-    if (stored === "openai" || stored === "claude") {
-      setProvider(stored);
-    }
+    const sync = () => {
+      const prefs = readVoraPreferences();
+      setProvider(prefs.provider);
+      setMode(prefs.mode);
+      setTone(prefs.tone);
+      setSignatureEnabled(prefs.signature);
+    };
+
+    sync();
+    window.addEventListener(VORA_SETTINGS_CHANGE_EVENT, sync);
+    return () => window.removeEventListener(VORA_SETTINGS_CHANGE_EVENT, sync);
   }, []);
 
-  const updateProvider = (next: Provider) => {
-    setProvider(next);
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(VORA_PROVIDER_STORAGE_KEY, next);
-    }
+  const appendSignature = (text: string) => {
+    if (!signatureEnabled) return text;
+    if (typeof window === "undefined") return `${text}\n\n— Vortex User`;
+    const userName =
+      window.localStorage.getItem("vortex:user:name") ??
+      window.localStorage.getItem("vortex:profile:name") ??
+      "Vortex User";
+    return `${text}\n\n— ${userName}`;
   };
 
   const generateDraft = async (inputPrompt?: string) => {
@@ -84,8 +102,15 @@ export default function VoraDraftDrawer({
       },
     };
 
-    const result = await sendMessage(payload);
-    setDraft(result.ok ? result.reply : FALLBACK_ERROR_COPY);
+    const result = await sendMessage(payload, { mode });
+    if (!result.ok && mode === "live" && (result.errorCode === "NO_KEY" || result.errorCode === "PROVIDER_ERROR")) {
+      setShowUnavailableBanner(true);
+      setDraft(FALLBACK_ERROR_COPY);
+      setLoading(false);
+      return;
+    }
+
+    setDraft(result.ok ? appendSignature(result.reply) : FALLBACK_ERROR_COPY);
     setLoading(false);
   };
 
@@ -111,15 +136,13 @@ export default function VoraDraftDrawer({
     >
       <div className="space-y-4">
         <div className="flex items-center justify-between gap-2">
-          <p className="text-xs uppercase tracking-wide text-[var(--muted)]">Provider</p>
-          <Select
-            className="max-w-[140px]"
-            value={provider}
-            onChange={(event) => updateProvider(event.target.value as Provider)}
-          >
-            <option value="openai">OpenAI</option>
-            <option value="claude">Claude</option>
-          </Select>
+          <p className="text-xs uppercase tracking-wide text-[var(--muted)]">Runtime</p>
+          <div className="flex items-center gap-2">
+            <Badge tone="info">{provider === "claude" ? "Claude" : "OpenAI"}</Badge>
+            <Badge tone={mode === "live" ? "warning" : "default"}>
+              {mode === "live" ? "Live mode" : "Mock mode"}
+            </Badge>
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -127,13 +150,17 @@ export default function VoraDraftDrawer({
           <Badge tone="default">{clientName || "Unknown client"}</Badge>
         </div>
 
-        <div className="grid grid-cols-1 gap-2">
-          <Select value={tone} onChange={(event) => setTone(event.target.value)}>
-            <option value="Professional">Professional</option>
-            <option value="Friendly">Friendly</option>
-            <option value="Direct">Direct</option>
-          </Select>
-        </div>
+        {showUnavailableBanner ? (
+          <div className="rounded-lg border border-[var(--warning)]/50 bg-[var(--surface2)] p-3">
+            <p className="text-sm font-medium text-[var(--text)]">{ASSISTANT_UNAVAILABLE_TITLE}</p>
+            <p className="mt-1 text-sm text-[var(--muted)]">{FALLBACK_ERROR_COPY}</p>
+            <div className="mt-2">
+              <Button size="xs" variant="ghost" onClick={() => setShowUnavailableBanner(false)}>
+                Dismiss
+              </Button>
+            </div>
+          </div>
+        ) : null}
 
         <VoraQuickActions loading={loading} onSelect={onSelectQuickAction} />
 

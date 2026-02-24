@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { Button, Drawer, IconButton, Select, Tabs } from "@/components/ui";
-import { voraConfig, VORA_PROVIDER_STORAGE_KEY } from "../config";
+import { Badge, Button, Drawer, IconButton, Tabs } from "@/components/ui";
+import {
+  VORA_SETTINGS_CHANGE_EVENT,
+  readVoraPreferences,
+  type VoraApiMode,
+} from "../config";
 import { sendMessage } from "../services/vora.service";
 import type { Provider, VoraMessage, VoraSendPayload } from "../types";
 import ChatThread from "./ChatThread";
@@ -15,35 +19,37 @@ type VoraDrawerProps = {
 };
 
 const draftTemplates = ["Client update", "Follow-up", "Scope clarification"] as const;
+const ASSISTANT_UNAVAILABLE_TITLE = "Assistant unavailable";
+const ASSISTANT_UNAVAILABLE_BODY =
+  "I’m unable to generate a draft right now. The assistant service is unavailable. Try again soon.";
 
 export default function VoraDrawer({ open, onOpenChange }: VoraDrawerProps) {
-  const [provider, setProvider] = useState<Provider>(voraConfig.defaultProvider);
+  const [provider, setProvider] = useState<Provider>("openai");
+  const [mode, setMode] = useState<VoraApiMode>("mock");
   const [composerValue, setComposerValue] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const [messages, setMessages] = useState<VoraMessage[]>([]);
   const [draftLoading, setDraftLoading] = useState(false);
   const [draftText, setDraftText] = useState("");
+  const [unavailableBanner, setUnavailableBanner] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const stored = window.localStorage.getItem(VORA_PROVIDER_STORAGE_KEY);
-    if (stored === "openai" || stored === "claude") {
-      setProvider(stored);
-    }
+    const sync = () => {
+      const prefs = readVoraPreferences();
+      setProvider(prefs.provider);
+      setMode(prefs.mode);
+    };
+
+    sync();
+    window.addEventListener(VORA_SETTINGS_CHANGE_EVENT, sync);
+    return () => window.removeEventListener(VORA_SETTINGS_CHANGE_EVENT, sync);
   }, []);
 
-  const updateProvider = (next: Provider) => {
-    setProvider(next);
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(VORA_PROVIDER_STORAGE_KEY, next);
-    }
-  };
-
-  const callVora = async (input: string, mode: "chat" | "draft") => {
+  const callVora = async (input: string, requestMode: "chat" | "draft") => {
     const payload: VoraSendPayload = {
       provider,
       messages:
-        mode === "chat"
+        requestMode === "chat"
           ? [
               ...messages,
               {
@@ -61,10 +67,19 @@ export default function VoraDrawer({ open, onOpenChange }: VoraDrawerProps) {
                 createdAt: new Date().toISOString(),
               },
             ],
-      context: { mode },
+      context: { mode: requestMode },
     };
 
-    return sendMessage(payload);
+    const result = await sendMessage(payload, { mode });
+    if (!result.ok && mode === "live" && (result.errorCode === "NO_KEY" || result.errorCode === "PROVIDER_ERROR")) {
+      setUnavailableBanner(true);
+      return {
+        ...result,
+        reply: ASSISTANT_UNAVAILABLE_BODY,
+      };
+    }
+
+    return result;
   };
 
   const onSendMessage = async () => {
@@ -175,18 +190,28 @@ export default function VoraDrawer({ open, onOpenChange }: VoraDrawerProps) {
       <div className="space-y-4">
         <div className="flex items-center gap-2 border-b border-[var(--border)] pb-3">
           <h2 className="text-lg font-semibold text-[var(--text)]">Vora</h2>
-          <Select
-            className="ml-auto max-w-[140px]"
-            value={provider}
-            onChange={(event) => updateProvider(event.target.value as Provider)}
-          >
-            <option value="openai">OpenAI</option>
-            <option value="claude">Claude</option>
-          </Select>
+          <div className="ml-auto flex items-center gap-2">
+            <Badge tone="info">{provider === "claude" ? "Claude" : "OpenAI"}</Badge>
+            <Badge tone={mode === "live" ? "warning" : "default"}>
+              {mode === "live" ? "Live mode" : "Mock mode"}
+            </Badge>
+          </div>
           <IconButton aria-label="Close Vora" size="sm" variant="ghost" onClick={() => onOpenChange(false)}>
             <X size={16} />
           </IconButton>
         </div>
+
+        {unavailableBanner ? (
+          <div className="rounded-lg border border-[var(--warning)]/50 bg-[var(--surface2)] p-3">
+            <p className="text-sm font-medium text-[var(--text)]">{ASSISTANT_UNAVAILABLE_TITLE}</p>
+            <p className="mt-1 text-sm text-[var(--muted)]">{ASSISTANT_UNAVAILABLE_BODY}</p>
+            <div className="mt-2">
+              <Button size="xs" variant="ghost" onClick={() => setUnavailableBanner(false)}>
+                Dismiss
+              </Button>
+            </div>
+          </div>
+        ) : null}
 
         <Tabs
           defaultValue="chat"
