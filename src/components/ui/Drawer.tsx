@@ -7,13 +7,14 @@ import { cn } from "@/lib";
 type DrawerProps = {
   open: boolean;
   onClose: () => void;
+  side?: "left" | "right";
   title?: string;
   children: ReactNode;
   className?: string;
 };
 
 const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
-  ({ open, onClose, title, children, className }, ref) => {
+  ({ open, onClose, side = "right", title, children, className }, ref) => {
     useEffect(() => {
       if (!open) return;
       const onKeyDown = (event: KeyboardEvent) => {
@@ -46,8 +47,9 @@ const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
         <aside
           ref={ref}
           className={cn(
-            "absolute right-0 top-0 h-full w-full max-w-md border-l border-[var(--border)] bg-[var(--surface)] p-6 transition-transform duration-200",
-            open ? "translate-x-0" : "translate-x-full",
+            "absolute top-0 h-full w-full max-w-md border-[var(--border)] bg-[var(--surface)] p-6 transition-transform duration-200",
+            side === "right" ? "right-0 border-l" : "left-0 border-r",
+            open ? "translate-x-0" : side === "right" ? "translate-x-full" : "-translate-x-full",
             className
           )}
         >

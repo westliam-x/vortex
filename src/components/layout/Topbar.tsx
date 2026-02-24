@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Bell, ChevronDown, Menu, Plus, Search, UserCircle2 } from "lucide-react";
 import { Button, IconButton, Input } from "@/components/ui";
 
 type TopbarProps = {
   onToggleSidebar: () => void;
+  breadcrumb?: ReactNode;
 };
 
-export default function Topbar({ onToggleSidebar }: TopbarProps) {
+export default function Topbar({ onToggleSidebar, breadcrumb }: TopbarProps) {
   const [quickActionsOpen, setQuickActionsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
@@ -19,7 +20,9 @@ export default function Topbar({ onToggleSidebar }: TopbarProps) {
           <Menu size={16} />
         </IconButton>
 
-        <div className="relative hidden max-w-md flex-1 md:block">
+        {breadcrumb ? <div className="hidden shrink-0 text-sm text-[var(--muted)] lg:block">{breadcrumb}</div> : null}
+
+        <div className="relative flex-1">
           <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted)]" />
           <Input className="pl-9" placeholder="Search projects, clients, logs..." />
         </div>

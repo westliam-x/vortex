@@ -6,6 +6,7 @@ import LogsFilters from "./components/LogFilters";
 import LogsTable from "./components/LogTables";
 import { getLogs } from "./services/logs.service";
 import { LogEntry } from "@/types/logs";
+import { PageHeader } from "@/components/layout";
 import { Button, Card, EmptyState, ErrorState, Skeleton } from "@/components/ui";
 
 type LogFilter = {
@@ -64,15 +65,11 @@ const LogsPage = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <Card className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-semibold text-[var(--text)]">Activity logs</h2>
-            <p className="text-sm text-[var(--text-muted)]">
-              Every action inside a Vortex space, in one timeline.
-            </p>
-          </div>
-          <Button variant="secondary">Export (coming soon)</Button>
-        </Card>
+        <PageHeader
+          title="Activity Logs"
+          subtitle="Every action inside a Vortex space, in one timeline."
+          primaryAction={{ label: "Export (coming soon)", variant: "secondary", disabled: true }}
+        />
 
         <LogsFilters onFilter={handleFilter} />
 

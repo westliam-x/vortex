@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/layout";
 export default function Payments() {
   return (
     <div className="space-y-6">
-      <PageHeader title="Payments" description="Track payment events and project totals." />
+      <PageHeader title="Payments" subtitle="Track payment events and project totals." />
       <Card className="text-sm text-[var(--muted)]">Payments dashboard is ready for API wiring.</Card>
     </div>
   );

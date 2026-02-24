@@ -3,6 +3,7 @@
 import { ReviewTable } from "./components";
 import { DashboardLayout } from "@/layouts";
 import { Card, EmptyState } from "@/components/ui";
+import { PageHeader } from "@/components/layout";
 import { LockKeyhole } from "lucide-react";
 import { useReviews } from "@/features/reviews";
 import { useProjects } from "@/features/projects";
@@ -15,12 +16,10 @@ const ReviewsPage = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-semibold text-[var(--text)]">Client reviews</h1>
-          <p className="text-sm text-[var(--text-muted)]">
-            Reviews unlock after project closure and require client approval before public display.
-          </p>
-        </div>
+        <PageHeader
+          title="Client Reviews"
+          subtitle="Reviews unlock after project closure and require client approval before public display."
+        />
 
         {!projectClosed ? (
           <Card className="p-10">

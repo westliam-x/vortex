@@ -4,11 +4,14 @@ import { useMemo, useState } from "react";
 import { ProjectGrid, ProjectHeader } from "./components";
 import { Skeleton } from "@/components/ui";
 import { useProjects } from "./hooks/useProjects";
+import { AddProjectModal } from "@/components";
+import { PageHeader } from "@/components/layout";
 
 const ProjectsList = () => {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
   const [sort, setSort] = useState("recent");
+  const [showProjectModal, setShowProjectModal] = useState(false);
   const { projects, loading } = useProjects();
 
   const filteredProjects = useMemo(() => {
@@ -42,6 +45,14 @@ const ProjectsList = () => {
 
   return (
     <div className="space-y-6">
+      <PageHeader
+        title="Projects"
+        subtitle="Track delivery, visibility, and approvals across active work."
+        primaryAction={{
+          label: "+ New Project",
+          onClick: () => setShowProjectModal(true),
+        }}
+      />
       <ProjectHeader
         search={search}
         status={status}
@@ -50,6 +61,7 @@ const ProjectsList = () => {
         onStatusChange={setStatus}
         onSortChange={setSort}
       />
+      <AddProjectModal isOpen={showProjectModal} onClose={() => setShowProjectModal(false)} />
       {loading ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {Array.from({ length: 4 }).map((_, idx) => (

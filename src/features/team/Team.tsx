@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { DashboardLayout } from "@/layouts";
 import { InviteUserModal } from "@/components";
+import { PageHeader } from "@/components/layout";
 import { TeamTable } from "./components";
-import { Button, Card } from "@/components/ui";
 import { useTeam } from "./hooks/useTeam";
 import { toast } from "react-toastify";
 
@@ -15,19 +15,11 @@ export default function TeamPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <Card className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="md:text-3xl text-2xl font-semibold text-[var(--text)]">
-              Team members
-            </h1>
-            <p className="text-sm text-[var(--text-muted)]">
-              Manage access levels and assignments across your workspace.
-            </p>
-          </div>
-          <Button onClick={() => setShowInviteModal(true)}>
-            + Invite member
-          </Button>
-        </Card>
+        <PageHeader
+          title="Team Members"
+          subtitle="Manage access levels and assignments across your workspace."
+          primaryAction={{ label: "+ Invite member", onClick: () => setShowInviteModal(true) }}
+        />
 
         <TeamTable
           members={team}
