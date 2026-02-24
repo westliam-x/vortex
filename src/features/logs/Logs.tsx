@@ -1,46 +1,32 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { format } from "date-fns";
 import { PageHeader } from "@/components/layout";
 import { Button, Input, Select, StatusBadge } from "@/components/ui";
 import { DataTable, ErrorStateBlock, FilterBar, NoResults } from "@/components/patterns";
-import { getLogs } from "./services/logs.service";
-import type { LogEntry } from "@/types/logs";
+import { useLogs } from "./hooks/useLogs";
 import gracefulApiError from "@/shared/utils/gracefulApiError";
 
 export default function Logs() {
-  const [allLogs, setAllLogs] = useState<LogEntry[]>([]);
-  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
   const [sort, setSort] = useState("recent");
-  const [error, setError] = useState<string | null>(null);
-
-  const loadLogs = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const logs = await getLogs({
-        action: search.trim() || undefined,
-        status: status === "all" ? undefined : status,
-      });
-      setAllLogs(logs);
-    } catch {
-      setError(gracefulApiError());
-      setAllLogs([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [search, status]);
-
-  useEffect(() => {
-    void loadLogs();
-  }, [loadLogs]);
+  const {
+    logs,
+    loading,
+    error,
+    refetch,
+    pagination,
+    page,
+    limit,
+    setPage,
+    setLimit,
+  } = useLogs();
 
   const filteredLogs = useMemo(() => {
     const term = search.toLowerCase().trim();
-    const items = allLogs.filter((log) => {
+    const items = logs.filter((log) => {
       const actor = log.actor.name.toLowerCase();
       const action = log.action.toLowerCase();
       const target = log.target.name.toLowerCase();
@@ -53,36 +39,45 @@ export default function Logs() {
       if (sort === "actor") return a.actor.name.localeCompare(b.actor.name);
       return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
     });
-  }, [allLogs, search, status, sort]);
+  }, [logs, search, status, sort]);
 
   const hasFilters = search.trim().length > 0 || status !== "all" || sort !== "recent";
-  const showNoResults = !loading && allLogs.length > 0 && filteredLogs.length === 0 && hasFilters;
+  const showNoResults = !loading && pagination.total > 0 && filteredLogs.length === 0 && hasFilters;
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Logs"
         subtitle="Every action inside a Vortex space, in one timeline."
-        primaryAction={{ label: "Refresh", variant: "secondary", onClick: () => void loadLogs() }}
+        primaryAction={{ label: "Refresh", variant: "secondary", onClick: () => void refetch() }}
       />
 
       <FilterBar
         searchSlot={
           <Input
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setPage(1);
+            }}
             placeholder="Search actor, action, or target"
           />
         }
         filterChipsSlot={
-          <Select value={status} onChange={(event) => setStatus(event.target.value)}>
+          <Select value={status} onChange={(event) => {
+            setStatus(event.target.value);
+            setPage(1);
+          }}>
             <option value="all">All statuses</option>
             <option value="success">Success</option>
             <option value="failure">Failure</option>
           </Select>
         }
         sortSlot={
-          <Select value={sort} onChange={(event) => setSort(event.target.value)}>
+          <Select value={sort} onChange={(event) => {
+            setSort(event.target.value);
+            setPage(1);
+          }}>
             <option value="recent">Sort: Recent</option>
             <option value="actor">Sort: Actor</option>
           </Select>
@@ -93,6 +88,7 @@ export default function Logs() {
               setSearch("");
               setStatus("all");
               setSort("recent");
+              setPage(1);
             }}>
               Reset
             </Button>
@@ -113,8 +109,8 @@ export default function Logs() {
       ) : error ? (
         <ErrorStateBlock
           title="Unable to load logs"
-          description={error}
-          onRetry={() => void loadLogs()}
+          description={gracefulApiError()}
+          onRetry={() => void refetch()}
         />
       ) : (
         <DataTable
@@ -132,11 +128,17 @@ export default function Logs() {
           rows={filteredLogs}
           loading={loading}
           loadingRows={8}
+          page={page}
+          limit={limit}
+          total={pagination.total}
+          totalPages={pagination.totalPages}
+          onPageChange={setPage}
+          onLimitChange={setLimit}
           getRowKey={(row) => row._id}
           emptyState={{
             title: "No activity yet",
             description: "Logs will appear here as your workspace activity grows.",
-            primaryAction: { label: "Refresh", variant: "secondary", onClick: () => void loadLogs() },
+            primaryAction: { label: "Refresh", variant: "secondary", onClick: () => void refetch() },
           }}
         />
       )}

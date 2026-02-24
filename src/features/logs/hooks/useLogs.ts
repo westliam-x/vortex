@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
-import { Client } from "@/types/client";
-import { fetchClients } from "../services/clients.service";
+import type { LogEntry } from "@/types/logs";
 import type { PaginationMeta } from "@/types/api";
+import { getLogs } from "../services/logs.service";
 
-type UseClientsOptions = {
+type UseLogsOptions = {
   page?: number;
   limit?: number;
   filters?: {
     search?: string;
+    action?: string;
     status?: string;
-    sort?: string;
+    from?: string;
+    to?: string;
   };
 };
 
@@ -22,35 +24,37 @@ const defaultPagination: PaginationMeta = {
   hasPrev: false,
 };
 
-export const useClients = (options: UseClientsOptions = {}) => {
-  const [clients, setClients] = useState<Client[]>([]);
+export const useLogs = (options: UseLogsOptions = {}) => {
+  const [logs, setLogs] = useState<LogEntry[]>([]);
   const [page, setPage] = useState(options.page ?? 1);
   const [limit, setLimit] = useState(options.limit ?? 20);
   const [pagination, setPagination] = useState<PaginationMeta>(defaultPagination);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadClients = useCallback(async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetchClients({
+      const response = await getLogs({
         page,
         limit,
-        filters: options.filters,
+        ...(options.filters ?? {}),
       });
-      setClients(response.data);
+      setLogs(response.data);
       setPagination(response.pagination ?? defaultPagination);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load clients");
+      setError(err instanceof Error ? err.message : "Failed to load logs");
+      setLogs([]);
+      setPagination(defaultPagination);
     } finally {
       setLoading(false);
     }
   }, [limit, options.filters, page]);
 
   useEffect(() => {
-    loadClients();
-  }, [loadClients]);
+    void load();
+  }, [load]);
 
   const updateLimit = (nextLimit: number) => {
     setLimit(nextLimit);
@@ -58,8 +62,8 @@ export const useClients = (options: UseClientsOptions = {}) => {
   };
 
   return {
-    data: clients,
-    clients,
+    data: logs,
+    logs,
     pagination,
     page,
     limit,
@@ -67,6 +71,6 @@ export const useClients = (options: UseClientsOptions = {}) => {
     setLimit: updateLimit,
     loading,
     error,
-    refetch: loadClients,
+    refetch: load,
   };
 };

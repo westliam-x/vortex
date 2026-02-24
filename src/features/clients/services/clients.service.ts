@@ -1,7 +1,7 @@
 import API_ROUTES from "@/endpoints/routes";
 import { Client } from "@/types/client";
-import { getId } from "@/lib/ids";
 import { makeRequest } from "@/api/request";
+import type { PaginationMeta } from "@/types/api";
 
 const normalizeClient = (client: Client & { id?: string; _id?: string }) => {
   if (!client.id && client._id) {
@@ -10,16 +10,49 @@ const normalizeClient = (client: Client & { id?: string; _id?: string }) => {
   return client;
 };
 
-export const fetchClients = async (): Promise<Client[]> => {
-  const response = await makeRequest<{ data: Client[] }>({
+type ClientListParams = {
+  page: number;
+  limit: number;
+  filters?: {
+    search?: string;
+    status?: string;
+    sort?: string;
+  };
+};
+
+type PaginatedClientsResponse = {
+  data: Client[];
+  pagination: PaginationMeta;
+};
+
+export const fetchClients = async ({
+  page = 1,
+  limit = 20,
+  filters,
+}: Partial<ClientListParams> = {}): Promise<PaginatedClientsResponse> => {
+  const response = await makeRequest<PaginatedClientsResponse>({
     url: API_ROUTES.CLIENT.LIST,
     method: "GET",
+    config: {
+      params: {
+        page,
+        limit,
+        ...(filters ?? {}),
+      },
+    },
   });
 
-  return (response.data ?? []).map(normalizeClient);
+  return {
+    data: (response.data ?? []).map(normalizeClient),
+    pagination: response.pagination,
+  };
 };
 
 export const fetchClientById = async (id: string): Promise<Client | null> => {
-  const clients = await fetchClients();
-  return clients.find((client) => getId(client) === id) ?? null;
+  const response = await makeRequest<{ client: Client | null }>({
+    url: `${API_ROUTES.CLIENT.BY_ID}/${id}`,
+    method: "GET",
+  });
+
+  return response.client ? normalizeClient(response.client) : null;
 };

@@ -27,7 +27,7 @@ export default function ProjectsList() {
   const [status, setStatus] = useState("all");
   const [sort, setSort] = useState("recent");
   const [showProjectModal, setShowProjectModal] = useState(false);
-  const { projects, loading } = useProjects();
+  const { projects, loading, pagination, page, limit, setPage, setLimit } = useProjects();
 
   const filteredProjects = useMemo(() => {
     const term = search.toLowerCase().trim();
@@ -55,7 +55,7 @@ export default function ProjectsList() {
   }, [projects, search, status, sort]);
 
   const hasFilters = search.trim().length > 0 || status !== "all" || sort !== "recent";
-  const showNoResults = !loading && projects.length > 0 && filteredProjects.length === 0 && hasFilters;
+  const showNoResults = !loading && pagination.total > 0 && filteredProjects.length === 0 && hasFilters;
 
   return (
     <div className="space-y-6">
@@ -69,12 +69,18 @@ export default function ProjectsList() {
         searchSlot={
           <Input
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setPage(1);
+            }}
             placeholder="Search by project, client, or description"
           />
         }
         filterChipsSlot={
-          <Select value={status} onChange={(event) => setStatus(event.target.value)}>
+          <Select value={status} onChange={(event) => {
+            setStatus(event.target.value);
+            setPage(1);
+          }}>
             <option value="all">All statuses</option>
             <option value="Pending">Pending</option>
             <option value="In Progress">In Progress</option>
@@ -83,7 +89,10 @@ export default function ProjectsList() {
           </Select>
         }
         sortSlot={
-          <Select value={sort} onChange={(event) => setSort(event.target.value)}>
+          <Select value={sort} onChange={(event) => {
+            setSort(event.target.value);
+            setPage(1);
+          }}>
             <option value="recent">Sort: Recent</option>
             <option value="due">Sort: Deadline</option>
             <option value="budget">Sort: Budget</option>
@@ -95,6 +104,7 @@ export default function ProjectsList() {
               setSearch("");
               setStatus("all");
               setSort("recent");
+              setPage(1);
             }}>
               Reset
             </Button>
@@ -128,6 +138,12 @@ export default function ProjectsList() {
           rows={filteredProjects}
           loading={loading}
           loadingRows={6}
+          page={page}
+          limit={limit}
+          total={pagination.total}
+          totalPages={pagination.totalPages}
+          onPageChange={setPage}
+          onLimitChange={setLimit}
           getRowKey={(row) => getProjectId(row) ?? row.title}
           onRowClick={(row) => {
             const id = getProjectId(row);

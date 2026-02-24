@@ -16,7 +16,7 @@ export default function ClientsList() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
   const [sort, setSort] = useState("name");
-  const { clients, loading, error, refetch } = useClients();
+  const { clients, loading, error, refetch, pagination, page, limit, setPage, setLimit } = useClients();
 
   const filteredClients = useMemo(() => {
     const term = search.toLowerCase().trim();
@@ -38,7 +38,7 @@ export default function ClientsList() {
   }, [clients, search, status, sort]);
 
   const hasFilters = search.trim().length > 0 || status !== "all" || sort !== "name";
-  const showNoResults = !loading && clients.length > 0 && filteredClients.length === 0 && hasFilters;
+  const showNoResults = !loading && pagination.total > 0 && filteredClients.length === 0 && hasFilters;
 
   return (
     <div className="space-y-6">
@@ -52,12 +52,18 @@ export default function ClientsList() {
         searchSlot={
           <Input
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setPage(1);
+            }}
             placeholder="Search by name or email"
           />
         }
         filterChipsSlot={
-          <Select value={status} onChange={(event) => setStatus(event.target.value)}>
+          <Select value={status} onChange={(event) => {
+            setStatus(event.target.value);
+            setPage(1);
+          }}>
             <option value="all">All statuses</option>
             <option value="Active">Active</option>
             <option value="Pending">Pending</option>
@@ -65,7 +71,10 @@ export default function ClientsList() {
           </Select>
         }
         sortSlot={
-          <Select value={sort} onChange={(event) => setSort(event.target.value)}>
+          <Select value={sort} onChange={(event) => {
+            setSort(event.target.value);
+            setPage(1);
+          }}>
             <option value="name">Sort: Name</option>
             <option value="projects">Sort: Projects count</option>
           </Select>
@@ -76,6 +85,7 @@ export default function ClientsList() {
               setSearch("");
               setStatus("all");
               setSort("name");
+              setPage(1);
             }}>
               Reset
             </Button>
@@ -119,6 +129,12 @@ export default function ClientsList() {
           rows={filteredClients}
           loading={loading}
           loadingRows={6}
+          page={page}
+          limit={limit}
+          total={pagination.total}
+          totalPages={pagination.totalPages}
+          onPageChange={setPage}
+          onLimitChange={setLimit}
           getRowKey={(row) => getId(row) ?? row.email}
           onRowClick={(row) => {
             const id = getId(row);

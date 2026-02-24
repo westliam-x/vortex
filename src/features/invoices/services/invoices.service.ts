@@ -2,6 +2,7 @@ import API_ROUTES from "@/endpoints/routes";
 import { makeRequest } from "@/api/request";
 import type { Invoice } from "@/lib/invoices";
 import type { AxiosRequestConfig } from "axios";
+import type { PaginationMeta } from "@/types/api";
 
 const normalizeInvoice = (invoice: Invoice & { _id?: string }) => {
   if (!invoice.id && invoice._id) {
@@ -10,13 +11,44 @@ const normalizeInvoice = (invoice: Invoice & { _id?: string }) => {
   return invoice;
 };
 
-export const fetchInvoices = async (config?: AxiosRequestConfig): Promise<Invoice[]> => {
-  const response = await makeRequest<{ data: Invoice[] }>({
+type InvoiceListParams = {
+  page: number;
+  limit: number;
+  filters?: {
+    search?: string;
+    status?: string;
+    dateFilter?: string;
+  };
+  config?: AxiosRequestConfig;
+};
+
+type PaginatedInvoicesResponse = {
+  data: Invoice[];
+  pagination: PaginationMeta;
+};
+
+export const fetchInvoices = async ({
+  page = 1,
+  limit = 20,
+  filters,
+  config,
+}: Partial<InvoiceListParams> = {}): Promise<PaginatedInvoicesResponse> => {
+  const response = await makeRequest<PaginatedInvoicesResponse>({
     url: API_ROUTES.INVOICES.BASE,
     method: "GET",
-    config,
+    config: {
+      ...config,
+      params: {
+        page,
+        limit,
+        ...(filters ?? {}),
+      },
+    },
   });
-  return (response.data ?? []).map(normalizeInvoice);
+  return {
+    data: (response.data ?? []).map(normalizeInvoice),
+    pagination: response.pagination,
+  };
 };
 
 export const createInvoice = async (payload: Invoice): Promise<Invoice> => {

@@ -62,7 +62,7 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
     const fetchClients = async () => {
       try {
         const response = await fetchClientsService();
-        setClients(response);
+        setClients(response.data ?? []);
       } catch {
         toast.error("Unable to load clients");
       }

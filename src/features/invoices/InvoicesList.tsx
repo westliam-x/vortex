@@ -18,7 +18,7 @@ const getInvoiceStatus = (invoice: Invoice) => {
 
 export default function InvoicesList() {
   const router = useRouter();
-  const { invoices, loading } = useInvoices();
+  const { invoices, loading, pagination, page, limit, setPage, setLimit } = useInvoices();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
   const [dateFilter, setDateFilter] = useState("all");
@@ -60,10 +60,11 @@ export default function InvoicesList() {
     setSearch("");
     setStatus("all");
     setDateFilter("all");
+    setPage(1);
   };
 
   const hasFilters = search.trim().length > 0 || status !== "all" || dateFilter !== "all";
-  const showNoResults = !loading && invoices.length > 0 && filteredInvoices.length === 0 && hasFilters;
+  const showNoResults = !loading && pagination.total > 0 && filteredInvoices.length === 0 && hasFilters;
 
   const columns = [
     { key: "invoice", header: "Invoice", cell: (row: Invoice) => getInvoiceNumber(row) },
@@ -106,19 +107,28 @@ export default function InvoicesList() {
         searchSlot={
           <Input
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setPage(1);
+            }}
             placeholder="Search invoice number or client"
           />
         }
         filterChipsSlot={
           <>
-            <Select value={status} onChange={(event) => setStatus(event.target.value)}>
+            <Select value={status} onChange={(event) => {
+              setStatus(event.target.value);
+              setPage(1);
+            }}>
               <option value="all">Status: All</option>
               <option value="Draft">Status: Draft</option>
               <option value="Sent">Status: Sent</option>
               <option value="Overdue">Status: Overdue</option>
             </Select>
-            <Select value={dateFilter} onChange={(event) => setDateFilter(event.target.value)}>
+            <Select value={dateFilter} onChange={(event) => {
+              setDateFilter(event.target.value);
+              setPage(1);
+            }}>
               <option value="all">Date: All</option>
               <option value="30d">Date: Last 30 days</option>
               <option value="90d">Date: Last 90 days</option>
@@ -146,6 +156,12 @@ export default function InvoicesList() {
           rows={filteredInvoices}
           loading={loading}
           loadingRows={6}
+          page={page}
+          limit={limit}
+          total={pagination.total}
+          totalPages={pagination.totalPages}
+          onPageChange={setPage}
+          onLimitChange={setLimit}
           getRowKey={(row) => row.id}
           onRowClick={(row) => router.push(`/invoices/${row.id}`)}
           emptyState={{

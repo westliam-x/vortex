@@ -33,7 +33,7 @@ export default function SpacesList() {
   const [search, setSearch] = useState("");
   const [linkStatus, setLinkStatus] = useState("all");
   const [sort, setSort] = useState("recent");
-  const { projects, loading } = useProjects();
+  const { projects, loading, pagination, page, limit, setPage, setLimit } = useProjects();
 
   const spaces = useMemo(() => projects.map(toSpace).filter((item): item is SpaceRow => item !== null), [projects]);
 
@@ -52,7 +52,7 @@ export default function SpacesList() {
   }, [spaces, search, linkStatus, sort]);
 
   const hasFilters = search.trim().length > 0 || linkStatus !== "all" || sort !== "recent";
-  const showNoResults = !loading && spaces.length > 0 && filteredSpaces.length === 0 && hasFilters;
+  const showNoResults = !loading && pagination.total > 0 && filteredSpaces.length === 0 && hasFilters;
 
   return (
     <div className="space-y-6">
@@ -65,19 +65,28 @@ export default function SpacesList() {
         searchSlot={
           <Input
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setPage(1);
+            }}
             placeholder="Search by project name"
           />
         }
         filterChipsSlot={
-          <Select value={linkStatus} onChange={(event) => setLinkStatus(event.target.value)}>
+          <Select value={linkStatus} onChange={(event) => {
+            setLinkStatus(event.target.value);
+            setPage(1);
+          }}>
             <option value="all">All links</option>
             <option value="Enabled">Enabled</option>
             <option value="Disabled">Disabled</option>
           </Select>
         }
         sortSlot={
-          <Select value={sort} onChange={(event) => setSort(event.target.value)}>
+          <Select value={sort} onChange={(event) => {
+            setSort(event.target.value);
+            setPage(1);
+          }}>
             <option value="recent">Sort: Recent activity</option>
             <option value="project">Sort: Project</option>
           </Select>
@@ -88,6 +97,7 @@ export default function SpacesList() {
               setSearch("");
               setLinkStatus("all");
               setSort("recent");
+              setPage(1);
             }}>
               Reset
             </Button>
@@ -119,6 +129,12 @@ export default function SpacesList() {
           rows={filteredSpaces}
           loading={loading}
           loadingRows={6}
+          page={page}
+          limit={limit}
+          total={pagination.total}
+          totalPages={pagination.totalPages}
+          onPageChange={setPage}
+          onLimitChange={setLimit}
           getRowKey={(row) => row.id}
           onRowClick={(row) => router.push(`/spaces/${row.id}`)}
           emptyState={{

@@ -27,7 +27,7 @@ export default function PaymentEventsDrawer({
   invoiceId,
   projectId,
 }: PaymentEventsDrawerProps) {
-  const { payments, loading, error, fetchPayments } = usePayments(projectId);
+  const { payments, loading, error, fetchPayments, pagination, page, limit, setPage, setLimit } = usePayments(projectId);
 
   const events = useMemo<PaymentTimelineEvent[]>(() => {
     const mapped = payments.events.map((event, index) => ({
@@ -79,6 +79,42 @@ export default function PaymentEventsDrawer({
           />
         ) : null}
         {!loading && !error ? events.map((event) => <PaymentEventRow key={event.id} event={event} />) : null}
+        {!loading && !error && pagination.total > 0 ? (
+          <div className="flex items-center justify-between border-t border-[var(--border)] pt-3">
+            <p className="text-xs text-[var(--muted)]">
+              Page {page} of {pagination.totalPages}
+            </p>
+            <div className="flex items-center gap-2">
+              <select
+                className="rounded-md border border-[var(--border)] bg-[var(--surface2)] px-2 py-1 text-xs text-[var(--text)]"
+                value={String(limit)}
+                onChange={(event) => setLimit(Number(event.target.value))}
+              >
+                {[10, 20, 50, 100].map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                className="rounded-md border border-[var(--border)] bg-[var(--surface2)] px-2 py-1 text-xs text-[var(--text)] disabled:opacity-50"
+                disabled={!pagination.hasPrev}
+                onClick={() => setPage(page - 1)}
+              >
+                Prev
+              </button>
+              <button
+                type="button"
+                className="rounded-md border border-[var(--border)] bg-[var(--surface2)] px-2 py-1 text-xs text-[var(--text)] disabled:opacity-50"
+                disabled={!pagination.hasNext}
+                onClick={() => setPage(page + 1)}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        ) : null}
       </div>
     </Drawer>
   );

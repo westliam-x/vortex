@@ -20,7 +20,8 @@ const API_ROUTES = {
     UPDATE: "/client/update",
     DELETE: "/client/delete",
     LIST: "/client/list",
-    DETAILS: "/client/details"
+    DETAILS: "/client/details",
+    BY_ID: "/client",
   },
   USERS:{
     INVITE: "/users/invite",

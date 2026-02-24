@@ -1,5 +1,6 @@
 import API_ROUTES from "@/endpoints/routes";
 import { makeRequest } from "@/api/request";
+import type { PaginationMeta } from "@/types/api";
 
 export type PaymentEvent = {
   _id?: string;
@@ -15,15 +16,24 @@ export type PaymentsResponse = {
   data: PaymentEvent[];
   totals: { total: number };
   currency: string;
+  pagination: PaginationMeta;
 };
 
 export const fetchProjectPayments = async (
   projectId: string,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  page = 1,
+  limit = 20
 ): Promise<PaymentsResponse> => {
   return makeRequest<PaymentsResponse>({
     url: `${API_ROUTES.PAYMENTS.BASE}/${projectId}`,
     method: "GET",
-    config: signal ? { signal } : undefined,
+    config: {
+      ...(signal ? { signal } : {}),
+      params: {
+        page,
+        limit,
+      },
+    },
   });
 };

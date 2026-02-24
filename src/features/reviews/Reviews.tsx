@@ -26,7 +26,7 @@ export default function Reviews() {
   const [status, setStatus] = useState("all");
   const [sort, setSort] = useState("recent");
 
-  const { reviews, loading } = useReviews();
+  const { reviews, loading, pagination, page, limit, setPage, setLimit } = useReviews();
   const { projects } = useProjects();
   const projectClosed = projects.some((project) => project.status === "Completed");
   const projectClientMap = useMemo(() => {
@@ -65,7 +65,7 @@ export default function Reviews() {
   }, [reviews, search, status, sort]);
 
   const hasFilters = search.trim().length > 0 || status !== "all" || sort !== "recent";
-  const showNoResults = !loading && reviews.length > 0 && filteredReviews.length === 0 && hasFilters;
+  const showNoResults = !loading && pagination.total > 0 && filteredReviews.length === 0 && hasFilters;
 
   return (
     <div className="space-y-6">
@@ -92,12 +92,18 @@ export default function Reviews() {
             searchSlot={
               <Input
                 value={search}
-                onChange={(event) => setSearch(event.target.value)}
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  setPage(1);
+                }}
                 placeholder="Search by project or review text"
               />
             }
             filterChipsSlot={
-              <Select value={status} onChange={(event) => setStatus(event.target.value)}>
+              <Select value={status} onChange={(event) => {
+                setStatus(event.target.value);
+                setPage(1);
+              }}>
                 <option value="all">All statuses</option>
                 <option value="Pending">Pending</option>
                 <option value="Approved">Approved</option>
@@ -105,7 +111,10 @@ export default function Reviews() {
               </Select>
             }
             sortSlot={
-              <Select value={sort} onChange={(event) => setSort(event.target.value)}>
+              <Select value={sort} onChange={(event) => {
+                setSort(event.target.value);
+                setPage(1);
+              }}>
                 <option value="recent">Sort: Recent</option>
                 <option value="rating">Sort: Rating</option>
               </Select>
@@ -116,6 +125,7 @@ export default function Reviews() {
                   setSearch("");
                   setStatus("all");
                   setSort("recent");
+                  setPage(1);
                 }}>
                   Reset
                 </Button>
@@ -198,6 +208,12 @@ export default function Reviews() {
               rows={filteredReviews}
               loading={loading}
               loadingRows={6}
+              page={page}
+              limit={limit}
+              total={pagination.total}
+              totalPages={pagination.totalPages}
+              onPageChange={setPage}
+              onLimitChange={setLimit}
               getRowKey={(row) => row.id}
               onRowClick={(row) => router.push(`/projects/${resolveProjectId(row.projectId)}`)}
               emptyState={{

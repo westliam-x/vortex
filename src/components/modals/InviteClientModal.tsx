@@ -62,8 +62,8 @@ const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
 
   useEffect(() => {
     const load = async () => {
-      const data = await fetchProjects();
-      setProjects(data);
+      const response = await fetchProjects();
+      setProjects(response.data ?? []);
     };
 
     load();

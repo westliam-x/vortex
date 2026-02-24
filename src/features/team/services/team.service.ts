@@ -2,6 +2,7 @@ import API_ROUTES from "@/endpoints/routes";
 import { makeRequest } from "@/api/request";
 import type { TeamMember } from "@/types/team";
 import type { AxiosRequestConfig } from "axios";
+import type { PaginationMeta } from "@/types/api";
 
 const normalizeMember = (member: TeamMember & { _id?: string }) => {
   if (!member.id && member._id) {
@@ -10,13 +11,44 @@ const normalizeMember = (member: TeamMember & { _id?: string }) => {
   return member;
 };
 
-export const fetchTeam = async (config?: AxiosRequestConfig): Promise<TeamMember[]> => {
-  const response = await makeRequest<{ data: TeamMember[] }>({
+type TeamListParams = {
+  page: number;
+  limit: number;
+  filters?: {
+    search?: string;
+    status?: string;
+    sort?: string;
+  };
+  config?: AxiosRequestConfig;
+};
+
+type PaginatedTeamResponse = {
+  data: TeamMember[];
+  pagination: PaginationMeta;
+};
+
+export const fetchTeam = async ({
+  page = 1,
+  limit = 20,
+  filters,
+  config,
+}: Partial<TeamListParams> = {}): Promise<PaginatedTeamResponse> => {
+  const response = await makeRequest<PaginatedTeamResponse>({
     url: API_ROUTES.TEAM.BASE,
     method: "GET",
-    config,
+    config: {
+      ...config,
+      params: {
+        page,
+        limit,
+        ...(filters ?? {}),
+      },
+    },
   });
-  return (response.data ?? []).map(normalizeMember);
+  return {
+    data: (response.data ?? []).map(normalizeMember),
+    pagination: response.pagination,
+  };
 };
 
 export const updateTeamRole = async (memberId: string, role: TeamMember["role"]) => {
