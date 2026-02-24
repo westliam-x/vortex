@@ -30,11 +30,11 @@ const Dashboard = () => {
         <RecentComments messages={summary?.recentMessages ?? []} loading={summaryLoading} />
       </div>
 
-      <ProjectOverview projects={summary?.recentProjects ?? []} loading={summaryLoading} />
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <ProjectOverview projects={summary?.recentProjects ?? []} loading={summaryLoading} />
         <ReviewHighlight review={highlight} />
-        <QuickActions />
+        {/* <QuickActions /> */}
       </div>
     </main>
   );
