@@ -1,57 +1,135 @@
 "use client";
 
-import { useState } from "react";
-import { DashboardLayout } from "@/layouts";
+import { useMemo, useState } from "react";
+import { format } from "date-fns";
 import { InviteUserModal } from "@/components";
 import { PageHeader } from "@/components/layout";
-import { TeamTable } from "./components";
+import { Button, Input, Select } from "@/components/ui";
+import { DataTable, FilterBar, NoResults } from "@/components/patterns";
 import { useTeam } from "./hooks/useTeam";
-import { toast } from "react-toastify";
+import type { TeamMember } from "@/types/team";
 
-export default function TeamPage() {
-  const { team, loading, changeRole, removeMember } = useTeam();
+export default function Team() {
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("all");
+  const [sort, setSort] = useState("name");
   const [showInviteModal, setShowInviteModal] = useState(false);
 
+  const { team, loading, error, refetch } = useTeam();
+
+  const filteredTeam = useMemo(() => {
+    const term = search.toLowerCase().trim();
+    const items = team.filter((member) => {
+      const matchesSearch =
+        !term ||
+        member.name.toLowerCase().includes(term) ||
+        member.email.toLowerCase().includes(term);
+      const matchesStatus = status === "all" || member.status === status;
+      return matchesSearch && matchesStatus;
+    });
+
+    return items.sort((a, b) => {
+      if (sort === "joined") return new Date(b.joinedAt).getTime() - new Date(a.joinedAt).getTime();
+      return a.name.localeCompare(b.name);
+    });
+  }, [team, search, status, sort]);
+
+  const hasFilters = search.trim().length > 0 || status !== "all" || sort !== "name";
+  const showNoResults = !loading && team.length > 0 && filteredTeam.length === 0 && hasFilters;
+
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        <PageHeader
-          title="Team Members"
-          subtitle="Manage access levels and assignments across your workspace."
-          primaryAction={{ label: "+ Invite member", onClick: () => setShowInviteModal(true) }}
-        />
+    <div className="space-y-6">
+      <PageHeader
+        title="Team"
+        subtitle="Manage access levels and assignments across your workspace."
+        primaryAction={{ label: "+ Invite member", onClick: () => setShowInviteModal(true) }}
+      />
 
-        <TeamTable
-          members={team}
-          onRoleChange={async (id, newRole) => {
-            try {
-              await changeRole(id, newRole as (typeof team)[number]["role"]);
-            } catch (err) {
-              toast.error(err instanceof Error ? err.message : "Failed to update role");
-            }
+      <FilterBar
+        searchSlot={
+          <Input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search by name or email"
+          />
+        }
+        filterChipsSlot={
+          <Select value={status} onChange={(event) => setStatus(event.target.value)}>
+            <option value="all">All statuses</option>
+            <option value="Active">Active</option>
+            <option value="Pending">Pending</option>
+            <option value="Suspended">Suspended</option>
+          </Select>
+        }
+        sortSlot={
+          <Select value={sort} onChange={(event) => setSort(event.target.value)}>
+            <option value="name">Sort: Name</option>
+            <option value="joined">Sort: Joined date</option>
+          </Select>
+        }
+        rightActionsSlot={
+          hasFilters ? (
+            <Button variant="ghost" onClick={() => {
+              setSearch("");
+              setStatus("all");
+              setSort("name");
+            }}>
+              Reset
+            </Button>
+          ) : null
+        }
+      />
+
+      {error ? (
+        <DataTable<TeamMember>
+          columns={[
+            { key: "member", header: "Member", cell: (row) => row.name },
+            { key: "role", header: "Role", cell: (row) => row.role },
+            { key: "status", header: "Status", cell: (row) => row.status },
+            { key: "joined", header: "Joined date", cell: (row) => format(new Date(row.joinedAt), "dd MMM yyyy") },
+          ]}
+          rows={[]}
+          emptyState={{
+            title: "Unable to load team",
+            description: "Please retry to fetch team members.",
+            primaryAction: { label: "Retry", onClick: () => void refetch() },
           }}
-          onRemove={async (id) => {
-            try {
-              await removeMember(id);
-            } catch (err) {
-              toast.error(err instanceof Error ? err.message : "Failed to remove member");
-            }
+        />
+      ) : showNoResults ? (
+        <NoResults
+          title="No team members match your filters"
+          description="Adjust your filters or clear search criteria."
+          onReset={() => {
+            setSearch("");
+            setStatus("all");
+            setSort("name");
           }}
+        />
+      ) : (
+        <DataTable<TeamMember>
+          columns={[
+            { key: "member", header: "Member", cell: (row) => `${row.name} (${row.email})` },
+            { key: "role", header: "Role", cell: (row) => row.role },
+            { key: "status", header: "Status", cell: (row) => row.status },
+            { key: "joined", header: "Joined date", cell: (row) => format(new Date(row.joinedAt), "dd MMM yyyy") },
+          ]}
+          rows={filteredTeam}
           loading={loading}
-        />
-
-        <InviteUserModal
-          isOpen={showInviteModal}
-          onClose={() => setShowInviteModal(false)}
-          onSubmit={(data: { type: string }) => {
-            if (data.type === "Client") {
-              // send invite to client with data.projectId
-            } else {
-              // send invite to team member with data.role
-            }
+          loadingRows={6}
+          getRowKey={(row) => row.id}
+          emptyState={{
+            title: "No team members yet",
+            description: "Invite your first collaborator to get started.",
+            primaryAction: { label: "Invite member", onClick: () => setShowInviteModal(true) },
           }}
         />
-      </div>
-    </DashboardLayout>
+      )}
+
+      <InviteUserModal
+        isOpen={showInviteModal}
+        onClose={() => setShowInviteModal(false)}
+        onSubmit={() => undefined}
+      />
+    </div>
   );
 }

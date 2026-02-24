@@ -1,13 +1,28 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ProjectGrid, ProjectHeader } from "./components";
-import { Skeleton } from "@/components/ui";
-import { useProjects } from "./hooks/useProjects";
+import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 import { AddProjectModal } from "@/components";
 import { PageHeader } from "@/components/layout";
+import { Button, Input, Select, StatusBadge } from "@/components/ui";
+import { DataTable, FilterBar, NoResults } from "@/components/patterns";
+import { getProjectId } from "@/lib/ids";
+import { useProjects } from "./hooks/useProjects";
+import type { Project } from "@/types/project";
 
-const ProjectsList = () => {
+const formatBudget = (project: Project) => {
+  if (typeof project.budget !== "number") return "-";
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(project.budget);
+};
+
+const getClientName = (project: Project) => {
+  if (typeof project.clientId === "string") return project.clientId || "-";
+  return project.clientId?.name ?? "-";
+};
+
+export default function ProjectsList() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
   const [sort, setSort] = useState("recent");
@@ -15,64 +30,118 @@ const ProjectsList = () => {
   const { projects, loading } = useProjects();
 
   const filteredProjects = useMemo(() => {
-    const normalized = search.toLowerCase().trim();
-    const filtered = projects.filter((project) => {
+    const term = search.toLowerCase().trim();
+    const items = projects.filter((project) => {
       const matchesSearch =
-        !normalized ||
-        project.title.toLowerCase().includes(normalized) ||
-        project.description?.toLowerCase().includes(normalized);
+        !term ||
+        project.title.toLowerCase().includes(term) ||
+        project.description?.toLowerCase().includes(term) ||
+        getClientName(project).toLowerCase().includes(term);
       const matchesStatus = status === "all" || project.status === status;
       return matchesSearch && matchesStatus;
     });
 
-    return filtered.sort((a, b) => {
+    return items.sort((a, b) => {
       if (sort === "due") {
-        const aDate = a.deadline ? new Date(a.deadline).getTime() : 0;
-        const bDate = b.deadline ? new Date(b.deadline).getTime() : 0;
-        return aDate - bDate;
+        const aDue = a.deadline ? new Date(a.deadline).getTime() : Number.MAX_SAFE_INTEGER;
+        const bDue = b.deadline ? new Date(b.deadline).getTime() : Number.MAX_SAFE_INTEGER;
+        return aDue - bDue;
       }
-      if (sort === "priority") {
-        const order = { High: 0, Medium: 1, Low: 2 };
-        const aPriority = a.priority ? order[a.priority] : 3;
-        const bPriority = b.priority ? order[b.priority] : 3;
-        return aPriority - bPriority;
+      if (sort === "budget") {
+        return (b.budget ?? 0) - (a.budget ?? 0);
       }
-      const aUpdated = new Date(a.updatedAt ?? a.createdAt).getTime();
-      const bUpdated = new Date(b.updatedAt ?? b.createdAt).getTime();
-      return bUpdated - aUpdated;
+      return new Date(b.updatedAt ?? b.createdAt).getTime() - new Date(a.updatedAt ?? a.createdAt).getTime();
     });
   }, [projects, search, status, sort]);
+
+  const hasFilters = search.trim().length > 0 || status !== "all" || sort !== "recent";
+  const showNoResults = !loading && projects.length > 0 && filteredProjects.length === 0 && hasFilters;
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Projects"
         subtitle="Track delivery, visibility, and approvals across active work."
-        primaryAction={{
-          label: "+ New Project",
-          onClick: () => setShowProjectModal(true),
-        }}
+        primaryAction={{ label: "+ New Project", onClick: () => setShowProjectModal(true) }}
       />
-      <ProjectHeader
-        search={search}
-        status={status}
-        sort={sort}
-        onSearchChange={setSearch}
-        onStatusChange={setStatus}
-        onSortChange={setSort}
+
+      <FilterBar
+        searchSlot={
+          <Input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search by project, client, or description"
+          />
+        }
+        filterChipsSlot={
+          <Select value={status} onChange={(event) => setStatus(event.target.value)}>
+            <option value="all">All statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+            <option value="Archived">Archived</option>
+          </Select>
+        }
+        sortSlot={
+          <Select value={sort} onChange={(event) => setSort(event.target.value)}>
+            <option value="recent">Sort: Recent</option>
+            <option value="due">Sort: Deadline</option>
+            <option value="budget">Sort: Budget</option>
+          </Select>
+        }
+        rightActionsSlot={
+          hasFilters ? (
+            <Button variant="ghost" onClick={() => {
+              setSearch("");
+              setStatus("all");
+              setSort("recent");
+            }}>
+              Reset
+            </Button>
+          ) : null
+        }
       />
-      <AddProjectModal isOpen={showProjectModal} onClose={() => setShowProjectModal(false)} />
-      {loading ? (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {Array.from({ length: 4 }).map((_, idx) => (
-            <Skeleton key={idx} className="h-36" />
-          ))}
-        </div>
+
+      {showNoResults ? (
+        <NoResults
+          title="No projects match your filters"
+          description="Try a different search term or reset filters."
+          onReset={() => {
+            setSearch("");
+            setStatus("all");
+            setSort("recent");
+          }}
+        />
       ) : (
-        <ProjectGrid projects={filteredProjects} />
+        <DataTable
+          columns={[
+            { key: "name", header: "Name", cell: (row) => row.title },
+            { key: "client", header: "Client", cell: (row) => getClientName(row) },
+            { key: "status", header: "Status", cell: (row) => <StatusBadge kind="project" status={row.status} /> },
+            {
+              key: "deadline",
+              header: "Deadline",
+              cell: (row) => (row.deadline ? format(new Date(row.deadline), "dd MMM yyyy") : "-"),
+            },
+            { key: "budget", header: "Budget", cell: (row) => formatBudget(row) },
+          ]}
+          rows={filteredProjects}
+          loading={loading}
+          loadingRows={6}
+          getRowKey={(row) => getProjectId(row) ?? row.title}
+          onRowClick={(row) => {
+            const id = getProjectId(row);
+            if (id) router.push(`/projects/${id}`);
+          }}
+          emptyState={{
+            title: "No projects yet",
+            description: "Create your first project to start tracking work.",
+            primaryAction: { label: "Create project", onClick: () => setShowProjectModal(true) },
+          }}
+        />
       )}
+
+      <AddProjectModal isOpen={showProjectModal} onClose={() => setShowProjectModal(false)} />
     </div>
   );
-};
-
-export default ProjectsList;
+}

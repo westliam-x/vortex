@@ -9,6 +9,7 @@ export { default as Input } from "./Input";
 export { default as Modal } from "./Modal";
 export { default as Select } from "./Select";
 export { default as Skeleton } from "./Skeleton";
+export { default as StatusBadge } from "./StatusBadge";
 export { default as Tabs } from "./Tabs";
 export { default as Textarea } from "./Textarea";
 export { default as ToastProvider } from "./ToastProvider";

@@ -19,7 +19,7 @@
 - `StatCard` - KPI metric with label and delta.
 - `DataTable` - sortable table with column config.
 - `DataList` - card/list renderer for responsive views.
-- `EntityCard` - shared card for project/client/invoice summaries.
+- `EntityCard` - shared card for project, client, and invoice summaries.
 - `ActivityTimeline` - log stream with actor/action/target/status/time.
 - `StatusBadge` - normalized status tokens (pending/approved/paid/etc).
 - `KeyValueList` - compact metadata display in side panel.
