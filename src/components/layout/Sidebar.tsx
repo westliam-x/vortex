@@ -2,7 +2,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, BriefcaseBusiness, CircleDollarSign, FolderKanban, Gauge, Grid2X2, MessageSquareShare, Settings, Star, Users } from "lucide-react";
+import {
+  BookOpen,
+  Bot,
+  BriefcaseBusiness,
+  CircleDollarSign,
+  Compass,
+  FolderKanban,
+  Gauge,
+  Grid2X2,
+  MessageSquareShare,
+  Settings,
+  Signal,
+  Star,
+  Users,
+} from "lucide-react";
 import { cn } from "@/lib";
 
 type SidebarItem = {
@@ -19,7 +33,10 @@ type SidebarGroup = {
 const navGroups: SidebarGroup[] = [
   {
     label: "Workspace",
-    items: [{ label: "Dashboard", href: "/dashboard", icon: Gauge }],
+    items: [
+      { label: "Dashboard", href: "/dashboard", icon: Gauge },
+      { label: "Team", href: "/team", icon: Users },
+    ],
   },
   {
     label: "Work",
@@ -28,6 +45,8 @@ const navGroups: SidebarGroup[] = [
       { label: "Clients", href: "/clients", icon: Users },
       { label: "Spaces", href: "/spaces", icon: MessageSquareShare },
       { label: "Reviews", href: "/reviews", icon: Star },
+      { label: "Discover", href: "/discover", icon: Compass },
+      { label: "Signal", href: "/signal", icon: Signal },
     ],
   },
   {
@@ -43,7 +62,10 @@ const navGroups: SidebarGroup[] = [
   },
   {
     label: "System",
-    items: [{ label: "Settings", href: "/settings", icon: Settings }],
+    items: [
+      { label: "Settings", href: "/settings", icon: Settings },
+      { label: "Vora", href: "/vora", icon: Bot },
+    ],
   },
 ];
 
