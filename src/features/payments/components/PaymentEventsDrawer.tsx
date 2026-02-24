@@ -53,10 +53,12 @@ export default function PaymentEventsDrawer({
       onClose={() => onOpenChange(false)}
       side="right"
       title="Payment Events"
-      description={invoiceId ? `Linked invoice: ${invoiceId}` : undefined}
       className="max-w-lg"
     >
       <div className="space-y-3">
+        {invoiceId ? (
+          <p className="text-sm text-[var(--muted)]">Linked invoice: {invoiceId}</p>
+        ) : null}
         {loading ? <PaymentEventsSkeleton /> : null}
         {!loading && error ? (
           <ErrorStateBlock
