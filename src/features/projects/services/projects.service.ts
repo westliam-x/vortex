@@ -10,12 +10,12 @@ const normalizeProject = (project: Project & { _id?: string }) => {
 };
 
 export const fetchProjects = async (): Promise<Project[]> => {
-  const response = await makeRequest<{ projects: Project[] }>({
+  const response = await makeRequest<{ data: Project[] }>({
     url: API_ROUTES.PROJECT.LIST,
     method: "GET",
   });
 
-  return (response.projects ?? []).map(normalizeProject);
+  return (response.data ?? []).map(normalizeProject);
 };
 
 export const fetchProjectById = async (id: string): Promise<Project | null> => {

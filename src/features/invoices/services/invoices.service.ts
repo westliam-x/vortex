@@ -11,12 +11,12 @@ const normalizeInvoice = (invoice: Invoice & { _id?: string }) => {
 };
 
 export const fetchInvoices = async (config?: AxiosRequestConfig): Promise<Invoice[]> => {
-  const response = await makeRequest<{ invoices: Invoice[] }>({
+  const response = await makeRequest<{ data: Invoice[] }>({
     url: API_ROUTES.INVOICES.BASE,
     method: "GET",
     config,
   });
-  return (response.invoices ?? []).map(normalizeInvoice);
+  return (response.data ?? []).map(normalizeInvoice);
 };
 
 export const createInvoice = async (payload: Invoice): Promise<Invoice> => {

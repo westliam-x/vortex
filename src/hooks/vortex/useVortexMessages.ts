@@ -21,12 +21,12 @@ export const useVortexMessages = (
     setLoading(true);
     setError(null);
     try {
-      const response = await makeRequest<VortexMessage[]>({
+      const response = await makeRequest<{ data: VortexMessage[] }>({
         url: `${API_ROUTES.VORTEX.SUMMARY}/${projectId}/messages`,
         method: "GET",
         config: signal ? { signal } : undefined,
       });
-      setMessages(response ?? []);
+      setMessages(response.data ?? []);
     } catch (err) {
       if (signal?.aborted || (err instanceof Error && err.message === "aborted")) return;
       setError(err instanceof Error ? err.message : "Failed to load messages");

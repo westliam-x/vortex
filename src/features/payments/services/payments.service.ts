@@ -12,7 +12,7 @@ export type PaymentEvent = {
 };
 
 export type PaymentsResponse = {
-  events: PaymentEvent[];
+  data: PaymentEvent[];
   totals: { total: number };
   currency: string;
 };

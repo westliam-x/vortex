@@ -10,19 +10,11 @@ type LogsQuery = {
 };
 
 export const getLogs = async (query?: LogsQuery): Promise<LogEntry[]> => {
-  const response = await makeRequest<LogEntry[] | { logs: LogEntry[] }>({
+  const response = await makeRequest<{ data: LogEntry[] }>({
     url: API_ROUTES.LOGS.GET,
     method: "GET",
     config: query ? { params: query } : undefined,
   });
 
-  if (Array.isArray(response)) {
-    return response;
-  }
-
-  if (response && Array.isArray(response.logs)) {
-    return response.logs;
-  }
-
-  return [];
+  return response.data ?? [];
 };

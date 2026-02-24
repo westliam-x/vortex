@@ -11,12 +11,12 @@ const normalizeClient = (client: Client & { id?: string; _id?: string }) => {
 };
 
 export const fetchClients = async (): Promise<Client[]> => {
-  const response = await makeRequest<{ clients: Client[] }>({
+  const response = await makeRequest<{ data: Client[] }>({
     url: API_ROUTES.CLIENT.LIST,
     method: "GET",
   });
 
-  return response.clients.map(normalizeClient);
+  return (response.data ?? []).map(normalizeClient);
 };
 
 export const fetchClientById = async (id: string): Promise<Client | null> => {

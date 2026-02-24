@@ -85,7 +85,7 @@ export default function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "h-full w-full border-r border-[var(--border)] bg-[var(--surface)]",
+        "h-full w-full overflow-y-auto border-r border-[var(--border)] bg-[var(--surface)]",
         mobile ? "p-4" : "p-5"
       )}
     >

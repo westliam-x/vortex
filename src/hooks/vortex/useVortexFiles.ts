@@ -14,12 +14,12 @@ export const useVortexFiles = (projectId?: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await makeRequest<VortexFile[]>({
+      const response = await makeRequest<{ data: VortexFile[] }>({
         url: `${API_ROUTES.VORTEX.SUMMARY}/${projectId}/files`,
         method: "GET",
         config: signal ? { signal } : undefined,
       });
-      setFiles(response ?? []);
+      setFiles(response.data ?? []);
     } catch (err) {
       if (signal?.aborted || (err instanceof Error && err.message === "aborted")) return;
       setError(err instanceof Error ? err.message : "Failed to load files");

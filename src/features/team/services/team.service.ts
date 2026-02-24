@@ -11,12 +11,12 @@ const normalizeMember = (member: TeamMember & { _id?: string }) => {
 };
 
 export const fetchTeam = async (config?: AxiosRequestConfig): Promise<TeamMember[]> => {
-  const response = await makeRequest<{ members: TeamMember[] }>({
+  const response = await makeRequest<{ data: TeamMember[] }>({
     url: API_ROUTES.TEAM.BASE,
     method: "GET",
     config,
   });
-  return (response.members ?? []).map(normalizeMember);
+  return (response.data ?? []).map(normalizeMember);
 };
 
 export const updateTeamRole = async (memberId: string, role: TeamMember["role"]) => {

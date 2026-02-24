@@ -11,12 +11,12 @@ const normalizeReview = (review: Review & { _id?: string }) => {
 };
 
 export const fetchReviews = async (config?: AxiosRequestConfig): Promise<Review[]> => {
-  const response = await makeRequest<{ reviews: Review[] }>({
+  const response = await makeRequest<{ data: Review[] }>({
     url: API_ROUTES.REVIEWS.LIST,
     method: "GET",
     config,
   });
-  return (response.reviews ?? []).map(normalizeReview);
+  return (response.data ?? []).map(normalizeReview);
 };
 
 export const fetchProjectReview = async (

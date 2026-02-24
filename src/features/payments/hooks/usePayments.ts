@@ -26,7 +26,7 @@ export const usePayments = (projectId?: string, fallbackTotal = 0) => {
         setPayments({
           total: response.totals?.total ?? fallbackRef.current,
           currency: response.currency ?? "USD",
-          events: response.events ?? [],
+          events: response.data ?? [],
         });
       } catch (err) {
         if (signal?.aborted || (err instanceof Error && err.message === "aborted")) return;

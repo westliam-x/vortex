@@ -35,9 +35,11 @@ export default function AppShell({ header, children }: AppShellProps) {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      <div className="hidden w-72 shrink-0 md:block">
-        <Sidebar />
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] md:grid md:grid-cols-[18rem_minmax(0,1fr)]">
+      <div className="hidden shrink-0 md:block">
+        <div className="sticky top-0 h-screen shrink-0">
+          <Sidebar />
+        </div>
       </div>
 
       <div className="md:hidden">
@@ -51,12 +53,12 @@ export default function AppShell({ header, children }: AppShellProps) {
         </Drawer>
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="min-w-0">
         <Topbar onToggleSidebar={() => {
           if (!isMobileViewport) return;
           setMobileOpen((prev) => !prev);
         }} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+        <main className="p-4 md:p-6">
           {header ? <div className="mb-6">{header}</div> : null}
           {children}
         </main>

@@ -37,19 +37,19 @@ export const useGuestVortex = (token: string) => {
   }, [token]);
 
   const fetchMessages = useCallback(async () => {
-    const response = await makeRequest<VortexMessage[]>({
+    const response = await makeRequest<{ data: VortexMessage[] }>({
       url: `${API_ROUTES.VORTEX.SUMMARY}/guest/${token}/messages`,
       method: "GET",
     });
-    setMessages(response);
+    setMessages(response.data ?? []);
   }, [token]);
 
   const fetchFiles = useCallback(async () => {
-    const response = await makeRequest<VortexFile[]>({
+    const response = await makeRequest<{ data: VortexFile[] }>({
       url: `${API_ROUTES.VORTEX.SUMMARY}/guest/${token}/files`,
       method: "GET",
     });
-    setFiles(response);
+    setFiles(response.data ?? []);
   }, [token]);
 
   const bootstrapGuest = useCallback(async () => {
