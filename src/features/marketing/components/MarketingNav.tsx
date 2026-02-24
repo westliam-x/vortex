@@ -6,15 +6,11 @@ type MarketingNavProps = {
 };
 
 const defaultLinks = [
-  { label: "Workspace", href: "/features/workspace" },
-  { label: "Spaces", href: "/features/workspace#spaces" },
-  { label: "Invoices", href: "/features/payments#invoices" },
+  { label: "Vortex Space", href: "/features/workspace#spaces" },
   { label: "Payments", href: "/features/payments" },
-  { label: "Blaaiz", href: "/features/payments#blaaiz" },
   { label: "Reviews", href: "/features/reviews" },
   { label: "Signal", href: "/features/signal" },
   { label: "Vora", href: "/vora-ai" },
-  { label: "Pricing", href: "/pricing" },
 ];
 
 export default function MarketingNav({ links = defaultLinks }: MarketingNavProps) {

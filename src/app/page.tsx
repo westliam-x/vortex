@@ -84,27 +84,21 @@ export default function LandingPage() {
             <span className="text-lg font-semibold">Vortex</span>
           </Link>
           <nav className="hidden items-center gap-4 text-sm text-[var(--muted)] lg:flex">
-            <Link href="/features/workspace" className="hover:text-[var(--text)]">Workspace</Link>
-            <Link href="/features/workspace#spaces" className="hover:text-[var(--text)]">Spaces</Link>
-            <Link href="/features/payments#invoices" className="hover:text-[var(--text)]">Invoices</Link>
+            <Link href="/features/workspace#spaces" className="hover:text-[var(--text)]">Vortex Space</Link>
             <Link href="/features/payments" className="hover:text-[var(--text)]">Payments</Link>
-            <Link href="/features/payments#blaaiz" className="hover:text-[var(--text)]">Blaaiz</Link>
             <Link href="/features/reviews" className="hover:text-[var(--text)]">Reviews</Link>
             <Link href="/features/signal" className="hover:text-[var(--text)]">Signal</Link>
             <Link href="/vora-ai" className="hover:text-[var(--text)]">Vora</Link>
           </nav>
             <div className="flex items-center gap-3">
-            <Link href="/features" className="hidden text-sm text-[var(--muted)] hover:text-[var(--text)] sm:inline">
-              Feature pages
-            </Link>
-            <Link href="/pricing" className="hidden text-sm text-[var(--muted)] hover:text-[var(--text)] sm:inline">
-              Pricing
+            <Link href="/login" className="hidden text-sm text-[var(--muted)] hover:text-[var(--text)] sm:inline">
+              Login
             </Link>
             <Link
               href="/signup"
               className="inline-flex items-center gap-2 rounded-md bg-[var(--accent-strong)] px-4 py-2 text-sm font-medium text-[#041017] hover:bg-[var(--accent)]"
             >
-              Start workspace <ArrowRight size={16} />
+              Start now <ArrowRight size={16} />
             </Link>
           </div>
         </div>
