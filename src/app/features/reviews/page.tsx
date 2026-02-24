@@ -29,13 +29,12 @@ export default function ReviewsFeaturePage() {
           <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-2">
             <article className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <Image
-                src="/illustrations/feature-reviews.svg"
+                src="/images/reviews.png"
                 alt="Reviews feature placeholder"
                 width={1400}
                 height={860}
                 className="h-auto w-full rounded-xl border border-[var(--border)]"
               />
-              <p className="mt-3 text-sm text-[var(--muted)]">Replace with reviews list + status badge + public profile review section.</p>
             </article>
 
             <article className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">

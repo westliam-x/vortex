@@ -66,15 +66,12 @@ export default function VoraAiPage() {
           <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-3">
             <article className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 lg:col-span-2">
               <Image
-                src="/illustrations/landing-vora.svg"
+                src="/images/vora.png"
                 alt="Vora assistant placeholder"
                 width={1400}
                 height={860}
                 className="h-auto w-full rounded-xl border border-[var(--border)]"
               />
-              <p className="mt-3 text-sm text-[var(--muted)]">
-                Replace with your Vora drawer + draft generation + provider selector screenshot.
-              </p>
             </article>
             <article className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <h2 className="text-xl font-semibold">What Vora does today</h2>

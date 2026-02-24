@@ -40,13 +40,12 @@ export default function WorkspaceFeaturePage() {
           <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-3">
             <article className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 lg:col-span-2">
               <Image
-                src="/illustrations/feature-workspace.svg"
+                src="/images/dashboard.png"
                 alt="Workspace feature placeholder"
                 width={1400}
                 height={860}
                 className="h-auto w-full rounded-xl border border-[var(--border)]"
               />
-              <p className="mt-3 text-sm text-[var(--muted)]">Replace with your dashboard + projects + space composite screenshot.</p>
             </article>
             <article className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <h2 className="text-xl font-semibold">What this unlocks</h2>

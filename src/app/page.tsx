@@ -144,33 +144,30 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3">
               <Image
-                src="/illustrations/landing-dashboard.svg"
+                src="/images/dashboard.png"
                 alt="Vortex dashboard preview placeholder"
                 width={1200}
                 height={800}
                 className="h-auto w-full rounded-xl border border-[var(--border)]"
               />
-              <p className="mt-3 px-1 text-sm text-[var(--muted)]">Dashboard command view placeholder (replace with your real screenshot).</p>
             </div>
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3">
               <Image
-                src="/illustrations/landing-space.svg"
+                src="/images/spaces.png"
                 alt="Vortex space preview placeholder"
                 width={1200}
                 height={800}
                 className="h-auto w-full rounded-xl border border-[var(--border)]"
               />
-              <p className="mt-3 px-1 text-sm text-[var(--muted)]">Space collaboration placeholder (messages, files, right context panel).</p>
             </div>
             <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3">
               <Image
-                src="/illustrations/landing-vora.svg"
+                src="/images/vora.png"
                 alt="Vora assistant preview placeholder"
                 width={1200}
                 height={800}
                 className="h-auto w-full rounded-xl border border-[var(--border)]"
               />
-              <p className="mt-3 px-1 text-sm text-[var(--muted)]">Vora drafting + planning placeholder (replace with your drawer screenshot).</p>
             </div>
           </div>
         </div>

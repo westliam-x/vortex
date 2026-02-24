@@ -29,14 +29,13 @@ export default function SignalFeaturePage() {
           <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-2">
             <article className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <Image
-                src="/illustrations/feature-signal.svg"
+                src="/images/signal.png"
                 alt="Signal feature placeholder"
                 width={1400}
                 height={860}
                 className="h-auto w-full rounded-xl border border-[var(--border)]"
               />
-              <p className="mt-3 text-sm text-[var(--muted)]">Replace with Signal profile + Discover grid screenshots.</p>
-            </article>
+             </article>
             <article className="space-y-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
               {[
                 {
