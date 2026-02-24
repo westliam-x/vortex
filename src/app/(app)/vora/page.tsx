@@ -1,5 +1,5 @@
-import { VoraPortal } from "@/features/vora";
+import { VoraOverview } from "@/features/vora";
 
 export default function Page() {
-  return <VoraPortal />;
+  return <VoraOverview />;
 }
