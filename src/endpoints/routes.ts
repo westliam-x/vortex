@@ -51,6 +51,10 @@ const API_ROUTES = {
   INVOICES: {
     BASE: "/invoices",
   },
+  INTEGRATIONS: {
+    BLAAIZ_STATUS: "/integrations/blaaiz/status",
+    BLAAIZ_COLLECTIONS: "/integrations/blaaiz/collections",
+  },
   SIGNAL: {
     PROFILE: "/signal/profile",
     DISCOVER: "/signal/discover",

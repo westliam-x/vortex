@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge, Button } from "@/components/ui";
 import { FormSection, SectionCard } from "@/components/patterns";
+import { fetchBlaaizStatus } from "@/features/integrations";
 
 type IntegrationStatus = "connected" | "not_connected";
 
@@ -17,6 +18,31 @@ const statusBadge = (status: IntegrationStatus) =>
 export default function IntegrationsSettings() {
   const router = useRouter();
   const [notice, setNotice] = useState<string | null>(null);
+  const [blaaizConnected, setBlaaizConnected] = useState(false);
+  const [statusLoading, setStatusLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+
+    const run = async () => {
+      setStatusLoading(true);
+      try {
+        const status = await fetchBlaaizStatus();
+        if (!active) return;
+        setBlaaizConnected(Boolean(status.connected));
+      } catch {
+        if (!active) return;
+        setBlaaizConnected(false);
+      } finally {
+        if (active) setStatusLoading(false);
+      }
+    };
+
+    void run();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const onConnect = (provider: string) => {
     setNotice(`${provider} OAuth is not enabled yet. Configure provider preferences in Vora settings.`);
@@ -57,7 +83,11 @@ export default function IntegrationsSettings() {
           <div className="flex flex-col gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface2)] px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
               <p className="text-sm font-medium text-[var(--text)]">Blaaiz</p>
-              {statusBadge("not_connected")}
+              {statusLoading ? (
+                <Badge tone="default">Checking...</Badge>
+              ) : (
+                statusBadge(blaaizConnected ? "connected" : "not_connected")
+              )}
             </div>
             <Button size="sm" variant="secondary" onClick={() => onConnect("Blaaiz")}>
               Connect
