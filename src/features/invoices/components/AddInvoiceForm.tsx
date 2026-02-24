@@ -8,6 +8,9 @@ import { Info } from "lucide-react";
 import { useProfile } from "@/features/auth";
 import { useInvoices } from "../hooks/useInvoices";
 import { toast } from "react-toastify";
+import { fetchProjects as fetchProjectsService } from "@/features/projects";
+import type { Project } from "@/types/project";
+import { getProjectId } from "@/lib/ids";
 
 const itemSchema = z.object({
   description: z.string().min(1),
@@ -20,6 +23,7 @@ const customFieldSchema = z.object({
 });
 
 const formSchema = z.object({
+  projectId: z.string().optional().or(z.literal("")),
   currency: z.enum(["NGN", "USD"]),
   businessName: z.string().min(2),
   clientName: z.string().optional(),
@@ -42,6 +46,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const defaultValues: DefaultValues<FormData> = {
+  projectId: "",
   currency: "NGN",
   businessName: "",
   items: [{ description: "", quantity: 1, rate: 0 }],
@@ -92,8 +97,27 @@ export default function AddInvoiceForm() {
   const total = useMemo(() => Math.max(0, sub + tax - discount), [sub, tax, discount]);
 
   const [loading, setLoading] = useState(false);
+  const [projects, setProjects] = useState<Project[]>([]);
   const { profile } = useProfile();
   const { create } = useInvoices({ autoFetch: false });
+
+  useEffect(() => {
+    let mounted = true;
+    const loadProjects = async () => {
+      try {
+        const response = await fetchProjectsService({ page: 1, limit: 100 });
+        if (!mounted) return;
+        setProjects(response.data ?? []);
+      } catch {
+        if (!mounted) return;
+        setProjects([]);
+      }
+    };
+    void loadProjects();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!profile) return;
@@ -110,6 +134,7 @@ export default function AddInvoiceForm() {
     try {
       const invoice: Invoice = {
         id: genId(),
+        projectId: data.projectId || undefined,
         createdAt: Date.now(),
         currency: data.currency,
         businessName: data.businessName,
@@ -168,6 +193,27 @@ export default function AddInvoiceForm() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="text-sm text-[var(--text-muted)] mb-1 flex items-center">
+            Linked Project <Tooltip text="Optional: link this invoice to a project for payments and reporting" />
+          </label>
+          <select
+            {...register("projectId")}
+            className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+          >
+            <option value="">No linked project</option>
+            {projects.map((project) => {
+              const projectId = getProjectId(project);
+              if (!projectId) return null;
+              return (
+                <option key={projectId} value={projectId}>
+                  {project.title}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+
         <div>
           <label className="text-sm text-[var(--text-muted)] mb-1 flex items-center">
             Business (Bill To) <Tooltip text="Who you are billing" />
