@@ -18,11 +18,14 @@ import {
   Users,
 } from "lucide-react";
 import { cn } from "@/lib";
+import { Badge } from "@/components/ui";
+import { useFeature } from "@/hooks/useFeature";
 
 type SidebarItem = {
   label: string;
   href: string;
   icon: React.ComponentType<{ size?: number; className?: string }>;
+  premiumFeature?: "voraEnabled" | "signalEnabled" | "analyticsAdvanced" | "teamLimit";
 };
 
 type SidebarGroup = {
@@ -35,7 +38,7 @@ const navGroups: SidebarGroup[] = [
     label: "Workspace",
     items: [
       { label: "Dashboard", href: "/dashboard", icon: Gauge },
-      { label: "Team", href: "/team", icon: Users },
+      { label: "Team", href: "/team", icon: Users, premiumFeature: "teamLimit" },
     ],
   },
   {
@@ -46,7 +49,7 @@ const navGroups: SidebarGroup[] = [
       { label: "Spaces", href: "/spaces", icon: MessageSquareShare },
       { label: "Reviews", href: "/reviews", icon: Star },
       { label: "Discover", href: "/discover", icon: Compass },
-      { label: "Signal", href: "/signal", icon: Signal },
+      { label: "Signal", href: "/signal", icon: Signal, premiumFeature: "signalEnabled" },
     ],
   },
   {
@@ -64,7 +67,7 @@ const navGroups: SidebarGroup[] = [
     label: "System",
     items: [
       { label: "Settings", href: "/settings", icon: Settings },
-      { label: "Vora", href: "/vora", icon: Bot },
+      { label: "Vora", href: "/vora", icon: Bot, premiumFeature: "voraEnabled" },
     ],
   },
 ];
@@ -81,6 +84,17 @@ type SidebarProps = {
 
 export default function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
   const pathname = usePathname();
+  const { enabled: voraEnabled } = useFeature("voraEnabled");
+  const { enabled: signalEnabled } = useFeature("signalEnabled");
+  const { enabled: analyticsAdvancedEnabled } = useFeature("analyticsAdvanced");
+  const { enabled: teamLimitEnabled } = useFeature("teamLimit");
+
+  const featureEnabled: Record<NonNullable<SidebarItem["premiumFeature"]>, boolean> = {
+    voraEnabled,
+    signalEnabled,
+    analyticsAdvanced: analyticsAdvancedEnabled,
+    teamLimit: teamLimitEnabled,
+  };
 
   return (
     <aside
@@ -104,8 +118,9 @@ export default function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
           <section key={group.label}>
             <p className="mb-2 px-2 text-xs uppercase tracking-wider text-[var(--muted)]">{group.label}</p>
             <div className="space-y-1">
-              {group.items.map(({ label, href, icon: Icon }) => {
+              {group.items.map(({ label, href, icon: Icon, premiumFeature }) => {
                 const active = isActive(pathname, href);
+                const showProBadge = premiumFeature ? !featureEnabled[premiumFeature] : false;
                 return (
                   <Link
                     key={href}
@@ -121,6 +136,11 @@ export default function Sidebar({ mobile = false, onNavigate }: SidebarProps) {
                   >
                     <Icon size={16} />
                     <span>{label}</span>
+                    {showProBadge ? (
+                      <Badge tone="info" className="ml-auto">
+                        Pro
+                      </Badge>
+                    ) : null}
                   </Link>
                 );
               })}

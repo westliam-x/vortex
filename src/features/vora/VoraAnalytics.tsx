@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/layout";
 import { SectionCard } from "@/components/patterns";
 import { Badge, Button, StatusBadge } from "@/components/ui";
+import { useFeature } from "@/hooks/useFeature";
 import VoraPortalNav from "./components/VoraPortalNav";
 
 const kpis = [
@@ -29,10 +30,15 @@ const topClients = [
 
 export default function VoraAnalytics() {
   const router = useRouter();
+  const { enabled: analyticsAdvancedEnabled } = useFeature("analyticsAdvanced");
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Vora Analytics" subtitle="Financial performance and payment health snapshots." />
+      <PageHeader
+        title="Vora Analytics"
+        subtitle="Financial performance and payment health snapshots."
+        rightSlot={analyticsAdvancedEnabled ? undefined : <Badge tone="info">Pro</Badge>}
+      />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
         <aside className="lg:col-span-3">

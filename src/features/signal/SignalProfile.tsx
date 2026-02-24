@@ -2,6 +2,8 @@
 
 import { PageHeader } from "@/components/layout";
 import { SectionCard } from "@/components/patterns";
+import { Badge } from "@/components/ui";
+import { useFeature } from "@/hooks/useFeature";
 import { useSignalProfile } from "./hooks/useSignalProfile";
 import SignalToggle from "./components/SignalToggle";
 import SignalProfileForm from "./components/SignalProfileForm";
@@ -9,10 +11,15 @@ import AvailabilityCard from "./components/AvailabilityCard";
 
 export default function SignalProfile() {
   const { active, setActive, profile, setProfile, saveProfile, saving, savedAt, hydrated } = useSignalProfile();
+  const { enabled } = useFeature("signalEnabled");
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Signal" subtitle="Manage discoverability and collaboration availability." />
+      <PageHeader
+        title="Signal"
+        subtitle="Manage discoverability and collaboration availability."
+        rightSlot={enabled ? undefined : <Badge tone="info">Pro</Badge>}
+      />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
         <section className="space-y-4 lg:col-span-8">

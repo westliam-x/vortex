@@ -3,21 +3,25 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib";
+import { Badge } from "@/components/ui";
+import { useFeature } from "@/hooks/useFeature";
 
-const items = [
+const items: Array<{ label: string; href: string; premiumFeature?: "analyticsAdvanced" }> = [
   { label: "Overview", href: "/vora" },
   { label: "Planning", href: "/vora/planning" },
-  { label: "Analytics", href: "/vora/analytics" },
+  { label: "Analytics", href: "/vora/analytics", premiumFeature: "analyticsAdvanced" },
   { label: "Settings", href: "/vora/settings" },
-] as const;
+];
 
 export default function VoraPortalNav() {
   const pathname = usePathname();
+  const { enabled: analyticsAdvancedEnabled } = useFeature("analyticsAdvanced");
 
   return (
     <nav className="space-y-2">
       {items.map((item) => {
         const active = pathname === item.href;
+        const showProBadge = item.premiumFeature === "analyticsAdvanced" && !analyticsAdvancedEnabled;
         return (
           <Link
             key={item.href}
@@ -29,7 +33,10 @@ export default function VoraPortalNav() {
                 : "border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:text-[var(--text)]"
             )}
           >
-            {item.label}
+            <span className="inline-flex items-center gap-2">
+              {item.label}
+              {showProBadge ? <Badge tone="info">Pro</Badge> : null}
+            </span>
           </Link>
         );
       })}

@@ -4,8 +4,9 @@ import { useMemo, useState } from "react";
 import { format } from "date-fns";
 import { InviteUserModal } from "@/components";
 import { PageHeader } from "@/components/layout";
-import { Button, Input, Select } from "@/components/ui";
+import { Badge, Button, Input, Select } from "@/components/ui";
 import { DataTable, FilterBar, NoResults } from "@/components/patterns";
+import { useFeature } from "@/hooks/useFeature";
 import { useTeam } from "./hooks/useTeam";
 import type { TeamMember } from "@/types/team";
 
@@ -14,6 +15,7 @@ export default function Team() {
   const [status, setStatus] = useState("all");
   const [sort, setSort] = useState("name");
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const { enabled: teamLimitEnabled } = useFeature("teamLimit");
 
   const { team, loading, error, refetch, pagination, page, limit, setPage, setLimit } = useTeam();
 
@@ -42,6 +44,7 @@ export default function Team() {
       <PageHeader
         title="Team"
         subtitle="Manage access levels and assignments across your workspace."
+        rightSlot={teamLimitEnabled ? undefined : <Badge tone="info">Pro</Badge>}
         primaryAction={{ label: "+ Invite member", onClick: () => setShowInviteModal(true) }}
       />
 

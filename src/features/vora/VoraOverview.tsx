@@ -2,12 +2,20 @@
 
 import { PageHeader } from "@/components/layout";
 import { SectionCard } from "@/components/patterns";
+import { Badge } from "@/components/ui";
+import { useFeature } from "@/hooks/useFeature";
 import VoraPortalNav from "./components/VoraPortalNav";
 
 export default function VoraOverview() {
+  const { enabled } = useFeature("voraEnabled");
+
   return (
     <div className="space-y-6">
-      <PageHeader title="Vora" subtitle="Overview of assistant operations and performance." />
+      <PageHeader
+        title="Vora"
+        subtitle="Overview of assistant operations and performance."
+        rightSlot={enabled ? undefined : <Badge tone="info">Pro</Badge>}
+      />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
         <aside className="lg:col-span-3">

@@ -2,12 +2,15 @@ import { useCallback, useState } from "react";
 import Cookies from "js-cookie";
 import { makeRequest } from "@/api/request";
 import API_ROUTES from "@/endpoints/routes";
+import { usePlanStore } from "@/store/planStore";
+import { getProfile } from "../services/profile.service";
 
 type LoginResponse = { user: { id: string; name: string; email: string } };
 
 export const useLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const setCurrentPlan = usePlanStore((state) => state.setCurrentPlan);
 
   const login = useCallback(async (email: string, password: string, remember?: boolean) => {
     setLoading(true);
@@ -18,6 +21,13 @@ export const useLogin = () => {
         method: "POST",
         data: { email, password },
       });
+
+      try {
+        const profile = await getProfile();
+        setCurrentPlan(profile.plan);
+      } catch {
+        setCurrentPlan("free");
+      }
 
       Cookies.set("logged_in", "true", {
         sameSite: "Lax",
@@ -31,7 +41,7 @@ export const useLogin = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [setCurrentPlan]);
 
   return { login, loading, error };
 };

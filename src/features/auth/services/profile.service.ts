@@ -8,6 +8,7 @@ export interface USER_RESPONSE{
     email: string;
     phone: string;
     country: string;
+    plan?: "free" | "pro" | "business";
 }
 export const getProfile = async (): Promise<USER_RESPONSE> => {
   const response = await makeRequest<{ user: USER_RESPONSE }>({
