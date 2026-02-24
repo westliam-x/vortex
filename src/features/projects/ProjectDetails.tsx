@@ -15,6 +15,16 @@ import { useVortexMessages } from "@/hooks/vortex/useVortexMessages";
 import { useVortexFiles } from "@/hooks/vortex/useVortexFiles";
 import { useVortexReview } from "@/hooks/vortex/useVortexReview";
 import { PaymentEventsDrawer, usePayments } from "@/features/payments";
+import {
+  CollabRequestCard,
+  CollabRequestModal,
+  SmartInviteModal,
+  readCollabRequest,
+  readProjectInvites,
+  writeCollabRequest,
+  type SignalProjectInvite,
+  type SignalCollabRequest,
+} from "@/features/signal";
 
 const tabList = ["Overview", "Messages", "Files", "Payments", "Reviews"] as const;
 type TabKey = (typeof tabList)[number];
@@ -27,6 +37,10 @@ export default function ProjectDetails() {
   const [messageBody, setMessageBody] = useState("");
   const [showOriginal, setShowOriginal] = useState<Record<string, boolean>>({});
   const [paymentsDrawerOpen, setPaymentsDrawerOpen] = useState(false);
+  const [collabModalOpen, setCollabModalOpen] = useState(false);
+  const [collabRequest, setCollabRequest] = useState<SignalCollabRequest | null>(null);
+  const [smartInviteOpen, setSmartInviteOpen] = useState(false);
+  const [projectInvites, setProjectInvites] = useState<SignalProjectInvite[]>([]);
 
   const { project, client, loading: loadingProject, shareUrl, enableShare, closeProject } = useProject(projectId);
   const resolvedProjectId = getProjectId(project);
@@ -69,6 +83,16 @@ export default function ProjectDetails() {
     if (activeTab === "Payments") fetchPayments();
     if (activeTab === "Reviews") fetchReview();
   }, [activeTab, project, fetchFiles, fetchMessages, fetchPayments, fetchReview]);
+
+  useEffect(() => {
+    if (!resolvedProjectId) {
+      setCollabRequest(null);
+      setProjectInvites([]);
+      return;
+    }
+    setCollabRequest(readCollabRequest(resolvedProjectId));
+    setProjectInvites(readProjectInvites(resolvedProjectId));
+  }, [resolvedProjectId]);
 
   const metadata = useMemo(
     () => [
@@ -423,6 +447,64 @@ export default function ProjectDetails() {
               </div>
             </SectionCard>
 
+            <SectionCard title="Need help?" description="Request a collaborator for this project.">
+              <div className="space-y-2">
+                {collabRequest ? (
+                  <CollabRequestCard
+                    request={collabRequest}
+                    onClose={
+                      collabRequest.status === "Open"
+                        ? () => {
+                            if (!resolvedProjectId) return;
+                            const closed = { ...collabRequest, status: "Closed" as const };
+                            setCollabRequest(closed);
+                            writeCollabRequest(resolvedProjectId, closed);
+                          }
+                        : undefined
+                    }
+                  />
+                ) : null}
+                <Button
+                  fullWidth
+                  variant="secondary"
+                  disabled={!resolvedProjectId || Boolean(collabRequest?.status === "Open")}
+                  onClick={() => setCollabModalOpen(true)}
+                >
+                  Signal for collaborator
+                </Button>
+                {collabRequest?.status === "Open" ? (
+                  <p className="text-xs text-[var(--muted)]">One active collaboration request is allowed per project.</p>
+                ) : null}
+                <Button fullWidth variant="outline" disabled={!resolvedProjectId} onClick={() => setSmartInviteOpen(true)}>
+                  Smart invite
+                </Button>
+              </div>
+            </SectionCard>
+
+            <SectionCard title="Invites" description="Collaboration invites sent for this project.">
+              <div className="space-y-2">
+                {projectInvites.length ? (
+                  projectInvites.map((invite) => (
+                    <div
+                      key={invite.id}
+                      className="rounded-lg border border-[var(--border)] bg-[var(--surface2)] p-3 text-sm"
+                    >
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium text-[var(--text)]">{invite.candidateName}</p>
+                        <StatusBadge kind="invite" status={invite.status.toLowerCase()} />
+                      </div>
+                      <p className="mt-1 text-xs text-[var(--muted)]">Role: {invite.role}</p>
+                      <p className="text-xs text-[var(--muted)]">
+                        Sent: {new Date(invite.sentAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-[var(--muted)]">No invites sent for this project yet.</p>
+                )}
+              </div>
+            </SectionCard>
+
             <SectionCard title="Wallet">
               <div className="space-y-2 text-sm text-[var(--muted)]">
                 <p className="inline-flex items-center gap-2 text-[var(--text)]"><Wallet size={14} /> Vortex Wallet</p>
@@ -439,6 +521,29 @@ export default function ProjectDetails() {
         onOpenChange={setPaymentsDrawerOpen}
         projectId={resolvedProjectId ?? undefined}
       />
+      {resolvedProjectId ? (
+        <CollabRequestModal
+          open={collabModalOpen}
+          onOpenChange={setCollabModalOpen}
+          projectId={resolvedProjectId}
+          onSubmit={(request) => {
+            setCollabRequest(request);
+            writeCollabRequest(resolvedProjectId, request);
+          }}
+        />
+      ) : null}
+      {resolvedProjectId ? (
+        <SmartInviteModal
+          open={smartInviteOpen}
+          onOpenChange={setSmartInviteOpen}
+          candidateName={collabRequest ? `${collabRequest.roleNeeded} specialist` : "Potential collaborator"}
+          initialProjectId={resolvedProjectId}
+          initialRole={collabRequest?.roleNeeded}
+          onInvited={() => {
+            setProjectInvites(readProjectInvites(resolvedProjectId));
+          }}
+        />
+      ) : null}
     </div>
   );
 }

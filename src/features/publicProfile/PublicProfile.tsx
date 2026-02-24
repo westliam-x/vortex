@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { Card, EmptyState } from "@/components/ui";
 import { ContentGrid, RightContextPanel } from "@/components/layout";
 import { SectionCard } from "@/components/patterns";
+import { ReputationScore } from "@/shared";
 import { usePublicProfile } from "./hooks/usePublicProfile";
 import HireMeCard from "./components/HireMeCard";
 import ProfileHeader from "./components/ProfileHeader";
@@ -79,6 +80,12 @@ export default function PublicProfile() {
                 <StatCard label="Verified Reviews" value={String(profile.verifiedReviewsCount)} />
                 <StatCard label="Avg Rating" value={profile.avgRating.toFixed(1)} />
               </div>
+
+              <ReputationScore
+                rating={profile.avgRating}
+                verifiedReviews={profile.verifiedReviewsCount}
+                completedProjects={profile.totalProjects}
+              />
 
               <VerifiedReviews reviews={profile.reviews} />
             </div>
