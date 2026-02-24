@@ -47,7 +47,7 @@ const featureGroups = [
     title: "Revenue engine",
     items: [
       { icon: FileText, title: "Invoices", body: "Generate project-linked invoices with due dates, totals, and clean status tracking." },
-      { icon: Wallet, title: "Payments", body: "Collect and monitor payment events with timeline visibility and collection readiness." },
+      { icon: Wallet, title: "Payments + Blaaiz", body: "Collect, monitor payment events, and generate virtual bank account references powered by Blaaiz." },
       { icon: Star, title: "Reviews", body: "Capture transaction-backed social proof with clearer trust for future clients." },
       { icon: Users, title: "Team", body: "Coordinate collaborators and roles without losing ownership of delivery quality." },
     ],
@@ -83,13 +83,20 @@ export default function LandingPage() {
             </span>
             <span className="text-lg font-semibold">Vortex</span>
           </Link>
-          <nav className="hidden items-center gap-6 text-sm text-[var(--muted)] md:flex">
-            <a href="#platform" className="hover:text-[var(--text)]">Platform</a>
-            <a href="#features" className="hover:text-[var(--text)]">Features</a>
-            <a href="#visuals" className="hover:text-[var(--text)]">Visuals</a>
-            <a href="#proof" className="hover:text-[var(--text)]">Proof</a>
+          <nav className="hidden items-center gap-4 text-sm text-[var(--muted)] lg:flex">
+            <Link href="/features/workspace" className="hover:text-[var(--text)]">Workspace</Link>
+            <Link href="/features/workspace#spaces" className="hover:text-[var(--text)]">Spaces</Link>
+            <Link href="/features/payments#invoices" className="hover:text-[var(--text)]">Invoices</Link>
+            <Link href="/features/payments" className="hover:text-[var(--text)]">Payments</Link>
+            <Link href="/features/payments#blaaiz" className="hover:text-[var(--text)]">Blaaiz</Link>
+            <Link href="/features/reviews" className="hover:text-[var(--text)]">Reviews</Link>
+            <Link href="/features/signal" className="hover:text-[var(--text)]">Signal</Link>
+            <Link href="/vora-ai" className="hover:text-[var(--text)]">Vora</Link>
           </nav>
-          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3">
+            <Link href="/features" className="hidden text-sm text-[var(--muted)] hover:text-[var(--text)] sm:inline">
+              Feature pages
+            </Link>
             <Link href="/pricing" className="hidden text-sm text-[var(--muted)] hover:text-[var(--text)] sm:inline">
               Pricing
             </Link>
@@ -203,6 +210,20 @@ export default function LandingPage() {
                     </article>
                   ))}
                 </div>
+                <div className="mt-3">
+                  <Link
+                    href={
+                      group.title === "Core workspace"
+                        ? "/features/workspace"
+                        : group.title === "Revenue engine"
+                        ? "/features/payments"
+                        : "/features/signal"
+                    }
+                    className="inline-flex items-center gap-2 text-sm font-medium text-[var(--mint)] hover:text-[var(--text)]"
+                  >
+                    Explore {group.title.toLowerCase()} <ArrowRight size={16} />
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
@@ -232,6 +253,14 @@ export default function LandingPage() {
                 See plan tiers <ArrowRight size={16} />
               </Link>
             </div>
+          </div>
+          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Link href="/features" className="rounded-lg border border-[var(--border)] bg-[var(--surface2)] px-4 py-3 text-sm text-[var(--muted)] hover:text-[var(--text)]">
+              Open full feature hub
+            </Link>
+            <Link href="/vora-ai" className="rounded-lg border border-[var(--border)] bg-[var(--surface2)] px-4 py-3 text-sm text-[var(--muted)] hover:text-[var(--text)]">
+              Read Vora deep dive
+            </Link>
           </div>
         </div>
       </section>

@@ -1,0 +1,12 @@
+<svg width="1400" height="860" viewBox="0 0 1400 860" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1400" height="860" rx="24" fill="#0D1014"/>
+  <rect x="24" y="24" width="1352" height="812" rx="18" fill="#121722" stroke="#232C3D" stroke-width="2"/>
+  <rect x="52" y="52" width="250" height="756" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="320" y="52" width="1056" height="82" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="348" y="80" width="360" height="28" rx="8" fill="#121722"/>
+  <rect x="1076" y="80" width="270" height="28" rx="8" fill="#007AFF"/>
+  <rect x="320" y="156" width="684" height="348" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="1020" y="156" width="356" height="348" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="320" y="524" width="1056" height="284" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <text x="356" y="792" fill="#94A3B8" font-family="Arial, sans-serif" font-size="20">Replace with real workspace screenshot</text>
+</svg>
