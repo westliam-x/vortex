@@ -1,0 +1,31 @@
+:root {
+  color-scheme: dark;
+
+  --bg: #050505;
+  --mint: #00ff94;
+  --blue: #007aff;
+
+  --surface: #0d1014;
+  --surface2: #121722;
+  --border: #232c3d;
+  --text: #edf2ff;
+  --muted: #94a3b8;
+  --danger: #ff4d67;
+  --warning: #ffc84d;
+
+  --overlay: rgb(from var(--bg) r g b / 0.75);
+  --focus: rgb(from var(--blue) r g b / 0.42);
+  --success: var(--mint);
+  --on-accent: #04120d;
+
+  /* Backward-compatible aliases for existing app styles */
+  --bg-elevated: var(--surface);
+  --surface-2: var(--surface2);
+  --text-muted: var(--muted);
+  --text-subtle: var(--muted);
+  --accent: var(--mint);
+  --accent-strong: var(--blue);
+  --accent-soft: rgb(from var(--mint) r g b / 0.16);
+  --error: var(--danger);
+  --info: var(--blue);
+}

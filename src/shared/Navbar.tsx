@@ -3,7 +3,7 @@
 import { Bell, Menu } from "lucide-react";
 import { useMobileSidebar } from "@/store/useMobileSidebar";
 import { useEffect, useState } from "react";
-import { useProfile } from "@/hooks/auth/useProfile";
+import { useProfile } from "@/features/auth";
 
 const Navbar = () => {
   const openSidebar = useMobileSidebar((state) => state.open);

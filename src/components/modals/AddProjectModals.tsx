@@ -11,6 +11,7 @@ import { makeRequest } from "@/api/request";
 import { toast } from "react-toastify";
 import API_ROUTES from "@/endpoints/routes";
 import { getId } from "@/lib/ids";
+import { fetchClients as fetchClientsService } from "@/features/clients";
 
 const formSchema = z
   .object({
@@ -60,10 +61,8 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await makeRequest<{ clients: Client[] }>({
-          url: API_ROUTES.CLIENT.LIST,
-        });
-        setClients(response.clients);
+        const response = await fetchClientsService();
+        setClients(response);
       } catch {
         toast.error("Unable to load clients");
       }

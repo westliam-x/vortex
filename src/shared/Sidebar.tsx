@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { handleLogout } from "@/services/authServices";
+import { handleLogout } from "@/features/auth";
 import {
   BookOpen,
   FolderKanban,
@@ -21,7 +21,7 @@ const links = [
   { name: "Projects", href: "/projects", icon: FolderKanban },
   // { name: "Vortex Spaces", href: "/vortexes", icon: Zap, badge: "Soon" },
   { name: "Reviews", href: "/reviews", icon: Star },
-  { name: "Invoices", href: "/invoice", icon: ReceiptText },
+  { name: "Invoices", href: "/invoices", icon: ReceiptText },
   { name: "Team", href: "/team", icon: Users },
   { name: "Settings", href: "/settings", icon: Settings, badge: "Soon" },
   { name: "Logs", href: "/logs", icon: BookOpen },

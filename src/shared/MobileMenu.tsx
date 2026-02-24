@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useMobileSidebar } from "@/store/useMobileSidebar";
 import { cn } from "@/lib";
-import { handleLogout } from "@/services/authServices";
+import { handleLogout } from "@/features/auth";
 import { AnimatePresence, motion } from "framer-motion";
 
 const links = [
@@ -15,7 +15,7 @@ const links = [
   { name: "Projects", href: "/projects" },
   // { name: "Vortex Spaces", href: "/vortexes", badge: "Soon" },
   { name: "Reviews", href: "/reviews" },
-  { name: "Invoices", href: "/invoice" },
+  { name: "Invoices", href: "/invoices" },
   { name: "Team", href: "/team" },
   { name: "Settings", href: "/settings", badge: "Soon" },
   { name: "Logs", href: "/logs" },

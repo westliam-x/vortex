@@ -1,0 +1,73 @@
+"use client";
+
+import { useMemo } from "react";
+import { Badge, Card, EmptyState, Skeleton } from "@/components/ui";
+import type { SummaryProject } from "../services/dashboardServices";
+
+const statusTone = (status: SummaryProject["status"]) => {
+  switch (status) {
+    case "Completed":
+      return "success";
+    case "In Progress":
+      return "warning";
+    case "Pending":
+      return "info";
+    case "Archived":
+      return "default";
+    default:
+      return "default";
+  }
+};
+
+const ProjectOverview = ({ projects, loading }: { projects: SummaryProject[]; loading: boolean }) => {
+  const latestProjects = useMemo(() => projects.slice(0, 6), [projects]);
+
+  return (
+    <Card>
+      <h2 className="mb-5 text-lg font-semibold text-[var(--text)]">
+        Latest projects
+      </h2>
+
+      {loading ? (
+        <div className="hide-scrollbar flex space-x-4 overflow-x-auto pb-2">
+          {Array.from({ length: 3 }).map((_, idx) => (
+            <Skeleton key={idx} className="h-24 min-w-[240px]" />
+          ))}
+        </div>
+      ) : latestProjects.length > 0 ? (
+        <div className="hide-scrollbar flex space-x-4 overflow-x-auto pb-2">
+          {latestProjects.map((project) => (
+            <div
+              key={project.id}
+              className="min-w-[260px] rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4"
+            >
+              <h3 className="text-base font-medium text-[var(--text)]">
+                {project.title}
+              </h3>
+              <p className="truncate text-sm text-[var(--text-muted)]">
+                Client:{" "}
+                {typeof project.clientId === "object" &&
+                project.clientId &&
+                "name" in project.clientId &&
+                project.clientId.name
+                  ? project.clientId.name
+                  : "Client"}
+              </p>
+
+              <div className="mt-3">
+                <Badge tone={statusTone(project.status)}>{project.status}</Badge>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          title="No projects yet"
+          description="Create a project to start your first Vortex space."
+        />
+      )}
+    </Card>
+  );
+};
+
+export default ProjectOverview;

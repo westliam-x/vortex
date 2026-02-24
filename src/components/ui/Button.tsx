@@ -1,48 +1,86 @@
-// components/ui/Button.tsx
-import { cva, VariantProps } from "class-variance-authority";
-import clsx from "clsx";
-import { ButtonHTMLAttributes } from "react";
+"use client";
+
+import { cva, type VariantProps } from "class-variance-authority";
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
+import { cn } from "@/lib";
 
 const buttonStyles = cva(
-  "inline-flex items-center cursor-pointer justify-center rounded-md font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60",
+  "inline-flex items-center justify-center gap-2 rounded-lg border font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)] disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        outline:
-          "bg-transparent border border-[var(--border)] text-[var(--text)] hover:bg-[var(--surface)] focus:ring-[var(--accent)]/40",
-        primary:
-          "bg-[var(--accent-strong)] hover:bg-[var(--accent)] text-[#041017] focus:ring-[var(--accent)]/40",
-        secondary:
-          "bg-[var(--surface-2)] hover:bg-[var(--surface)] text-[var(--text)] focus:ring-[var(--accent)]/30",
-        destructive:
-          "bg-[var(--error)] hover:bg-[#dc2626] text-white focus:ring-[var(--error)]/40",
-        ghost:
-          "bg-transparent text-[var(--text)] hover:bg-[var(--surface)] focus:ring-[var(--accent)]/30",
+        primary: "border-transparent bg-[var(--mint)] text-[var(--on-accent)] hover:bg-[var(--blue)]",
+        secondary: "border-[var(--border)] bg-[var(--surface2)] text-[var(--text)] hover:bg-[var(--surface)]",
+        outline: "border-[var(--border)] bg-transparent text-[var(--text)] hover:bg-[var(--surface)]",
+        ghost: "border-transparent bg-transparent text-[var(--text)] hover:bg-[var(--surface)]",
+        destructive: "border-transparent bg-[var(--danger)] text-[var(--text)] hover:bg-[var(--warning)]",
       },
       size: {
-        xs: "px-2 py-1 text-xs",
-        sm: "px-3 py-1 text-sm",
-        md: "px-4 py-2 text-base",
-        lg: "px-5 py-3 text-lg",
+        xs: "h-8 px-2.5 text-xs",
+        sm: "h-9 px-3 text-sm",
+        md: "h-10 px-4 text-sm",
+        lg: "h-11 px-5 text-base",
+      },
+      fullWidth: {
+        true: "w-full",
+        false: "",
       },
     },
     defaultVariants: {
       variant: "primary",
       size: "md",
+      fullWidth: false,
     },
   }
 );
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
-  VariantProps<typeof buttonStyles>;
+export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
+  VariantProps<typeof buttonStyles> & {
+    loading?: boolean;
+    leftIcon?: ReactNode;
+    rightIcon?: ReactNode;
+  };
 
- const Button = ({ className, variant, size, ...props }: ButtonProps) => {
-  return (
-    <button
-      className={clsx(buttonStyles({ variant, size }), className)}
-      {...props}
-    />
-  );
-};
+const Spinner = () => (
+  <span
+    aria-hidden="true"
+    className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent"
+  />
+);
+
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      className,
+      variant,
+      size,
+      fullWidth,
+      loading = false,
+      leftIcon,
+      rightIcon,
+      disabled,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const isDisabled = disabled || loading;
+
+    return (
+      <button
+        ref={ref}
+        className={cn(buttonStyles({ variant, size, fullWidth }), className)}
+        disabled={isDisabled}
+        {...props}
+      >
+        {loading ? <Spinner /> : leftIcon}
+        <span>{children}</span>
+        {!loading ? rightIcon : null}
+      </button>
+    );
+  }
+);
+
+Button.displayName = "Button";
 
 export default Button;

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
-import { Login } from "@/container";
+import { Login } from "@/features/auth";
 
-export default function LoginPage() {
+export default function Page() {
   return (
     <Suspense fallback={null}>
       <Login />

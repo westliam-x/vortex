@@ -1,29 +1,40 @@
 "use client";
 
-import type { HTMLAttributes } from "react";
+import { forwardRef, type HTMLAttributes } from "react";
 import { cn } from "@/lib";
 
+type BadgeTone = "default" | "success" | "warning" | "error" | "info";
+
 type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
-  tone?: "default" | "success" | "warning" | "error" | "info";
+  tone?: BadgeTone;
+  variant?: BadgeTone;
 };
 
-const toneClasses: Record<NonNullable<BadgeProps["tone"]>, string> = {
-  default: "bg-[var(--surface-2)] text-[var(--text-subtle)]",
-  success: "bg-[rgba(34,197,94,0.18)] text-[var(--success)]",
-  warning: "bg-[rgba(245,158,11,0.18)] text-[var(--warning)]",
-  error: "bg-[rgba(239,68,68,0.18)] text-[var(--error)]",
-  info: "bg-[rgba(96,165,250,0.18)] text-[var(--info)]",
+const toneClasses: Record<BadgeTone, string> = {
+  default: "border-[var(--border)] bg-[var(--surface2)] text-[var(--muted)]",
+  success: "border-transparent bg-[var(--success)] text-[var(--on-accent)]",
+  warning: "border-transparent bg-[var(--warning)] text-[var(--on-accent)]",
+  error: "border-transparent bg-[var(--danger)] text-[var(--text)]",
+  info: "border-transparent bg-[var(--blue)] text-[var(--text)]",
 };
 
-const Badge = ({ className, tone = "default", ...props }: BadgeProps) => (
-  <span
-    className={cn(
-      "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
-      toneClasses[tone],
-      className
-    )}
-    {...props}
-  />
+const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
+  ({ className, tone, variant, ...props }, ref) => {
+    const selectedTone = variant ?? tone ?? "default";
+    return (
+      <span
+        ref={ref}
+        className={cn(
+          "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
+          toneClasses[selectedTone],
+          className
+        )}
+        {...props}
+      />
+    );
+  }
 );
+
+Badge.displayName = "Badge";
 
 export default Badge;

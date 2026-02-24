@@ -2,7 +2,7 @@
 
 import { makeRequest } from "@/api/request";
 import API_ROUTES from "@/endpoints/routes";
-import { fetchProjects } from "@/services/projectServices";
+import { fetchProjects } from "@/features/projects";
 import { Project } from "@/types/project";
 import {
   Dialog,

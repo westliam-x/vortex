@@ -1,18 +1,21 @@
 "use client";
 
-import type { HTMLAttributes } from "react";
+import { forwardRef, type HTMLAttributes } from "react";
 import { cn } from "@/lib";
 
 type CardProps = HTMLAttributes<HTMLDivElement>;
 
-const Card = ({ className, ...props }: CardProps) => (
+const Card = forwardRef<HTMLDivElement, CardProps>(({ className, ...props }, ref) => (
   <div
+    ref={ref}
     className={cn(
-      "rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_0_0_1px_rgba(0,0,0,0.2)]",
+      "rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 text-[var(--text)]",
       className
     )}
     {...props}
   />
-);
+));
+
+Card.displayName = "Card";
 
 export default Card;

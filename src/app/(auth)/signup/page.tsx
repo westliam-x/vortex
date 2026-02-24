@@ -1,9 +1,5 @@
-import { SignupWrapper } from "@/container";
+import { Signup } from "@/features/auth";
 
-export default function Signup() {
-return(
-    <div>
-        <SignupWrapper/>
-    </div>
-)
+export default function Page() {
+  return <Signup />;
 }

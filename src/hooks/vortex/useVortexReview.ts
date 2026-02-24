@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Review } from "@/types/reviews";
-import { fetchProjectReview, updateReviewStatus as updateReviewStatusRequest } from "@/services/reviewServices";
+import { fetchProjectReview, updateReviewStatus as updateReviewStatusRequest } from "@/features/reviews";
 
 export const useVortexReview = (projectId?: string) => {
   const [review, setReview] = useState<Review | null>(null);
