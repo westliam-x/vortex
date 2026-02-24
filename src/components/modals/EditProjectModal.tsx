@@ -9,6 +9,7 @@ import { X } from "lucide-react";
 import { Project } from "@/types/project";
 import { Client } from "@/types/client";
 import { getId } from "@/lib/ids";
+import { Button } from "@/components/ui";
 
 const formSchema = z.object({
   title: z.string().min(2, "Title is too short"),
@@ -28,6 +29,12 @@ interface Props {
   onSubmit: (updatedData: Partial<Project>) => void;
   clients?: Client[];
 }
+
+const panelClass =
+  "w-full max-w-lg rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)]";
+const inputClass =
+  "w-full rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-[var(--text)] outline-none transition focus:border-[var(--blue)] focus:ring-2 focus:ring-[var(--blue)]/30";
+const labelClass = "mb-1.5 block text-xs font-medium uppercase tracking-wide text-[var(--muted)]";
 
 const EditProjectModal = ({ isOpen, onClose, project, onSubmit, clients = [] }: Props) => {
   const {
@@ -68,22 +75,23 @@ const EditProjectModal = ({ isOpen, onClose, project, onSubmit, clients = [] }: 
       <Dialog as="div" onClose={onClose} className="relative z-50">
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="w-full max-w-lg bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6">
+          <Dialog.Panel className={panelClass}>
             <div className="flex justify-between items-center mb-4">
-              <Dialog.Title className="text-lg font-semibold text-[var(--text)]">
-                Edit Project
-              </Dialog.Title>
-              <button onClick={onClose} className="text-[var(--text-subtle)] hover:text-[var(--text)]">
+              <div>
+                <Dialog.Title className="text-xl font-semibold text-[var(--text)]">Edit Project</Dialog.Title>
+                <p className="mt-1 text-sm text-[var(--muted)]">Adjust delivery details and project metadata.</p>
+              </div>
+              <button onClick={onClose} className="rounded-md p-1 text-[var(--text-subtle)] hover:bg-[var(--surface2)] hover:text-[var(--text)]">
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
               <div>
-                <label className="block text-sm text-[var(--text-muted)] mb-1">Title</label>
+                <label className={labelClass}>Title</label>
                 <input
                   {...register("title")}
-                  className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                  className={inputClass}
                 />
                 {errors.title ? (
                   <p className="text-xs text-[var(--error)] mt-1">{errors.title.message}</p>
@@ -91,19 +99,19 @@ const EditProjectModal = ({ isOpen, onClose, project, onSubmit, clients = [] }: 
               </div>
 
               <div>
-                <label className="block text-sm text-[var(--text-muted)] mb-1">Description</label>
+                <label className={labelClass}>Description</label>
                 <textarea
                   {...register("description")}
                   rows={3}
-                  className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                  className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-[var(--text-muted)] mb-1">Client</label>
+                <label className={labelClass}>Client</label>
                 <select
                   {...register("clientId")}
-                  className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                  className={inputClass}
                 >
                   <option value="">Select client</option>
                   {clients.map((c) => {
@@ -122,19 +130,19 @@ const EditProjectModal = ({ isOpen, onClose, project, onSubmit, clients = [] }: 
               </div>
 
               <div>
-                <label className="block text-sm text-[var(--text-muted)] mb-1">Deadline</label>
+                <label className={labelClass}>Deadline</label>
                 <input
                   type="date"
                   {...register("deadline")}
-                  className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                  className={inputClass}
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-[var(--text-muted)] mb-1">Priority</label>
+                <label className={labelClass}>Priority</label>
                 <select
                   {...register("priority")}
-                  className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                  className={inputClass}
                 >
                   <option value="">Select</option>
                   <option value="Low">Low</option>
@@ -144,10 +152,10 @@ const EditProjectModal = ({ isOpen, onClose, project, onSubmit, clients = [] }: 
               </div>
 
               <div>
-                <label className="block text-sm text-[var(--text-muted)] mb-1">Status</label>
+                <label className={labelClass}>Status</label>
                 <select
                   {...register("status")}
-                  className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                  className={inputClass}
                 >
                   <option value="Pending">Pending</option>
                   <option value="In Progress">In Progress</option>
@@ -156,12 +164,12 @@ const EditProjectModal = ({ isOpen, onClose, project, onSubmit, clients = [] }: 
                 </select>
               </div>
 
-              <button
-                type="submit"
-                className="w-full bg-[var(--accent-strong)] hover:bg-[var(--accent)] transition text-[#041017] py-2 rounded-md"
-              >
-                Update Project
-              </button>
+              <div className="flex items-center justify-end gap-2 border-t border-[var(--border)] pt-4">
+                <Button type="button" variant="ghost" onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button type="submit">Update Project</Button>
+              </div>
             </form>
           </Dialog.Panel>
         </div>

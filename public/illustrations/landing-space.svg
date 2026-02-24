@@ -1,0 +1,23 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="800" rx="24" fill="#0D1014"/>
+  <rect x="28" y="28" width="1144" height="744" rx="18" fill="#121722" stroke="#232C3D" stroke-width="2"/>
+  <rect x="52" y="52" width="1096" height="74" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="78" y="76" width="220" height="26" rx="8" fill="#121722"/>
+  <rect x="970" y="76" width="152" height="26" rx="8" fill="#00FF94" fill-opacity="0.2" stroke="#00FF94"/>
+  <rect x="52" y="146" width="250" height="600" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="322" y="146" width="528" height="600" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="870" y="146" width="278" height="600" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="70" y="174" width="214" height="44" rx="10" fill="#121722"/>
+  <rect x="70" y="230" width="214" height="44" rx="10" fill="#121722"/>
+  <rect x="70" y="286" width="214" height="44" rx="10" fill="#121722"/>
+  <rect x="70" y="342" width="214" height="44" rx="10" fill="#007AFF" fill-opacity="0.2" stroke="#007AFF"/>
+  <rect x="348" y="178" width="476" height="82" rx="10" fill="#121722"/>
+  <rect x="348" y="272" width="476" height="102" rx="10" fill="#121722"/>
+  <rect x="348" y="386" width="476" height="102" rx="10" fill="#121722"/>
+  <rect x="348" y="500" width="476" height="102" rx="10" fill="#121722"/>
+  <rect x="348" y="652" width="476" height="66" rx="10" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="890" y="178" width="238" height="150" rx="10" fill="#121722"/>
+  <rect x="890" y="346" width="238" height="182" rx="10" fill="#121722"/>
+  <rect x="890" y="546" width="238" height="172" rx="10" fill="#121722"/>
+  <text x="336" y="710" fill="#94A3B8" font-family="Arial, sans-serif" font-size="18">Replace with real Space layout screenshot</text>
+</svg>

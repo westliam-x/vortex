@@ -17,6 +17,7 @@ import { Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { z } from "zod";
+import { Button } from "@/components/ui";
 
 const roles = ["Admin", "Developer", "Designer", "Marketer"];
 
@@ -45,6 +46,12 @@ interface InviteUserModalProps {
   onClose: () => void;
   onSubmit: (data: InviteFormData) => void;
 }
+
+const panelClass =
+  "w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)]";
+const inputClass =
+  "w-full rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-[var(--text)] outline-none transition focus:border-[var(--blue)] focus:ring-2 focus:ring-[var(--blue)]/30";
+const labelClass = "mb-1.5 block text-xs font-medium uppercase tracking-wide text-[var(--muted)]";
 
 const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
   const {
@@ -95,14 +102,15 @@ const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
 
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <TransitionChild as={Fragment}>
-            <DialogPanel className="w-full max-w-md bg-[var(--surface)] border border-[var(--border)] p-6 rounded-xl">
+            <DialogPanel className={panelClass}>
               <div className="flex justify-between items-center mb-4">
-                <DialogTitle className="text-lg font-semibold text-[var(--text)]">
-                  Invite a user
-                </DialogTitle>
+                <div>
+                  <DialogTitle className="text-xl font-semibold text-[var(--text)]">Invite a user</DialogTitle>
+                  <p className="mt-1 text-sm text-[var(--muted)]">Send a secure invite to a client or team member.</p>
+                </div>
                 <button
                   onClick={onClose}
-                  className="text-[var(--text-subtle)] hover:text-[var(--text)]"
+                  className="rounded-md p-1 text-[var(--text-subtle)] hover:bg-[var(--surface2)] hover:text-[var(--text)]"
                 >
                   <X size={20} />
                 </button>
@@ -110,12 +118,10 @@ const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
 
               <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
                 <div>
-                  <label className="block text-sm text-[var(--text-muted)] mb-1">
-                    Invite as
-                  </label>
+                  <label className={labelClass}>Invite as</label>
                   <select
                     {...register("type")}
-                    className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                    className={inputClass}
                   >
                     <option value="Client">Client</option>
                     <option value="Team">Team Member</option>
@@ -123,13 +129,11 @@ const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-[var(--text-muted)] mb-1">
-                    Full Name
-                  </label>
+                  <label className={labelClass}>Full Name</label>
                   <input
                     type="text"
                     {...register("name")}
-                    className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                    className={inputClass}
                   />
                   {errors.name ? (
                     <p className="text-xs text-[var(--error)] mt-1">{errors.name.message}</p>
@@ -137,13 +141,11 @@ const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-[var(--text-muted)] mb-1">
-                    Email
-                  </label>
+                  <label className={labelClass}>Email</label>
                   <input
                     type="email"
                     {...register("email")}
-                    className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                    className={inputClass}
                   />
                   {errors.email ? (
                     <p className="text-xs text-[var(--error)] mt-1">{errors.email.message}</p>
@@ -152,12 +154,10 @@ const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
 
                 {userType === "Client" ? (
                   <div>
-                    <label className="block text-sm text-[var(--text-muted)] mb-1">
-                      Assign to Project
-                    </label>
+                    <label className={labelClass}>Assign to Project</label>
                     <select
                       {...register("projectId")}
-                      className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                      className={inputClass}
                     >
                       <option value="">Select project</option>
                       {projects.map((proj) => (
@@ -177,12 +177,10 @@ const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
                 {userType === "Team" ? (
                   <>
                     <div>
-                      <label className="block text-sm text-[var(--text-muted)] mb-1">
-                        Select Role
-                      </label>
+                      <label className={labelClass}>Select Role</label>
                       <select
                         {...register("role")}
-                        className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                        className={inputClass}
                       >
                         <option value="">Select role</option>
                         {roles.map((role) => (
@@ -199,13 +197,11 @@ const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
                     </div>
 
                     <div>
-                      <label className="block text-sm text-[var(--text-muted)] mb-1">
-                        Assign to Projects
-                      </label>
+                      <label className={labelClass}>Assign to Projects</label>
                       <select
                         {...register("projectIds")}
                         multiple
-                        className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                        className={inputClass}
                       >
                         {projects.map((proj) => (
                           <option key={proj.id} value={proj.id}>
@@ -222,12 +218,12 @@ const InviteUserModal = ({ isOpen, onClose }: InviteUserModalProps) => {
                   </>
                 ) : null}
 
-                <button
-                  type="submit"
-                  className="w-full mt-4 bg-[var(--accent-strong)] hover:bg-[var(--accent)] transition text-[#041017] py-2 rounded-md"
-                >
-                  Send Invite
-                </button>
+                <div className="flex items-center justify-end gap-2 border-t border-[var(--border)] pt-4">
+                  <Button type="button" variant="ghost" onClick={onClose}>
+                    Cancel
+                  </Button>
+                  <Button type="submit">Send Invite</Button>
+                </div>
               </form>
             </DialogPanel>
           </TransitionChild>

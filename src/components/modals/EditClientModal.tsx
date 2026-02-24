@@ -7,6 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { Client } from "@/types/client";
+import { Button } from "@/components/ui";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is too short"),
@@ -25,6 +26,12 @@ interface Props {
   client: Client;
   onUpdate: (updatedClient: Client) => void;
 }
+
+const panelClass =
+  "w-full max-w-lg rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)]";
+const inputClass =
+  "w-full rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-[var(--text)] outline-none transition focus:border-[var(--blue)] focus:ring-2 focus:ring-[var(--blue)]/30";
+const labelClass = "mb-1.5 block text-xs font-medium uppercase tracking-wide text-[var(--muted)]";
 
 const EditClientModal = ({ isOpen, onClose, client, onUpdate }: Props) => {
   const {
@@ -53,22 +60,23 @@ const EditClientModal = ({ isOpen, onClose, client, onUpdate }: Props) => {
       <Dialog as="div" onClose={onClose} className="relative z-50">
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="w-full max-w-lg bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6">
+          <Dialog.Panel className={panelClass}>
             <div className="flex justify-between items-center mb-4">
-              <Dialog.Title className="text-lg font-semibold text-[var(--text)]">
-                Edit Client
-              </Dialog.Title>
-              <button onClick={onClose} className="text-[var(--text-subtle)] hover:text-[var(--text)]">
+              <div>
+                <Dialog.Title className="text-xl font-semibold text-[var(--text)]">Edit Client</Dialog.Title>
+                <p className="mt-1 text-sm text-[var(--muted)]">Update contact and account information.</p>
+              </div>
+              <button onClick={onClose} className="rounded-md p-1 text-[var(--text-subtle)] hover:bg-[var(--surface2)] hover:text-[var(--text)]">
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
+              <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
               <div>
-                <label className="block text-sm text-[var(--text-muted)] mb-1">Name</label>
+                <label className={labelClass}>Name</label>
                 <input
                   {...register("name")}
-                  className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                  className={inputClass}
                 />
                 {errors.name ? (
                   <p className="text-xs text-[var(--error)] mt-1">{errors.name.message}</p>
@@ -76,11 +84,11 @@ const EditClientModal = ({ isOpen, onClose, client, onUpdate }: Props) => {
               </div>
 
               <div>
-                <label className="block text-sm text-[var(--text-muted)] mb-1">Email</label>
+                <label className={labelClass}>Email</label>
                 <input
                   type="email"
                   {...register("email")}
-                  className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                  className={inputClass}
                 />
                 {errors.email ? (
                   <p className="text-xs text-[var(--error)] mt-1">{errors.email.message}</p>
@@ -89,26 +97,26 @@ const EditClientModal = ({ isOpen, onClose, client, onUpdate }: Props) => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-[var(--text-muted)] mb-1">Phone</label>
+                  <label className={labelClass}>Phone</label>
                   <input
                     {...register("phone")}
-                    className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                    className={inputClass}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-[var(--text-muted)] mb-1">Company</label>
+                  <label className={labelClass}>Company</label>
                   <input
                     {...register("company")}
-                    className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                    className={inputClass}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm text-[var(--text-muted)] mb-1">Status</label>
+                <label className={labelClass}>Status</label>
                 <select
                   {...register("status")}
-                  className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                  className={inputClass}
                 >
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
@@ -117,20 +125,20 @@ const EditClientModal = ({ isOpen, onClose, client, onUpdate }: Props) => {
               </div>
 
               <div>
-                <label className="block text-sm text-[var(--text-muted)] mb-1">Notes</label>
+                <label className={labelClass}>Notes</label>
                 <textarea
                   {...register("notes")}
                   rows={3}
-                  className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] text-[var(--text)] border border-[var(--border)]"
+                  className={inputClass}
                 />
               </div>
 
-              <button
-                type="submit"
-                className="w-full bg-[var(--accent-strong)] hover:bg-[var(--accent)] transition text-[#041017] py-2 rounded-md"
-              >
-                Update Client
-              </button>
+              <div className="flex items-center justify-end gap-2 border-t border-[var(--border)] pt-4">
+                <Button type="button" variant="ghost" onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button type="submit">Update Client</Button>
+              </div>
             </form>
           </Dialog.Panel>
         </div>

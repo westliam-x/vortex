@@ -9,6 +9,7 @@ import { z } from "zod";
 import API_ROUTES from "@/endpoints/routes";
 import { toast } from "react-toastify";
 import { makeRequest } from "@/api/request";
+import { Button } from "@/components/ui";
 
 const formSchema = z.object({
   name: z.string().min(2, "Client name is too short"),
@@ -26,6 +27,12 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const panelClass =
+  "w-full max-w-xl rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)] max-h-screen overflow-y-auto";
+const inputClass =
+  "w-full rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-[var(--text)] outline-none transition focus:border-[var(--blue)] focus:ring-2 focus:ring-[var(--blue)]/30";
+const labelClass = "mb-1.5 block text-xs font-medium uppercase tracking-wide text-[var(--muted)]";
 
 const AddClientModal = ({ isOpen, onClose }: Props) => {
   const {
@@ -77,14 +84,15 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="w-full max-w-xl bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 shadow-lg max-h-screen overflow-y-auto">
+            <Dialog.Panel className={panelClass}>
               <div className="flex justify-between items-center mb-6">
-                <Dialog.Title className="text-xl font-semibold text-[var(--text)]">
-                  Add New Client
-                </Dialog.Title>
+                <div>
+                  <Dialog.Title className="text-xl font-semibold text-[var(--text)]">Add New Client</Dialog.Title>
+                  <p className="mt-1 text-sm text-[var(--muted)]">Create a client profile and contact details.</p>
+                </div>
                 <button
                   onClick={onClose}
-                  className="text-[var(--text-subtle)] hover:text-[var(--text)] transition"
+                  className="rounded-md p-1 text-[var(--text-subtle)] transition hover:bg-[var(--surface2)] hover:text-[var(--text)]"
                 >
                   <X size={20} />
                 </button>
@@ -92,12 +100,10 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
 
               <form onSubmit={handleSubmit(submitHandler)} className="space-y-5">
                 <div>
-                  <label className="block text-sm text-[var(--text-muted)] mb-1">
-                    Client Name
-                  </label>
+                  <label className={labelClass}>Client Name</label>
                   <input
                     {...register("name")}
-                    className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
+                    className={inputClass}
                   />
                   {errors.name ? (
                     <p className="text-xs text-[var(--error)] mt-1">{errors.name.message}</p>
@@ -105,13 +111,11 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-[var(--text-muted)] mb-1">
-                    Email Address
-                  </label>
+                  <label className={labelClass}>Email Address</label>
                   <input
                     {...register("email")}
                     type="email"
-                    className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
+                    className={inputClass}
                   />
                   {errors.email ? (
                     <p className="text-xs text-[var(--error)] mt-1">{errors.email.message}</p>
@@ -120,22 +124,18 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-[var(--text-muted)] mb-1">
-                      Company
-                    </label>
+                    <label className={labelClass}>Company</label>
                     <input
                       {...register("company")}
-                      className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
+                      className={inputClass}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-[var(--text-muted)] mb-1">
-                      Phone Number
-                    </label>
+                    <label className={labelClass}>Phone Number</label>
                     <input
                       {...register("phone")}
                       type="tel"
-                      className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
+                      className={inputClass}
                     />
                     {errors.phone ? (
                       <p className="text-xs text-[var(--error)] mt-1">{errors.phone.message}</p>
@@ -145,22 +145,18 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-[var(--text-muted)] mb-1">
-                      Project Type
-                    </label>
+                    <label className={labelClass}>Project Type</label>
                     <input
                       {...register("projectType")}
                       placeholder="e.g., Website, Branding"
-                      className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
+                      className={inputClass}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-[var(--text-muted)] mb-1">
-                      Status
-                    </label>
+                    <label className={labelClass}>Status</label>
                     <select
                       {...register("status")}
-                      className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
+                      className={inputClass}
                     >
                       <option value="Active">Active</option>
                       <option value="Inactive">Inactive</option>
@@ -170,25 +166,23 @@ const AddClientModal = ({ isOpen, onClose }: Props) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-[var(--text-muted)] mb-1">
-                    Notes
-                  </label>
+                  <label className={labelClass}>Notes</label>
                   <textarea
                     {...register("notes")}
                     rows={3}
-                    className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
+                    className={inputClass}
                   />
                   {errors.notes ? (
                     <p className="text-xs text-[var(--error)] mt-1">{errors.notes.message}</p>
                   ) : null}
                 </div>
 
-                <button
-                  type="submit"
-                  className="w-full bg-[var(--accent-strong)] hover:bg-[var(--accent)] text-[#041017] py-2 rounded-lg font-medium transition"
-                >
-                  Add Client
-                </button>
+                <div className="flex items-center justify-end gap-2 border-t border-[var(--border)] pt-4">
+                  <Button type="button" variant="ghost" onClick={onClose}>
+                    Cancel
+                  </Button>
+                  <Button type="submit">Add Client</Button>
+                </div>
               </form>
             </Dialog.Panel>
           </Transition.Child>

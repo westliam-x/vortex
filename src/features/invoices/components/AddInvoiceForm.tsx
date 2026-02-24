@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { fetchProjects as fetchProjectsService } from "@/features/projects";
 import type { Project } from "@/types/project";
 import { getProjectId } from "@/lib/ids";
+import { fetchClientById } from "@/features/clients";
 
 const itemSchema = z.object({
   description: z.string().min(1),
@@ -98,8 +99,15 @@ export default function AddInvoiceForm() {
 
   const [loading, setLoading] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [prefillClientId, setPrefillClientId] = useState<string | null>(null);
   const { profile } = useProfile();
   const { create } = useInvoices({ autoFetch: false });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    setPrefillClientId(params.get("clientId"));
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -128,6 +136,29 @@ export default function AddInvoiceForm() {
       yourPhone: profile.phone,
     }));
   }, [profile, reset]);
+
+  useEffect(() => {
+    let mounted = true;
+    const run = async () => {
+      if (!prefillClientId) return;
+      try {
+        const client = await fetchClientById(prefillClientId);
+        if (!mounted || !client) return;
+        reset((prev) => ({
+          ...prev,
+          clientName: client.name || prev.clientName,
+          clientEmail: client.email || prev.clientEmail,
+          clientPhone: client.phone || prev.clientPhone,
+        }));
+      } catch {
+        // no-op: keep manual entry
+      }
+    };
+    void run();
+    return () => {
+      mounted = false;
+    };
+  }, [prefillClientId, reset]);
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);

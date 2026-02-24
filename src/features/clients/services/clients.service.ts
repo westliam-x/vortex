@@ -56,3 +56,19 @@ export const fetchClientById = async (id: string): Promise<Client | null> => {
 
   return response.client ? normalizeClient(response.client) : null;
 };
+
+export const updateClient = async (id: string, payload: Partial<Client>): Promise<Client> => {
+  const response = await makeRequest<{ client: Client }>({
+    url: `${API_ROUTES.CLIENT.BY_ID}/${id}`,
+    method: "PATCH",
+    data: payload,
+  });
+  return normalizeClient(response.client);
+};
+
+export const deleteClient = async (id: string): Promise<void> => {
+  await makeRequest({
+    url: `${API_ROUTES.CLIENT.BY_ID}/${id}`,
+    method: "DELETE",
+  });
+};

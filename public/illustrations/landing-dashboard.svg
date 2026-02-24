@@ -1,0 +1,23 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="800" rx="24" fill="#0D1014"/>
+  <rect x="28" y="28" width="1144" height="744" rx="18" fill="#121722" stroke="#232C3D" stroke-width="2"/>
+  <rect x="56" y="56" width="220" height="688" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="308" y="56" width="836" height="76" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="332" y="80" width="310" height="28" rx="8" fill="#121722"/>
+  <rect x="664" y="80" width="112" height="28" rx="8" fill="#007AFF"/>
+  <rect x="786" y="80" width="112" height="28" rx="8" fill="#121722"/>
+  <rect x="908" y="80" width="112" height="28" rx="8" fill="#121722"/>
+  <rect x="332" y="164" width="250" height="148" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="601" y="164" width="250" height="148" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="870" y="164" width="250" height="148" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="332" y="336" width="788" height="188" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="332" y="548" width="378" height="172" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="742" y="548" width="378" height="172" rx="12" fill="#0D1014" stroke="#232C3D"/>
+  <rect x="72" y="88" width="130" height="14" rx="7" fill="#00FF94" fill-opacity="0.35"/>
+  <rect x="72" y="130" width="164" height="10" rx="5" fill="#94A3B8" fill-opacity="0.35"/>
+  <rect x="72" y="155" width="144" height="10" rx="5" fill="#94A3B8" fill-opacity="0.35"/>
+  <rect x="72" y="210" width="170" height="40" rx="10" fill="#007AFF" fill-opacity="0.25" stroke="#007AFF"/>
+  <rect x="72" y="268" width="170" height="40" rx="10" fill="#121722"/>
+  <rect x="72" y="326" width="170" height="40" rx="10" fill="#121722"/>
+  <text x="356" y="705" fill="#94A3B8" font-family="Arial, sans-serif" font-size="18">Replace with real Dashboard screenshot</text>
+</svg>

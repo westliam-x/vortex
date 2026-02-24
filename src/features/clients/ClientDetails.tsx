@@ -1,19 +1,66 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { format } from "date-fns";
+import { toast } from "react-toastify";
+import { EditClientModal } from "@/components";
 import { PageHeader, ContentGrid, RightContextPanel } from "@/components/layout";
 import { SectionCard } from "@/components/patterns";
 import { Button, EmptyState, StatusBadge } from "@/components/ui";
 import { getProjectId } from "@/lib/ids";
+import { deleteClient, updateClient } from "./services/clients.service";
 import { useClientDetails } from "./hooks/useClientDetails";
 
 export default function ClientDetails() {
   const router = useRouter();
   const { id } = useParams();
   const clientId = typeof id === "string" ? id : undefined;
-  const { client, loading } = useClientDetails(clientId);
+  const { client, loading, setClient } = useClientDetails(clientId);
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const onBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+      return;
+    }
+    router.push("/clients");
+  };
+
+  const onMessageClient = () => {
+    if (!client?.email) {
+      toast.info("Client email is not available.");
+      return;
+    }
+    window.location.href = `mailto:${client.email}?subject=${encodeURIComponent(`Project update for ${client.name}`)}`;
+  };
+
+  const onCreateInvoice = () => {
+    if (!clientId) {
+      router.push("/invoices/new");
+      return;
+    }
+    router.push(`/invoices/new?clientId=${clientId}`);
+  };
+
+  const onDeleteClient = async () => {
+    if (!clientId || !client) return;
+    const confirmed = window.confirm(`Remove client "${client.name}"? This cannot be undone.`);
+    if (!confirmed) return;
+
+    setDeleting(true);
+    try {
+      await deleteClient(clientId);
+      toast.success("Client removed.");
+      router.push("/clients");
+    } catch {
+      toast.error("Failed to remove client.");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   if (!client && !loading) {
     return (
@@ -34,7 +81,7 @@ export default function ClientDetails() {
       <PageHeader
         title={client?.name ?? "Client"}
         subtitle={client?.company ?? "Client profile and relationship details."}
-        secondaryActions={[{ label: "Back", variant: "outline", onClick: () => router.back() }]}
+        secondaryActions={[{ label: "Back", variant: "outline", onClick: onBack }]}
       />
 
       <ContentGrid
@@ -44,8 +91,8 @@ export default function ClientDetails() {
               title="Profile"
               actions={
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm">Edit client</Button>
-                  <Button size="sm" variant="secondary">Message</Button>
+                  <Button size="sm" onClick={() => setEditOpen(true)}>Edit client</Button>
+                  <Button size="sm" variant="secondary" onClick={onMessageClient}>Message</Button>
                 </div>
               }
             >
@@ -127,14 +174,36 @@ export default function ClientDetails() {
 
             <SectionCard title="Quick Actions">
               <div className="space-y-2">
-                <Button fullWidth>Message client</Button>
-                <Button fullWidth variant="secondary">Create invoice</Button>
-                <Button fullWidth variant="destructive">Remove client</Button>
+                <Button fullWidth onClick={onMessageClient}>Message client</Button>
+                <Button fullWidth variant="secondary" onClick={onCreateInvoice}>Create invoice</Button>
+                <Button fullWidth variant="destructive" onClick={() => void onDeleteClient()} loading={deleting}>
+                  Remove client
+                </Button>
               </div>
             </SectionCard>
           </RightContextPanel>
         }
       />
+
+      {client ? (
+        <EditClientModal
+          isOpen={editOpen}
+          onClose={() => setEditOpen(false)}
+          client={client}
+          onUpdate={(updatedClient) => {
+            if (!clientId) return;
+            void (async () => {
+              try {
+                const saved = await updateClient(clientId, updatedClient);
+                setClient(saved);
+                toast.success("Client updated.");
+              } catch {
+                toast.error("Failed to update client.");
+              }
+            })();
+          }}
+        />
+      ) : null}
     </div>
   );
 }

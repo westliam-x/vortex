@@ -14,6 +14,7 @@ import API_ROUTES from "@/endpoints/routes";
 import { getId } from "@/lib/ids";
 import { fetchClients as fetchClientsService } from "@/features/clients";
 import { useProfile } from "@/features/auth";
+import { Button } from "@/components/ui";
 
 const formSchema = z
   .object({
@@ -59,6 +60,12 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const panelClass =
+  "w-full max-w-lg rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)] max-h-screen overflow-y-auto";
+const inputClass =
+  "w-full rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-[var(--text)] outline-none transition focus:border-[var(--blue)] focus:ring-2 focus:ring-[var(--blue)]/30";
+const labelClass = "mb-1.5 block text-xs font-medium uppercase tracking-wide text-[var(--muted)]";
 
 const AddProjectModal = ({ isOpen, onClose }: Props) => {
   const [clients, setClients] = useState<Client[]>([]);
@@ -173,14 +180,15 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="w-full max-w-lg bg-[var(--surface)] border border-[var(--border)] rounded-xl p-6 shadow-lg max-h-screen overflow-y-auto">
+            <Dialog.Panel className={panelClass}>
               <div className="flex justify-between items-center mb-6">
-                <Dialog.Title className="text-xl font-semibold text-[var(--text)]">
-                  Create New Project
-                </Dialog.Title>
+                <div>
+                  <Dialog.Title className="text-xl font-semibold text-[var(--text)]">Create New Project</Dialog.Title>
+                  <p className="mt-1 text-sm text-[var(--muted)]">Set scope, timeline, and optional linked invoice.</p>
+                </div>
                 <button
                   onClick={onClose}
-                  className="text-[var(--text-subtle)] hover:text-[var(--text)] transition"
+                  className="rounded-md p-1 text-[var(--text-subtle)] hover:bg-[var(--surface2)] hover:text-[var(--text)]"
                 >
                   <X size={20} />
                 </button>
@@ -188,10 +196,10 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
 
               <form onSubmit={handleSubmit(submitHandler)} className="space-y-5">
                 <div>
-                  <label className="block text-sm text-[var(--text-muted)] mb-1">Title</label>
+                  <label className={labelClass}>Title</label>
                   <input
                     {...register("title")}
-                    className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
+                    className={inputClass}
                   />
                   {errors.title ? (
                     <p className="text-xs text-[var(--error)] mt-1">{errors.title.message}</p>
@@ -199,19 +207,19 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-[var(--text-muted)] mb-1">Description</label>
+                  <label className={labelClass}>Description</label>
                   <textarea
                     {...register("description")}
                     rows={3}
-                    className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
+                    className={inputClass}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm text-[var(--text-muted)] mb-1">Project Type</label>
+                  <label className={labelClass}>Project Type</label>
                   <select
                     {...register("type")}
-                    className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
+                    className={inputClass}
                   >
                     <option value="Free">Free</option>
                     <option value="Paid">Paid</option>
@@ -225,7 +233,7 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
                     </label>
                     <select
                       {...register("clientId")}
-                      className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
+                      className={inputClass}
                     >
                       <option value="">Select a client</option>
                       {clients.map((client) => {
@@ -246,29 +254,29 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
 
                 {projectType === "Paid" ? (
                   <div>
-                    <label className="block text-sm text-[var(--text-muted)] mb-1">Budget</label>
+                    <label className={labelClass}>Budget</label>
                     <input
                       {...register("budget")}
                       type="number"
-                      className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
+                      className={inputClass}
                     />
                   </div>
                 ) : null}
 
                 <div>
-                  <label className="block text-sm text-[var(--text-muted)] mb-1">Deadline</label>
+                  <label className={labelClass}>Deadline</label>
                   <input
                     {...register("deadline")}
                     type="date"
-                    className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
+                    className={inputClass}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm text-[var(--text-muted)] mb-1">Priority</label>
+                  <label className={labelClass}>Priority</label>
                   <select
                     {...register("priority")}
-                    className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
+                    className={inputClass}
                   >
                     <option value="">Select</option>
                     <option value="Low">Low</option>
@@ -294,10 +302,10 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
                 {createInvoice ? (
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
-                      <label className="block text-sm text-[var(--text-muted)] mb-1">Invoice Currency</label>
+                      <label className={labelClass}>Invoice Currency</label>
                       <select
                         {...register("invoiceCurrency")}
-                        className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
+                        className={inputClass}
                       >
                         <option value="USD">USD</option>
                         <option value="NGN">NGN</option>
@@ -305,22 +313,22 @@ const AddProjectModal = ({ isOpen, onClose }: Props) => {
                     </div>
 
                     <div>
-                      <label className="block text-sm text-[var(--text-muted)] mb-1">Invoice Due Date</label>
+                      <label className={labelClass}>Invoice Due Date</label>
                       <input
                         {...register("invoiceDueDate")}
                         type="date"
-                        className="w-full px-3 py-2 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text)] rounded-md focus:ring-2 focus:ring-[var(--accent)]/40 outline-none"
+                        className={inputClass}
                       />
                     </div>
                   </div>
                 ) : null}
 
-                <button
-                  type="submit"
-                  className="w-full bg-[var(--accent-strong)] hover:bg-[var(--accent)] text-[#041017] py-2 rounded-lg font-medium transition"
-                >
-                  Create Project
-                </button>
+                <div className="flex items-center justify-end gap-2 border-t border-[var(--border)] pt-4">
+                  <Button type="button" variant="ghost" onClick={onClose}>
+                    Cancel
+                  </Button>
+                  <Button type="submit">Create Project</Button>
+                </div>
               </form>
             </Dialog.Panel>
           </Transition.Child>
