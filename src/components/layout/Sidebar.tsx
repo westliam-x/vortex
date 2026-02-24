@@ -16,6 +16,7 @@ import {
   Signal,
   Star,
   Users,
+  WalletCards,
 } from "lucide-react";
 import { cn } from "@/lib";
 import { Badge } from "@/components/ui";
@@ -67,6 +68,7 @@ const navGroups: SidebarGroup[] = [
     label: "System",
     items: [
       { label: "Settings", href: "/settings", icon: Settings },
+      { label: "Pricing", href: "/pricing", icon: WalletCards },
       { label: "Vora", href: "/vora", icon: Bot, premiumFeature: "voraEnabled" },
     ],
   },

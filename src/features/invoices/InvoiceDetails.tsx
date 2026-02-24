@@ -304,6 +304,13 @@ export default function InvoiceDetails() {
                 >
                   Collect payment
                 </Button>
+                <Button
+                  fullWidth
+                  variant="ghost"
+                  onClick={() => router.push("/settings?tab=integrations")}
+                >
+                  Generate account
+                </Button>
               </div>
             </SectionCard>
           </RightContextPanel>

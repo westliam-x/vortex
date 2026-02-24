@@ -55,6 +55,7 @@ const API_ROUTES = {
   INTEGRATIONS: {
     BLAAIZ_STATUS: "/integrations/blaaiz/status",
     BLAAIZ_COLLECTIONS: "/integrations/blaaiz/collections",
+    BLAAIZ_VIRTUAL_BANK_ACCOUNTS: "/integrations/blaaiz/virtual-bank-accounts",
   },
   SIGNAL: {
     PROFILE: "/signal/profile",
