@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { toast } from "react-toastify";
 import { Button, Card, EmptyState, StatusBadge } from "@/components/ui";
 import { useProject } from "@/features/projects";
+import { VoraDraftDrawer } from "@/features/vora";
 import { useVortexMessages } from "@/hooks/vortex/useVortexMessages";
 import { useVortexFiles } from "@/hooks/vortex/useVortexFiles";
 import { useVortexReview } from "@/hooks/vortex/useVortexReview";
@@ -27,6 +28,7 @@ export default function Space() {
   const projectId = typeof id === "string" ? id : undefined;
   const [messageBody, setMessageBody] = useState("");
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [voraDraftOpen, setVoraDraftOpen] = useState(false);
   const composerRef = useRef<HTMLTextAreaElement>(null);
 
   const { project, client, loading } = useProject(projectId);
@@ -56,6 +58,10 @@ export default function Space() {
     if (locked) return "not_eligible" as const;
     return "eligible" as const;
   })();
+  const lastMessagesSummary = messages
+    .slice(-5)
+    .map((message) => `${message.authorType}: ${message.body}`)
+    .join("\n");
 
   const events = useMemo(() => {
     const messageEvents = messages.slice(0, 8).map((item, index) => ({
@@ -105,6 +111,8 @@ export default function Space() {
         statusSlot={<StatusBadge kind="project" status={project?.status ?? "Pending"} />}
         locked={locked}
         invoiceHref={invoiceHref}
+        showVoraAction
+        onOpenVora={() => setVoraDraftOpen(true)}
       />
 
       <SpaceLayout
@@ -180,6 +188,22 @@ export default function Space() {
           />
         }
         activityPane={<EventStream events={events} loading={loadingFiles || loadingMessages} />}
+      />
+
+      <VoraDraftDrawer
+        open={voraDraftOpen}
+        onOpenChange={setVoraDraftOpen}
+        onInsertDraft={(draft) => {
+          setMessageBody(draft);
+          composerRef.current?.focus();
+        }}
+        projectId={resolvedProjectId ?? undefined}
+        spaceId={projectId}
+        projectName={project?.title}
+        clientName={client?.name}
+        deadline={project?.deadline ? format(new Date(project.deadline), "dd MMM yyyy") : undefined}
+        invoiceStatus={locked ? "pending" : "confirmed"}
+        lastMessagesSummary={lastMessagesSummary}
       />
     </div>
   );

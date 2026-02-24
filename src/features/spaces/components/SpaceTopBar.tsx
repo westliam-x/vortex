@@ -13,6 +13,8 @@ type SpaceTopBarProps = {
   onViewInvoice?: () => void;
   invoiceHref?: string;
   lockedSubtext?: string;
+  showVoraAction?: boolean;
+  onOpenVora?: () => void;
 };
 
 export default function SpaceTopBar({
@@ -23,12 +25,24 @@ export default function SpaceTopBar({
   onViewInvoice,
   invoiceHref,
   lockedSubtext,
+  showVoraAction = false,
+  onOpenVora,
 }: SpaceTopBarProps) {
   const canViewInvoice = Boolean(invoiceHref || onViewInvoice);
+  const combinedRightSlot = (
+    <div className="flex items-center gap-2">
+      {statusSlot}
+      {showVoraAction ? (
+        <Button size="sm" variant="secondary" onClick={onOpenVora}>
+          Vora
+        </Button>
+      ) : null}
+    </div>
+  );
 
   return (
     <div className="space-y-4">
-      <PageHeader title={title} subtitle={subtitle} rightSlot={statusSlot} />
+      <PageHeader title={title} subtitle={subtitle} rightSlot={combinedRightSlot} />
       {locked ? (
         <Card className="flex flex-col gap-3 border-[var(--warning)]/40 bg-[var(--surface2)] md:flex-row md:items-center md:justify-between">
           <div>
